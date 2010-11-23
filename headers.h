@@ -1,7 +1,7 @@
 #ifndef _HEADERS_H_
 #define _HEADERS_H_
 
-#define ARCHFS_VERSION "1.0.0a"
+#define VERSION "1.0.0a"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +28,8 @@
 #define DEBUG
 #define DEBUG_DEEP
 
+#define PROGRAM_NAME "rdiff-backup-fs"
+#define TMP_DIR_NAME PROGRAM_NAME "-XXXXXX"
 #define DEFAULT_TMP_DIR "/tmp"
 
 #define MIRROR_PREFIX "mirror_metadata."

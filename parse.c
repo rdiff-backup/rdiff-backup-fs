@@ -133,8 +133,10 @@ void parse_option(int argc, char **argv, int *index){
     	if (set_directory(argc, argv, index) != 0)
     		fail(ERR_PARAMETRES);
     }
-    else if ((strcmp(argv[*index], OPT_VERSION) == 0) || (strcmp(argv[*index], OPT_VERSION_FULL) == 0))
-		printf("archfs - filesystem in userspace for rdiff-backup repositories; version %s\n", ARCHFS_VERSION);
+    else if ((strcmp(argv[*index], OPT_VERSION) == 0) || (strcmp(argv[*index], OPT_VERSION_FULL) == 0)) {
+		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
+        exit(0);
+    }
     else 
 		fail(ERR_UNKNOWN_OPTION);
 
@@ -174,7 +176,7 @@ int parse(int argc, char **argv){
     int i = 0;
         
     if ((argc == 2) && ((strcmp(argv[1], OPT_VERSION) == 0) || (strcmp(argv[1], OPT_VERSION) == 0))){
-		printf("archfs - filesystem in userspace for rdiff-backup repositories; version %s\n", ARCHFS_VERSION);
+		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
 		exit(0);	
     };	
     if (argc < 3)

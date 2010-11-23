@@ -13,7 +13,7 @@ int revs_getattr(const char *path, struct stat *stbuf);
 
 int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi);
 
-int archfs_readlink(const char *, char *, size_t);
+int revs_readlink(const char *, char *, size_t);
 
 int revs_open(const char *path, struct fuse_file_info *fi);
 

@@ -7,7 +7,7 @@ void fail(int error){
     printf("Error: ");
     switch (error){
 		case (ERR_PARAMETRES):
-	    	printf("Wrong parametres; try archfs <mount point path> <repository path> or see man archfs;\n");
+	    	printf("Wrong parametres; try " PROGRAM_NAME " <mount point path> <repository path> or see man archfs;\n");
 	    	break;
 		case (ERR_NO_MOUNT_OPT):
 		    printf("Mount point was not declared;\n");
@@ -16,7 +16,7 @@ void fail(int error){
 	    	printf("No repository was given\n");
 	    	break;
 		case (ERR_UNKNOWN_OPTION):
-		    printf("No such option; see man archfs\n");
+		    printf("No such option; see man " PROGRAM_NAME "\n");
 		    break;
 		case (ERR_NO_MOUNT):
 	    	printf("No such mount directory\n");

@@ -84,7 +84,7 @@ void fuse_operations_setup(){
 
 	operations.getattr 	= &revs_getattr;
 	operations.readdir 	= &revs_readdir;
-	operations.readlink = &archfs_readlink;
+	operations.readlink = &revs_readlink;
 	operations.open	   	= &revs_open;
 	operations.read    	= &revs_read;
 	operations.release 	= &revs_release;
@@ -102,11 +102,11 @@ void create_tmp_dir(char **tmp_dir, char **tmp_file){
     		fail(-1);
     if (gpthpro(tmp_dir) != 0)
     	fail(ERR_NO_TMP);
-    int length = strlen(*tmp_dir) + strlen("/archfs-XXXXXX");
+    int length = strlen(*tmp_dir) + strlen(TMP_DIR_NAME);
     char tmp_template[length + 1];
 
     strcpy(tmp_template, *tmp_dir);
-   	strcpy(tmp_template + strlen(*tmp_dir), "/archfs-XXXXXX");
+   	strcpy(tmp_template + strlen(*tmp_dir), TMP_DIR_NAME);
     if (mkdtemp(tmp_template) == NULL)
 		fail(-1);
     if (((*tmp_file) = gstralloc(length)) == NULL)

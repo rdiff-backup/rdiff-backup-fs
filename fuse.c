@@ -62,7 +62,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     
 };
 
-int archfs_readlink(const char *path, char *buf, size_t size){
+int revs_readlink(const char *path, char *buf, size_t size){
 	
 	struct stats *stats;
 	
