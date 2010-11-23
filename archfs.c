@@ -14,6 +14,7 @@ char *tmp_file = NULL;
 
 int structure = STRUCTURE_FULL;
 int layout = LAYOUT_ALL;
+int debug = 0;
 
 struct fuse_operations operations;
 
@@ -27,8 +28,11 @@ int run(int argc, char **argv){
     args[0] = argv[0];
     args[1] = mount;
     args[2] = "-d";
-
-    return fuse_main(3, args, &operations, NULL);
+    
+    if (debug)
+        return fuse_main(3, args, &operations, NULL);
+    else
+        return fuse_main(2, args, &operations, NULL);
 
 };
 

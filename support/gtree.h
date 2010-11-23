@@ -7,10 +7,7 @@
 #include "gpath.h"
 #include "../externs.h"
 
-#ifdef DEBUG_ON
-//    #define TREE_DEBUG
-//    #define TREE_DEBUG_DEEP
-#endif
+// #define TREE_DEBUG
 
 struct node {
 

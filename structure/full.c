@@ -86,7 +86,7 @@ int full_build_multi(int count, char **repo){
 	char *extension = NULL;
 	char *snapshot = NULL;
 
-#ifdef ALL_DEBUG
+#ifdef DEBUG
     printf("[Function: init_multi] Received %d repos;\n", count);
 #endif
 	gtreenew(&structure_tree);
@@ -155,7 +155,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 	    return;										\
 	}
 	
-#ifdef ALL_DEBUG
+#ifdef DEBUG
 	printf("[Function: read_repo_revision] Received repo %s and revision %s;\n", repo, rev);
 #endif
     char *rev_dir = NULL;
@@ -207,7 +207,7 @@ int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *f
     stats->internal = stats->path + strlen(prefix) + strlen("/");
     stats->repo = repo;
     stats->rev = rev;
-#ifdef ALL_DEBUG_DEEP
+#ifdef FULL_DEBUG
 	printf("[Function: read_stats_all] Read data of file %s\n", stats->path);
 #endif
     return 0;

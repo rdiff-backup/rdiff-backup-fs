@@ -15,5 +15,6 @@ extern struct fuse_operations operations;
 
 extern int structure;
 extern int layout;
+extern int debug;
 
 extern int policy;

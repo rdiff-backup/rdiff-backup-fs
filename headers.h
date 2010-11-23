@@ -23,10 +23,7 @@
 #define pass(val) printf("Passed point %d\n", val);
 #define single(type) calloc(1, sizeof(type))
 
-#define DEBUG_ON
-
 #define DEBUG
-#define DEBUG_DEEP
 
 #define PROGRAM_NAME "rdiff-backup-fs"
 #define TMP_DIR_NAME PROGRAM_NAME "-XXXXXX"

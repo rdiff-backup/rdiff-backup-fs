@@ -152,7 +152,7 @@ struct node* find_node(struct node *root, const char *path){
 	struct node *node = root, *next = NULL;
 	int i = 0, j = 0;
 
-#ifdef TREE_DEBUG_DEEP
+#ifdef TREE_DEBUG
 	printf("[Function: find_node] Finding node with path %s;\n", path);
 #endif
 	for (i = 0; i < count; i++){
@@ -195,7 +195,7 @@ struct node* find_parent(struct node *root, const char *path){
 
 int tree_add_node(struct node *node, char *name){
 
-#ifdef TREE_DEBUG_DEEP
+#ifdef TREE_DEBUG
 	printf("[Function: tree_add_node] Adding file %s;\n", name);
 #endif
     if (node->size == node->capacity)

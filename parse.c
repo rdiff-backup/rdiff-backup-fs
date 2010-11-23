@@ -22,6 +22,8 @@
 #define OPT_DIR "-d"
 #define OPT_DIR_FULL "--directory"
 
+#define OPT_DEBUG_FULL "--debug"
+
 #define OPT_LAST "-l"
 #define OPT_LAST_FULL "--last"
 
@@ -137,6 +139,8 @@ void parse_option(int argc, char **argv, int *index){
 		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
         exit(0);
     }
+    else if (strcmp(argv[*index], OPT_DEBUG_FULL) == 0)
+        debug = 1;
     else 
 		fail(ERR_UNKNOWN_OPTION);
 

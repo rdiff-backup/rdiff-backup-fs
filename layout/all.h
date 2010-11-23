@@ -7,10 +7,6 @@
 #include "../support/gpath.h"
 #include "../structure/core.h"
 
-#ifdef DEBUG_ON
-    #define ALL_DEBUG
-    // #define ALL_DEBUG_DEEP
-#endif
 
 int all_init(char *);
 
