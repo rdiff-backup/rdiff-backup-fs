@@ -93,7 +93,10 @@ void fuse_operations_setup(){
 };
 
 void create_tmp_dir(char **tmp_dir, char **tmp_file){
-    
+
+#ifdef DEBUG
+    printf("[Function: create_tmp_dir] Creating temporary directory\n");
+#endif    
     char *tmpdirprefix = getenv("TMPDIR");
     if (!tmpdirprefix) 
 		tmpdirprefix = DEFAULT_TMP_DIR;
@@ -102,11 +105,12 @@ void create_tmp_dir(char **tmp_dir, char **tmp_file){
     		fail(-1);
     if (gpthpro(tmp_dir) != 0)
     	fail(ERR_NO_TMP);
-    int length = strlen(*tmp_dir) + strlen(TMP_DIR_NAME);
+    int length = strlen(*tmp_dir) + strlen("/" TMP_DIR_NAME);
     char tmp_template[length + 1];
 
     strcpy(tmp_template, *tmp_dir);
-   	strcpy(tmp_template + strlen(*tmp_dir), TMP_DIR_NAME);
+   	strcpy(tmp_template + strlen(*tmp_dir), "/" TMP_DIR_NAME);
+    printf("%s\n", tmp_template);
     if (mkdtemp(tmp_template) == NULL)
 		fail(-1);
     if (((*tmp_file) = gstralloc(length)) == NULL)
