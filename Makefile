@@ -99,3 +99,6 @@ install:
 clean:
 	- find . -name "*\.o" | xargs rm
 	- rm ${EXECUTABLE}
+
+clean_tests:
+	rm -rf tests tests_backup
