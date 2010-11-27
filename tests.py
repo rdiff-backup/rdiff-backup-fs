@@ -83,16 +83,25 @@ class RdiffBackupTestCase(TestCase):
         remove_directory(self.TEST_RDIFF_DIRECTORY, only_content=False)
 
 
-class SimpleTestCase(RdiffBackupTestCase):
+class FlatTestCase(RdiffBackupTestCase):
     
     fixture_single_file = [
         {'file': 'content'},
         {'file': 'new content'}
     ]
     
-    #def test_some(self):
-    #    print self.EXECUTABLE
-
+    fixture_two_files = [
+        {'file1': 'content1', 'file2': 'content2'},
+        {'file1': 'new content 1', 'file2': 'new content 2'}
+    ]
+    
+    fixture_adding_files = [
+        {'file1': 'content1'},
+        {'file1': 'content1', 'file2': 'content2'},
+        {'file1': 'content1', 'file2': 'content2', 'file3': 'content3'},
+        {'file1': 'content1', 'file2': 'content2', 'file3': 'content3',
+         'file4': 'content4'}
+    ]
 
 
 def remove_directory(path, only_content=True):
