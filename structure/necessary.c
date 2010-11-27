@@ -19,6 +19,7 @@ static int build_revision_tree(struct repo *repo, struct revision *revision);
 static int free_cache();
 
 struct repo *repositories = NULL;
+static struct stats root;
 
 int necessary_build(char *repo){
 
@@ -53,6 +54,7 @@ int necessary_build(char *repo){
     repositories[0].revisions = calloc(rev_count[0], sizeof(struct revision));
     for (i = 0; i < rev_count[0]; i++)
         gstrcpy(&repositories[0].revisions[i].name, revs[i]);
+    set_directory_stats(&root);
 	necessary_build_finish(0);
 }
 
@@ -62,6 +64,13 @@ int necessary_build_multi(int count, char **repo){
 
 int necessary_get_file(char *repo, char *revision, char *internal, 
 					   struct stats **stats){
+#ifdef DEBUG
+    printf("[necessary_get_file: checking file %s/%s/%s\n", repo, revision, internal);
+#endif
+    if (revision == NULL){
+        *stats = &root;
+        return 0;
+    }
     struct node *tree = get_revision_tree(repo, revision);
     if (!tree)
         return -1;

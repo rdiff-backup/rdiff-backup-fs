@@ -10,19 +10,20 @@ int revs_getattr(const char *path, struct stat *stbuf){
 #ifdef DEBUG
 	printf("[FUSE: getattr] Attributes for path %s;\n", path);
 #endif
-    if (get_file(path, &stats) == 0) {
-		stbuf->st_size = stats->size;
-		if (stats->type == S_IFDIR)
-			stbuf->st_mode = stats->type | 0555;
-		else
-			stbuf->st_mode = stats->type | 0444;
-		stbuf->st_nlink = stats->nlink;
-		stbuf->st_mtime = stats->ctime;
-		stbuf->st_ctime = stats->ctime;
-		stbuf->st_atime = stats->atime;
-    }
+    if (get_file(path, &stats) != 0)
+        return -1;
+    stbuf->st_size = stats->size;
+    if (stats->type == S_IFDIR)
+        stbuf->st_mode = stats->type | 0555;
     else
-		return -1;
+        stbuf->st_mode = stats->type | 0444;
+    stbuf->st_nlink = stats->nlink;
+    stbuf->st_mtime = stats->ctime;
+    stbuf->st_ctime = stats->ctime;
+    stbuf->st_atime = stats->atime;
+#ifdef DEBUG
+	printf("[FUSE: getattr] Retrieved attributes");
+#endif    
     return 0;
     
 };
