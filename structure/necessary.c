@@ -78,6 +78,22 @@ int necessary_get_file(char *repo, char *revision, char *internal,
 }
 
 char** necessary_get_children(char *repo, char *revision, char *internal){
+    
+    int i = 0;
+    char **result = 0;
+
+#ifdef DEBUG
+    printf("[necessary_get_children: getting children of %s/%s/%s\n", repo, revision, internal);
+#endif    
+    if (revision == NULL){
+        pass(1);
+        result = calloc(rev_count[0] + 1, sizeof(char *));
+        pass(2);
+        for (i = 0; i < rev_count[0]; i++)
+            gstrcpy(&result[i], repositories[0].revisions[i].name);
+        pass(3);
+        return result;
+    }
     struct node *tree = get_revision_tree(repo, revision);
     if (!tree)
         return NULL;

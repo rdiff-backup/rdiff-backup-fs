@@ -10,8 +10,12 @@ int revs_getattr(const char *path, struct stat *stbuf){
 #ifdef DEBUG
 	printf("[FUSE: getattr] Attributes for path %s;\n", path);
 #endif
-    if (get_file(path, &stats) != 0)
+    if (get_file(path, &stats) != 0) {
+#ifdef DEBUG
+        printf("[FUSE: getattr] Failed to retrieve stats;\n", path);
+#endif
         return -1;
+    }
     stbuf->st_size = stats->size;
     if (stats->type == S_IFDIR)
         stbuf->st_mode = stats->type | 0555;
@@ -30,18 +34,19 @@ int revs_getattr(const char *path, struct stat *stbuf){
 
 int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){
 
+    pass(1);
     int i = 0;
     struct stats *stats = 0;
 
+#ifdef DEBUG
+    printf("[FUSE: readdir] Received path %s;\n", path);
+#endif
     if (get_file(path, &stats) != 0)
 		return -ENOENT;
 	
     filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
     
-#ifdef DEBUG
-    printf("[FUSE: readdir] Received path %s;\n", path);
-#endif
     char **content = get_children(path);
     if (content == NULL){
 #ifdef DEBUG
