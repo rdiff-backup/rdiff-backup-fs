@@ -18,6 +18,16 @@ static int build_revision_tree(struct repo *repo, struct revision *revision);
 
 static int free_cache();
 
+/*
+ * checks whether repo with given name exists
+ */
+static int repo_exists(char *repo_name);
+
+/*
+ * checks whether revision in given repo exists
+ */
+static int revision_exists(char *repo_name, char *revision_name);
+
 struct repo *repositories = NULL;
 static struct stats root;
 
@@ -53,7 +63,7 @@ int necessary_build(char *repo){
         necessary_build_finish(-1);
     repositories[0].revisions = calloc(rev_count[0], sizeof(struct revision));
     for (i = 0; i < rev_count[0]; i++)
-        gstrcpy(&repositories[0].revisions[i].name, revs[i]);
+        repositories[0].revisions[i].name = get_revs_dir(revs[i]);
     set_directory_stats(&root);
 	necessary_build_finish(0);
 }
@@ -67,14 +77,24 @@ int necessary_get_file(char *repo, char *revision, char *internal,
 #ifdef DEBUG
     printf("[necessary_get_file: checking file %s/%s/%s\n", repo, revision, internal);
 #endif
-    if (revision == NULL){
+    if (revision == NULL && (repo == NULL || repo_exists(repo))){
         *stats = &root;
         return 0;
     }
-    struct node *tree = get_revision_tree(repo, revision);
-    if (!tree)
-        return -1;
-    return gtreeget(tree, internal, stats);    
+    else if (revision != NULL && internal == NULL){
+        if (!revision_exists(repo, revision))
+            return -1;
+        else {
+            *stats = &root;
+            return 0;
+        }
+    }
+    else{
+        struct node *tree = get_revision_tree(repo, revision);
+        if (!tree)
+            return -1;
+        return gtreeget(tree, internal, stats);
+    }
 }
 
 char** necessary_get_children(char *repo, char *revision, char *internal){
@@ -88,7 +108,7 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
     if (revision == NULL){
         result = calloc(rev_count[0] + 1, sizeof(char *));
         for (i = 0; i < rev_count[0]; i++)
-            result[i] = get_revs_dir(repositories[0].revisions[i].name);
+            gstrcpy(&result[i], repositories[0].revisions[i].name);
         return result;
     }
     struct node *tree = get_revision_tree(repo, revision);
@@ -138,3 +158,25 @@ int build_revision_tree(struct repo *repo, struct revision *revision){
 int free_cache(){
     return 0;
 }
+
+int repo_exists(char *repo_name){
+    return 0;
+};
+
+int revision_exists(char *repo_name, char *revision_name){
+    
+    struct revision *revisions = NULL;
+    int i = 0;
+    
+    if (repo_name == NULL)
+        revisions = repositories[0].revisions;
+    else{
+        // find repository
+        return -1;
+    };
+    for (i = 0; i < rev_count[0]; i++)
+        if (strcmp(revisions[i].name, revision_name) == 0)
+            return 1;
+    return 0;
+    
+};
