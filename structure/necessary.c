@@ -88,7 +88,7 @@ int necessary_build_multi(int count, char **repo){
 }
 
 int necessary_get_file(char *repo, char *revision, char *internal, 
-					   struct stats **stats){
+					   stats_t **stats){
 #ifdef DEBUG
     printf("[necessary_get_file: checking file %s/%s/%s\n", repo, revision, internal);
 #endif

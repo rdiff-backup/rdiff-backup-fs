@@ -33,6 +33,8 @@ struct stats {
 
 };
 
+typedef struct stats stats_t;
+
 #define set_directory_stats(stats){            	\
             (stats)->nlink = 1;                   	\
             (stats)->type = S_IFDIR;              	\

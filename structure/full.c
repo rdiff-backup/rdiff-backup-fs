@@ -121,7 +121,7 @@ int full_build_multi(int count, char **repo){
     return 0;
 };
 
-int full_get_file(char *repo, char *revision, char *internal, struct stats **stats){
+int full_get_file(char *repo, char *revision, char *internal, stats_t **stats){
 	
 	char *path = NULL;
 	int result = 0;
