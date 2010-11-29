@@ -17,9 +17,18 @@ struct repository {
 
 typedef struct repository repository_t;
 
+repository_t *repositories = NULL;
+static struct stats root;
+
+/* private functions' prototypes */
+
 static struct node * get_revision_tree(char *repo, char *revision);
 
 static int build_revision_tree(revision_t *, int, int);
+
+static int find_snapshot(revision_t *, int, int);
+
+char * int build_snapshot(revision_t *, int, int);
 
 static int free_cache();
 
@@ -33,8 +42,7 @@ static int repo_exists(char *repo_name);
  */
 static int revision_exists(char *repo_name, char *revision_name);
 
-repository_t *repositories = NULL;
-static struct stats root;
+/* public functions */
 
 int necessary_build(char *repo){
 
@@ -124,6 +132,8 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
     return gtreecld(tree, internal);
 }
 
+/* private functions */
+
 struct node * get_revision_tree(char *repo, char *rev){
     
     revision_t *revisions = NULL;
@@ -151,21 +161,33 @@ struct node * get_revision_tree(char *repo, char *rev){
     if (j == count)
         // should never happen
         return NULL;
-    if (!revisions[j].tree)
-        if (build_revision_tree(revisions, rev_count[i], j))
-            return NULL;
+    if (!revisions[j].tree && build_revision_tree(revisions, rev_count[i], j))
+        return NULL;
     return revisions[j].tree;
 }
 
 int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
     char *ext = NULL;
-    int snapshot_index = rev_index;
+    int snapshot_index = 0;
+    char *current_snapshot = NULL;
     
     if (free_cache())
         return -1;
+    if ((snapshot_index = find_snapshot(revisions, count, rev_index)) == -1)
+        return -1;
+    if ((current_snapshot = build_snapshot(revisions, count, rev_index)) == NULL)
+        return -1;
+    return 0;
+}
+
+int find_snapshot(revision_t *revisions, int count, int rev_index){
+    
+    int snapshot_index = rev_index;
+    
     while (snapshot_index < count) {
-        ext = gpthext(revisions[snapshot_index].file);
+        if ((ext = gpthext(revisions[snapshot_index].file)) == NULL)
+            return -1;
         if (strcmp(ext, "snapshot") == 0){
             gstrdel(ext);
             break;
@@ -174,9 +196,15 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
         snapshot_index++;
     }
     if (snapshot_index == count)
+        // should never happen
         return -1;
-    return 0;
-}
+    return snapshot_index;
+    
+};
+
+char * build_snapshot(revision_t *revisions, int count, int rev_index) {
+    return NULL;
+};
 
 int free_cache(){
     return 0;
