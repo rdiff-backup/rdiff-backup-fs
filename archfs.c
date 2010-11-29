@@ -3,9 +3,13 @@
 #include "parse.h"
 #include "initialize.h"
 
+// number of repositories
 int repo_count = 0;
+// number of revisions in every repository
 int *rev_count = NULL;
+// paths to repositories
 char **repos = NULL;
+// names of repositories
 char **repo_names = NULL;
 
 char *mount = NULL;

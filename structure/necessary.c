@@ -4,6 +4,7 @@ int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
 struct revision {
 	char *name;
+    char *file;
 	struct node *tree;
 };
 
@@ -14,7 +15,7 @@ struct repo {
 
 static struct node * get_revision_tree(char *repo, char *revision);
 
-static int build_revision_tree(struct repo *repo, struct revision *revision);
+static int build_revision_tree(int, int);
 
 static int free_cache();
 
@@ -62,8 +63,10 @@ int necessary_build(char *repo){
     if ((repositories = single(struct repo)) == NULL)
         necessary_build_finish(-1);
     repositories[0].revisions = calloc(rev_count[0], sizeof(struct revision));
-    for (i = 0; i < rev_count[0]; i++)
+    for (i = 0; i < rev_count[0]; i++) {
         repositories[0].revisions[i].name = get_revs_dir(revs[i]);
+        gstrcpy(&repositories[0].revisions[i].file, revs[i]);
+    }
     set_directory_stats(&root);
 	necessary_build_finish(0);
 }
@@ -145,12 +148,28 @@ struct node * get_revision_tree(char *repo, char *rev){
         // should never happen
         return NULL;
     if (!revisions[j].tree)
-        build_revision_tree(&repositories[i], &revisions[j]);
+        if (build_revision_tree(i, j))
+            return NULL;
     return revisions[j].tree;
 }
 
-int build_revision_tree(struct repo *repo, struct revision *revision){
+int build_revision_tree(int repo_index, int rev_index){
+    
+    char *ext = NULL;
+    int snapshot_index = rev_index;
+    
     if (free_cache())
+        return -1;
+    while (snapshot_index < rev_count[repo_index]) {
+        ext = gpthext(repositories[repo_index].revisions[snapshot_index].file);
+        if (strcmp(ext, "snapshot") == 0){
+            gstrdel(ext);
+            break;
+        }
+        gstrdel(ext);
+        snapshot_index++;
+    }
+    if (snapshot_index == rev_count[repo_index])
         return -1;
     return 0;
 }
