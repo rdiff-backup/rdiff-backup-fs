@@ -28,7 +28,7 @@ static int build_revision_tree(revision_t *, int, int);
 
 static int find_snapshot(revision_t *, int, int);
 
-char * int build_snapshot(revision_t *, int, int);
+static char * build_snapshot(revision_t *, int, int);
 
 static int free_cache();
 
@@ -168,7 +168,6 @@ struct node * get_revision_tree(char *repo, char *rev){
 
 int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
-    char *ext = NULL;
     int snapshot_index = 0;
     char *current_snapshot = NULL;
     
@@ -184,6 +183,7 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
 int find_snapshot(revision_t *revisions, int count, int rev_index){
     
     int snapshot_index = rev_index;
+    char *ext = NULL;
     
     while (snapshot_index < count) {
         if ((ext = gpthext(revisions[snapshot_index].file)) == NULL)
