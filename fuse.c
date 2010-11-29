@@ -12,7 +12,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
 #endif
     if (get_file(path, &stats) != 0) {
 #ifdef DEBUG
-        printf("[FUSE: getattr] Failed to retrieve stats;\n", path);
+        printf("[FUSE: getattr] Failed to retrieve stats;\n");
 #endif
         return -1;
     }
