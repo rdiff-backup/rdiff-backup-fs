@@ -1,6 +1,7 @@
 #ifndef _SUPPORT_GRDIFF_H_
 #define _SUPPORT_GRDIFF_H_
 
+#include "gutils.h"
 #include "gstats.h"
 #include "gstring.h"
 #include "gpath.h"

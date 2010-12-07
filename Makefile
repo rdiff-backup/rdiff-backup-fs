@@ -7,6 +7,7 @@ OBJS = archfs.o \
        initialize.o \
        fuse.o \
        support/gstring.o \
+       support/gutils.o \
        support/gpath.o \
        support/gtree.o \
        support/grdiff.o \
@@ -44,6 +45,9 @@ initialize.o: initialize.c initialize.h headers.h
 
 fuse.o: fuse.c fuse.h fuse.h
 	${CC} ${FLAGS} fuse.c
+
+support/gutils.o: support/gutils.h support/gutils.c
+	${CC} ${FLAGS} support/gutils.c -o support/gutils.o
 
 support/gstats.o: support/gstats.c support/gstats.h headers.h
 	${CC} ${FLAGS} support/gstats.c -o support/gstats.o
