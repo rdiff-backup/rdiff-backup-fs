@@ -205,7 +205,6 @@ int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *f
 	if (stats->type == S_IFDIR)
 		stats->size = DIR_SIZE;
     stats->internal = stats->path + strlen(prefix) + strlen("/");
-    stats->repo = repo;
     stats->rev = rev;
 #ifdef FULL_DEBUG
 	printf("[Function: read_stats_all] Read data of file %s\n", stats->path);
@@ -249,7 +248,6 @@ int add_repo_dir(char *repository, int index){
 	stats->name = stats->path + 1;
 	stats->internal = NULL;
 	stats->rev = -1;
-	stats->repo = index;
 	set_directory_stats(stats);
 	gtreeadd(structure_tree, stats);
 

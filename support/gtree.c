@@ -35,7 +35,6 @@ int gtreenew(struct node **tree){
 	};
     stats->name = stats->path;
     stats->internal = NULL;
-    stats->repo = -1;
     stats->rev = -1;
     set_directory_stats(stats);
     (*tree)->stats = stats;

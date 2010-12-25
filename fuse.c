@@ -34,7 +34,6 @@ int revs_getattr(const char *path, struct stat *stbuf){
 
 int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){
 
-    pass(1);
     int i = 0;
     struct stats *stats = 0;
 

@@ -138,7 +138,6 @@ int versions_add_repo_dir(char *repository, int index){
 	stats->name = stats->path + 1;
 	stats->internal = NULL;
 	stats->rev = -1;
-	stats->repo = index;
 	set_directory_stats(stats);
 	gtreeadd(version_tree, stats);
 
@@ -216,7 +215,6 @@ void read_revision_versions(char *revision, int rev_index, char *prefix, int rep
 			gtreedel(version_tree, stats.path);
 		else if ((gtreeget(version_tree, file_path, &temp) == 0) && (stats.type == S_IFREG)){
 			gpthcldptr(&stats.name, stats.path);
-			stats.repo = repo;
 			stats.rev = rev_index;
 			gtreeadd(version_tree, &stats);
 		};

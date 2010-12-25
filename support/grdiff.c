@@ -228,11 +228,19 @@ int get_revisions(int count, char **revs){
     
 }
 
-struct node *snapshot_tree = NULL;
+int read_snapshot(char *snapshot, tree_t tree){
 
-int read_snapshot(struct node *tree){
-	
-	return 0;
+    #define read_snapshot_finish(value){            \
+        if (file)                                   \
+            fclose(file);                           \
+        return value;                               \
+    }
+
+    FILE *file = NULL;
+    
+    if ((file = fopen(snapshot, "r")) == NULL)
+        read_snapshot_finish(-1);
+    read_snapshot_finish(0);
 	
 };
 

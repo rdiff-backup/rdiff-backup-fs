@@ -19,6 +19,9 @@ struct node {
     
 };
 
+typedef struct node node_t;
+typedef node_t * tree_t;
+
 /*
  * creates a new directory tree with the root directory;
  * 
@@ -37,7 +40,7 @@ int gtreenew(struct node **);
  * 
  * returns: 0 on sucess, -1 otherwise
  */
-int gtreeadd(struct node *, struct stats *);
+int gtreeadd(tree_t, struct stats *);
 
 /*
  * finds and returns array of names of all children of a given

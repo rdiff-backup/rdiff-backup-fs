@@ -29,7 +29,6 @@ struct stats {
     time_t atime; 
 
     int rev;
-    int repo;
 
 };
 
