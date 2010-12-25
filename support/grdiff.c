@@ -100,9 +100,7 @@ time_t get_revs_date(char *mirror){
     /* TODO: consult, whether seasonal time change should be considered */
     rev_time.tm_isdst = -1;
     
-    time_t gmt_rev_time = mktime(&rev_time);
-    
-    return gmt_rev_time;
+    return mktime(&rev_time);
 
 };
 
@@ -119,7 +117,7 @@ char* get_revs_dir(char *mirror){
     
 };
 
-int read_stats(struct stats *stats, FILE *file){
+int read_stats(stats_t *stats, FILE *file){
 
 	char *line = NULL;
 	size_t length = 0;
@@ -131,8 +129,7 @@ int read_stats(struct stats *stats, FILE *file){
 	int size_set = 0;
 	int time_set = 0;
 	
-	memset(stats, 0, sizeof(struct stats));
-	
+	memset(stats, 0, sizeof(stats_t));
 	while ((result = gstrline(&line, &length, file)) != -1){
 		if (gstrsub(line, "File ") == 0){
 			memset(stats, 0, sizeof(struct stats));
@@ -237,9 +234,15 @@ int read_snapshot(char *snapshot, tree_t tree){
     }
 
     FILE *file = NULL;
+    stats_t stats;
     
     if ((file = fopen(snapshot, "r")) == NULL)
         read_snapshot_finish(-1);
+    while (read_stats(&stats, file) == 0)
+    	if (stats.type == -1)
+    		gtreedel(tree, stats.internal);
+    	else
+			gtreeadd(tree, &stats);
     read_snapshot_finish(0);
 	
 };

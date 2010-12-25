@@ -5,7 +5,7 @@ int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 struct revision {
 	char *name;
     char *file;
-	struct node *tree;
+	tree_t tree;
 };
 
 typedef struct revision revision_t;
@@ -184,7 +184,6 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
     int snapshot_index = 0;
     char *current_snapshot = NULL;
-    FILE *file = NULL;
 
 #ifdef DEBUG
     printf("[build_revision_tree: building revision tree for index %d\n", rev_index);
@@ -196,7 +195,7 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
         build_revision_tree_finish(-1);
     if ((current_snapshot = build_snapshot(revisions, count, rev_index, snapshot_index)) == NULL)
         build_revision_tree_finish(-1);
-    if ((file = fopen(current_snapshot, "r")) == NULL)
+    if (read_snapshot(current_snapshot, revisions[rev_index].tree))
         build_revision_tree_finish(-1);
     build_revision_tree_finish(0);
 }
