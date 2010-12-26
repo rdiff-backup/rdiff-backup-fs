@@ -138,6 +138,7 @@ int read_stats(stats_t *stats, FILE *file){
 				continue;
 			// gstrcpy(stats->internal, line + strlen("File "));
 			gstrcpy(&stats->internal, line + 5);
+            stats->path = stats->internal;
 			name_set = 1;
 			link_set = 0;
 			type_set = 0;
@@ -242,8 +243,9 @@ int read_snapshot(char *snapshot, tree_t tree){
     if ((file = fopen(snapshot, "r")) == NULL)
         read_snapshot_finish(-1);
     while (read_stats(&stats, file) == 0)
-    	if (stats.type == -1)
+    	if (stats.type == -1){
     		gtreedel(tree, stats.internal);
+        }
     	else
 			gtreeadd(tree, &stats);
 #ifdef DEBUG
