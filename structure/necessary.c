@@ -126,7 +126,10 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
             gstrcpy(&result[i], repositories[0].revisions[i].name);
         return result;
     }
-    struct node *tree = get_revision_tree(repo, revision);
+    tree_t tree = get_revision_tree(repo, revision);
+#ifdef DEBUG
+    printf("[necessary_get_children: retrieved tree %d\n", (int) tree);
+#endif        
     if (!tree)
         return NULL;
     return gtreecld(tree, internal);
@@ -134,7 +137,7 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
 
 /* private functions */
 
-struct node * get_revision_tree(char *repo, char *rev){
+tree_t get_revision_tree(char *repo, char *rev){
     
     revision_t *revisions = NULL;
     int count = 0;
@@ -195,8 +198,13 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
         build_revision_tree_finish(-1);
     if ((current_snapshot = build_snapshot(revisions, count, rev_index, snapshot_index)) == NULL)
         build_revision_tree_finish(-1);
+    if (gtreenew(&(revisions[rev_index].tree)))
+        build_revision_tree_finish(-1);
     if (read_snapshot(current_snapshot, revisions[rev_index].tree))
         build_revision_tree_finish(-1);
+#ifdef DEBUG
+    printf("[build_revision_tree: done building");
+#endif            
     build_revision_tree_finish(0);
 }
 
@@ -228,16 +236,18 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
 
 char * build_snapshot(revision_t *revisions, int count, int rev_index, int snapshot_index) {
     
-    #define build_snapshot_error { \
-        if (snapshot_desc > 0) \
-            close(snapshot_desc); \
-        if (revision_desc > 0) \
-            close(snapshot_desc); \
-        unlink(temp_snapshot); \
-        gstrdel(temp_snapshot); \
+    #define build_snapshot_error {          \
+        if (snapshot_desc > 0)              \
+            close(snapshot_desc);           \
+        if (revision_desc > 0)              \
+            close(snapshot_desc);           \
+        unlink(temp_snapshot);              \
+        gstrdel(temp_snapshot);             \
+        return NULL;                        \
     }
     
     char *temp_snapshot = NULL;
+    char *snapshot = NULL;
     int i = 0;
     int snapshot_desc = 0;
     int revision_desc = 0;
@@ -245,16 +255,18 @@ char * build_snapshot(revision_t *revisions, int count, int rev_index, int snaps
 #ifdef DEBUG
     printf("[build_snapshot: building full snapshot for index %d with snapshot %d\n", rev_index, snapshot_index);
 #endif            
-
-    gmstrcpy(&temp_snapshot, tmp_dir, "/temp-snapshot-XXXXXX", 0);
+    gmstrcpy(&temp_snapshot, tmp_file, "/temp-snapshot-XXXXXX", 0);
     if ((snapshot_desc = mkstemp(temp_snapshot)) == -1)
         build_snapshot_error;
-    if ((revision_desc = open(revisions[snapshot_index].file, O_RDONLY)) == -1)
+    gmstrcpy(&snapshot, tmp_file, "/", revisions[snapshot_index].file, 0);
+    printf("%s\n", snapshot);
+    if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
         build_snapshot_error;
     if (gdesccopy(revision_desc, snapshot_desc))
         build_snapshot_error;
     for (i = snapshot_index - 1; i >= rev_index; i--){
-        if ((revision_desc = open(revisions[snapshot_index].file, O_RDONLY)) == -1)
+        gmstrcpy(&snapshot, tmp_file, "/", revisions[i].file, 0);
+        if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
             build_snapshot_error;
         write(snapshot_desc, "\n", 1);
         if (gdesccopy(revision_desc, snapshot_desc))
@@ -262,6 +274,9 @@ char * build_snapshot(revision_t *revisions, int count, int rev_index, int snaps
         close(revision_desc);
     }
     close(snapshot_desc);
+#ifdef DEBUG
+    printf("[build_snapshot: returning temp snapshot %s\n", temp_snapshot);
+#endif            
     return temp_snapshot;
     
 };

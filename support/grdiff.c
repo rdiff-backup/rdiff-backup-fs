@@ -233,6 +233,9 @@ int read_snapshot(char *snapshot, tree_t tree){
         return value;                               \
     }
 
+#ifdef DEBUG
+    printf("[grdiff.read_snapshot: reading %s\n", snapshot);
+#endif            
     FILE *file = NULL;
     stats_t stats;
     
@@ -243,6 +246,9 @@ int read_snapshot(char *snapshot, tree_t tree){
     		gtreedel(tree, stats.internal);
     	else
 			gtreeadd(tree, &stats);
+#ifdef DEBUG
+    printf("[grdiff.read_snapshot: done reading snapshot\n");
+#endif            
     read_snapshot_finish(0);
 	
 };

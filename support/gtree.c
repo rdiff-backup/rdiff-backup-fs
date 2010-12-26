@@ -22,7 +22,7 @@ int tree_save_node(struct node *, int);
 
 // public
 
-int gtreenew(struct node **tree){
+int gtreenew(tree_t *tree){
 
     struct stats *stats = single(struct stats);
 	
