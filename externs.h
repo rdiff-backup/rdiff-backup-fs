@@ -10,7 +10,6 @@ extern char *mount;
 extern char *tmp_dir;
 extern char *tmp_file;
 
-extern struct data_structure description;
 extern struct fuse_operations operations;
 
 extern int structure;
