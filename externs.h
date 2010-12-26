@@ -7,8 +7,10 @@ extern char **repos;
 extern char **repo_names;
 
 extern char *mount;
+// directory where data directory should be created
 extern char *tmp_dir;
-extern char *tmp_file;
+// directory where file system's data will be kept
+extern char *data_dir;
 
 extern struct fuse_operations operations;
 

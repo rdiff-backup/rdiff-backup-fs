@@ -94,7 +94,7 @@ int create_tmp_file(struct stats *stats){
 #ifdef DEBUG_DEEP
 	printf("[Function: create_tmp_file] Received file %s;\n", stats->path);
 #endif
-    if (gmstrcpy(&tmp_template, tmp_file, "/", stats->name, "XXXXXX", 0) != 0)
+    if (gmstrcpy(&tmp_template, data_dir, "/", stats->name, "XXXXXX", 0) != 0)
 		create_tmp_file_error;
     desc = mkstemp(tmp_template);
     if (desc == -1)

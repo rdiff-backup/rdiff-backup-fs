@@ -255,17 +255,17 @@ char * build_snapshot(revision_t *revisions, int count, int rev_index, int snaps
 #ifdef DEBUG
     printf("[build_snapshot: building full snapshot for index %d with snapshot %d\n", rev_index, snapshot_index);
 #endif            
-    gmstrcpy(&temp_snapshot, tmp_file, "/temp-snapshot-XXXXXX", 0);
+    gmstrcpy(&temp_snapshot, data_dir, "/temp-snapshot-XXXXXX", 0);
     if ((snapshot_desc = mkstemp(temp_snapshot)) == -1)
         build_snapshot_error;
-    gmstrcpy(&snapshot, tmp_file, "/", revisions[snapshot_index].file, 0);
+    gmstrcpy(&snapshot, data_dir, "/", revisions[snapshot_index].file, 0);
     printf("%s\n", snapshot);
     if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
         build_snapshot_error;
     if (gdesccopy(revision_desc, snapshot_desc))
         build_snapshot_error;
     for (i = snapshot_index - 1; i >= rev_index; i--){
-        gmstrcpy(&snapshot, tmp_file, "/", revisions[i].file, 0);
+        gmstrcpy(&snapshot, data_dir, "/", revisions[i].file, 0);
         if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
             build_snapshot_error;
         write(snapshot_desc, "\n", 1);

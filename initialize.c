@@ -128,7 +128,7 @@ void initialize(){
 
     check_mount();
     check_repos();
-   	create_tmp_dir(&tmp_dir, &tmp_file);
+   	create_tmp_dir(&tmp_dir, &data_dir);
 
     data_structure_setup();
 	layout_setup();

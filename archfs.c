@@ -14,7 +14,7 @@ char **repo_names = NULL;
 
 char *mount = NULL;
 char *tmp_dir = NULL;
-char *tmp_file = NULL;
+char *data_dir = NULL;
 
 int structure = STRUCTURE_FULL;
 int layout = LAYOUT_ALL;

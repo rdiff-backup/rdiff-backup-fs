@@ -139,20 +139,20 @@ void revs_destroy(void *ptr){
 	char *path = NULL;
 	struct dirent *entry = NULL;
 
-    if (tmp_file == NULL)
+    if (data_dir == NULL)
     	return;
-    dir = opendir(tmp_file);
+    dir = opendir(data_dir);
     if (dir == NULL)
     	return;
     for (entry = readdir(dir); entry != NULL; entry = readdir(dir)){
-    	gmstrcpy(&path, tmp_file, "/", entry->d_name, 0);
+    	gmstrcpy(&path, data_dir, "/", entry->d_name, 0);
     	unlink(path);
     };
     closedir(dir);
 #ifdef DEBUG
-    printf("[FUSE: Destroy] Deleting temporary directory %s;\n", tmp_file);
+    printf("[FUSE: Destroy] Deleting temporary directory %s;\n", data_dir);
 #endif
-    rmdir(tmp_file);
+    rmdir(data_dir);
     gstrdel(path);
 
 };

@@ -67,7 +67,7 @@ int full_build_multi(int count, char **repo){
 					if (revs[k] != NULL)									\
 						free(revs[k]);										\
 				free(revs);													\
-				gmstrcpy(&snapshot, tmp_file, "/", CURRENT_SNAPSHOT, 0);	\
+				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
 			}
@@ -171,7 +171,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
     	if (gmstrcpy(&rev_dir, "/", repo, "/", get_revs_dir(rev), 0) != 0)
 			read_revision_error;
 	};
-    if (gmstrcpy(&file_path, tmp_file, "/", CURRENT_SNAPSHOT, 0) != 0)
+    if (gmstrcpy(&file_path, data_dir, "/", CURRENT_SNAPSHOT, 0) != 0)
 		read_revision_error;
     if ((file = fopen(file_path, "r")) == NULL)
 		read_revision_error;
@@ -185,7 +185,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 	};
 
     fclose(file);
-    gmstrcpy(&file_path, tmp_file, "/", rev, 0);
+    gmstrcpy(&file_path, data_dir, "/", rev, 0);
     unlink(file_path);
     gstrdel(file_path);
     gstrdel(rev_dir);

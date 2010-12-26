@@ -44,8 +44,8 @@ void fail(int error){
 
 void clean_up(){
 
-    if (tmp_file != NULL)
-    	if (execlp("rm", "rm", "-r", "-f", tmp_file, NULL) == -1)
+    if (data_dir != NULL)
+    	if (execlp("rm", "rm", "-r", "-f", data_dir, NULL) == -1)
     	    fail(-1);
 
 }

@@ -65,7 +65,7 @@ int versions_init_multi(int count, char **repos){
 					if (revs[k] != NULL)									\
 						free(revs[k]);										\
 				free(revs);													\
-				gmstrcpy(&snapshot, tmp_file, "/", CURRENT_SNAPSHOT, 0);	\
+				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
 			}
@@ -158,7 +158,7 @@ int read_layout_versions(char *revision, char *prefix){
 	FILE *file = NULL;
 	struct stats stats;
 		
-	if (gmstrcpy(&path, tmp_file, "/", revision, 0) != 0)
+	if (gmstrcpy(&path, data_dir, "/", revision, 0) != 0)
 		read_layout_versions_finish(-1);
 	if ((file = fopen(path, "r")) == NULL)
 		read_layout_versions_finish(-1);
@@ -182,7 +182,7 @@ int read_layout_versions(char *revision, char *prefix){
 void read_revision_versions(char *revision, int rev_index, char *prefix, int repo){
 
 #define read_revision_versions_finish {						\
-			gmstrcpy(&path, tmp_file, "/", revision, 0);	\
+			gmstrcpy(&path, data_dir, "/", revision, 0);	\
 			unlink(path);									\
 			gstrdel(path);									\
 			gstrdel(sufix);									\
@@ -198,7 +198,7 @@ void read_revision_versions(char *revision, int rev_index, char *prefix, int rep
 	struct stats stats, *temp;
 	FILE *file = NULL;
 
-	if (gmstrcpy(&path, tmp_file, "/", CURRENT_SNAPSHOT, 0) != 0)
+	if (gmstrcpy(&path, data_dir, "/", CURRENT_SNAPSHOT, 0) != 0)
 		read_revision_versions_finish;
 	if ((file = fopen(path, "r")) == NULL)
 		read_revision_versions_finish;

@@ -30,7 +30,7 @@ int unzip_revs(char *path){
             }
             else{
                 gstrdel(extension);
-            	if (gmstrcpy(&mirror, tmp_file, "/", entry->d_name, 0) == -1)
+            	if (gmstrcpy(&mirror, data_dir, "/", entry->d_name, 0) == -1)
             		continue;
             	if ((descriptor = open(mirror, O_WRONLY | O_CREAT)) == -1)
             		continue;
@@ -206,7 +206,7 @@ int get_revisions(int count, char **revs){
 #ifdef DEBUG_DEEP                           
     printf("[Function: get_revisions] Received place for %d revisions;\n", count);
 #endif
-    if ((dir = opendir(tmp_file)) == NULL)
+    if ((dir = opendir(data_dir)) == NULL)
         return -1;
     for (entry = readdir(dir); (i < count) && (entry != NULL); entry = readdir(dir)){
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0){
@@ -262,8 +262,8 @@ int snapshot_copy(char *revision){
 	char buffer[1024];
 	size_t result = 0;
 
-	gmstrcpy(&path, tmp_file, "/", revision, 0);
-	gmstrcpy(&snapshot, tmp_file, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&path, data_dir, "/", revision, 0);
+	gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);
 #ifdef DEBUG_DEEP
 	printf("[Function: snapshot_copy] Copying from %s to %s\n", path, snapshot);
 #endif
@@ -291,8 +291,8 @@ int snapshot_append(char *file){
 	char buffer[1024];
 	size_t result = 0;
 
-	gmstrcpy(&revision, tmp_file, "/", file, 0);
-	gmstrcpy(&snapshot, tmp_file, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&revision, data_dir, "/", file, 0);
+	gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);
 #ifdef DEBUG_DEEP
 	printf("[Function: snapshot_append] Appending from %s to %s\n", revision, snapshot);
 #endif
@@ -341,7 +341,7 @@ int unzip(char *path){
 		unzip_error;
     if (gpthugz(&temp) == -1)
 		unzip_error;
-    if (gstrcpy(&target, tmp_file) == -1)
+    if (gstrcpy(&target, data_dir) == -1)
 		unzip_error;
     if (gstrcat(&target, "/") == -1)
 		unzip_error;
