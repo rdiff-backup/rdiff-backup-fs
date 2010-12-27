@@ -24,6 +24,8 @@ static struct stats root;
 
 static struct node * get_revision_tree(char *repo, char *revision);
 
+static void free_revision_tree(char *repo, char *revision);
+
 static int build_revision_tree(revision_t *, int, int);
 
 static int find_snapshot(revision_t *, int, int);
@@ -132,7 +134,9 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
 #endif        
     if (!tree)
         return NULL;
-    return gtreecld(tree, internal);
+    result = gtreecld(tree, internal);
+    // free_revision_tree(repo, revision);
+    return result;
 }
 
 /* private functions */
@@ -174,6 +178,37 @@ tree_t get_revision_tree(char *repo, char *rev){
 #endif            
     return revisions[j].tree;
 }
+
+void free_revision_tree(char *repo, char *rev){
+
+    revision_t *revisions = NULL;
+    int count = 0;
+    int i = 0, j = 0;
+
+    if (!repo) {
+        revisions = repositories[0].revisions;
+        count = rev_count[0];
+    }
+    else {
+        for (i = 0; i < repo_count; i++)
+            if (strcmp(repo, repos[i]) == 0){
+                revisions = repositories[i].revisions;
+                count = rev_count[i];
+                break;
+            }
+        if (i == repo_count)
+            // should never happen
+            return;
+    }        
+    for (j = 0; j < count; j++)
+        if (strcmp(rev, revisions[j].name) == 0)
+            break;
+    if (j == count)
+        // should never happen
+        return;
+    gtreedel(revisions[j].tree, "/");
+    free(revisions[j].tree);
+};
 
 int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
