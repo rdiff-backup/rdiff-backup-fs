@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from os import walk, remove, rmdir, mknod, mkdir, listdir
-from os.path import join, exists, split
+from os.path import join, exists, split, sep as fssep
 from unittest import TestCase, main
 from subprocess import Popen
 from time import sleep
@@ -37,6 +37,7 @@ class RdiffBackupTestMeta(type):
             Meta.create_mount_directory()
             for revision in fixture:
                 for path, content in revision.items():
+                    Meta.create_dirs(path)
                     file = open(join(Meta.TEST_DATA_DIRECTORY, path), 'w')
                     file.write(content)
                     file.close()
@@ -46,6 +47,14 @@ class RdiffBackupTestMeta(type):
             Meta.run_fs(option)
             Meta.verify(self, fixture)
         return test
+    
+    @classmethod
+    def create_dirs(Meta, path):
+        path = path.split(fssep)
+        current_path = ''
+        for step in path[:-1]:
+            current_path += step
+            mkdir(join(Meta.TEST_DATA_DIRECTORY, current_path))
         
     @classmethod
     def verify(Meta, self, fixture):
@@ -104,6 +113,18 @@ class FlatTestCase(RdiffBackupTestCase):
         {'file1': 'content1', 'file2': 'content2', 'file3': 'content3',
          'file4': 'content4'}
     ]
+    
+
+class NestedTestCase(RdiffBackupTestCase):
+    
+    fixture_single_file = [
+        {'dir/file': 'content'},
+        {'dir/file': 'new content'}
+    ]
+    
+
+class MultipleRepoTestCase(RdiffBackupTestCase):
+    pass
 
 
 def remove_directory(path, only_content=True):
@@ -113,7 +134,11 @@ def remove_directory(path, only_content=True):
         for name in dirs:
             rmdir(join(root, name))
     if not only_content:
-        rmdir(path)
+        try:
+            rmdir(path)
+        except OSError:
+            # directory may not be yet created
+            pass
         
 if __name__ == "__main__":
     main()
