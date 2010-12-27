@@ -58,8 +58,6 @@ int read_stats(struct stats *stats, FILE *file);
 
 int get_revisions(int, char **);
 
-int read_snapshot(char *path, tree_t);
-
 int snapshot_copy(char *);
 
 int snapshot_append(char *file);

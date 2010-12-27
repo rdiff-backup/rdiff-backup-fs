@@ -34,6 +34,8 @@ static char * build_snapshot(revision_t *, int, int, int);
 
 static int free_cache();
 
+int read_revision_necessary(char *path, tree_t, int);
+
 /*
  * checks whether repo with given name exists
  */
@@ -235,7 +237,7 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
-    if (read_snapshot(current_snapshot, revisions[rev_index].tree))
+    if (read_revision_necessary(current_snapshot, revisions[rev_index].tree, rev_count[0] - rev_index - 1))
         build_revision_tree_finish(-1);
 #ifdef DEBUG
     printf("[build_revision_tree: done building");
@@ -267,6 +269,40 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
         return -1;
     return snapshot_index;
     
+};
+
+
+int read_revision_necessary(char *snapshot, tree_t tree, int revision){
+
+    #define read_snapshot_finish(value){            \
+        if (file)                                   \
+            fclose(file);                           \
+        return value;                               \
+    }
+
+#ifdef DEBUG
+    printf("[grdiff.read_snapshot: reading %s\n", snapshot);
+#endif            
+    FILE *file = NULL;
+    stats_t stats;
+    
+    if ((file = fopen(snapshot, "r")) == NULL)
+        read_snapshot_finish(-1);
+    while (read_stats(&stats, file) == 0){
+        stats.path = stats.internal;
+        stats.rev = revision;
+        if (gpthcldptr(&stats.name, stats.path) == -1)
+            read_snapshot_finish(-1);
+    	if (stats.type == -1)
+    		gtreedel(tree, stats.internal);
+    	else
+			gtreeadd(tree, &stats);
+    }
+#ifdef DEBUG
+    printf("[grdiff.read_snapshot: done reading snapshot\n");
+#endif            
+    read_snapshot_finish(0);
+	
 };
 
 char * build_snapshot(revision_t *revisions, int count, int rev_index, int snapshot_index) {

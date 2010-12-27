@@ -28,6 +28,8 @@ struct stats {
     time_t ctime; 
     time_t atime; 
 
+    // it seems, that this revision number is an inverted one (revision 0 is
+    // rev_count - 1)
     int rev;
 
 };

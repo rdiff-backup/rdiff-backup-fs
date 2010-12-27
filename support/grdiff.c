@@ -225,38 +225,6 @@ int get_revisions(int count, char **revs){
     
 }
 
-int read_snapshot(char *snapshot, tree_t tree){
-
-    #define read_snapshot_finish(value){            \
-        if (file)                                   \
-            fclose(file);                           \
-        return value;                               \
-    }
-
-#ifdef DEBUG
-    printf("[grdiff.read_snapshot: reading %s\n", snapshot);
-#endif            
-    FILE *file = NULL;
-    stats_t stats;
-    
-    if ((file = fopen(snapshot, "r")) == NULL)
-        read_snapshot_finish(-1);
-    while (read_stats(&stats, file) == 0){
-        stats.path = stats.internal;
-        if (gpthcldptr(&stats.name, stats.path) == -1)
-            read_snapshot_finish(-1);
-    	if (stats.type == -1)
-    		gtreedel(tree, stats.internal);
-    	else
-			gtreeadd(tree, &stats);
-    }
-#ifdef DEBUG
-    printf("[grdiff.read_snapshot: done reading snapshot\n");
-#endif            
-    read_snapshot_finish(0);
-	
-};
-
 int snapshot_copy(char *revision){
 	
 	char *path = NULL;

@@ -17,25 +17,20 @@ int retrieve_common(struct stats *stats, int repo){
 #ifdef DEBUG
 	printf("[Function: retrieve_common] Received file %s from repo %d;\n", stats->path, repo);
 #endif
-    pass(1);
 	lock(file_mutex[repo][stats->rev]);
 	if (stats->shared > 0){
 		stats->shared++;
 		retrieve_common_finish(0);
 	};
-    pass(2);
 	if (create_tmp_file(stats) == -1)
 		retrieve_common_finish(-1);
-    pass(3)
 	if (gmstrcpy(&file, repos[repo], "/", stats->internal, 0) == -1)
 		retrieve_common_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
 		retrieve_common_finish(-1);
-    pass(4);
 	if (stat(stats->tmp_path, temp) != 0)
 		retrieve_common_finish(-1);
-    pass(5);
 	stats->shared = 1;
 	retrieve_common_finish(0);
 

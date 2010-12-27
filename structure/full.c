@@ -12,7 +12,7 @@ int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *f
 
 // variables:
 
-struct node *structure_tree = NULL;
+tree_t structure_tree = NULL;
 
 // public:
 
