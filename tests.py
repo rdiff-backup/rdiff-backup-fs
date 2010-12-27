@@ -53,8 +53,11 @@ class RdiffBackupTestMeta(type):
         path = path.split(fssep)
         current_path = ''
         for step in path[:-1]:
-            current_path += step
-            mkdir(join(Meta.TEST_DATA_DIRECTORY, current_path))
+            current_path = join(current_path, step)
+            try:
+                mkdir(join(Meta.TEST_DATA_DIRECTORY, current_path))
+            except OSError: # the directory might already exist
+                pass
         
     @classmethod
     def verify(Meta, self, fixture):
@@ -114,13 +117,31 @@ class FlatTestCase(RdiffBackupTestCase):
          'file4': 'content4'}
     ]
     
-
+    fixture_removing_files = list(fixture_adding_files)
+    fixture_removing_files.reverse()
+        
 class NestedTestCase(RdiffBackupTestCase):
     
     fixture_single_file = [
         {'dir/file': 'content'},
         {'dir/file': 'new content'}
     ]
+    
+    fixture_two_files = [
+        {'file': 'content', 'dir/file': 'content 2'},
+        {'file': 'new content', 'dir/file': 'new content 2'}
+    ]
+    
+    fixture_adding_files = [
+        {'file': '1'},
+        {'file': '2', 'dir/file': '2'},
+        {'file': '3', 'dir/file': '3', 'dir/dir/file': '3'},
+        {'file': '4', 'dir/file': '4', 'dir/dir/file': '4', 
+         'dir/dir/dir/file': '4'}
+    ]
+    
+    fixture_removing_files = list(fixture_adding_files)
+    fixture_removing_files.reverse()
     
 
 class MultipleRepoTestCase(RdiffBackupTestCase):
