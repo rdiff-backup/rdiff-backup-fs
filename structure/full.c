@@ -155,9 +155,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 	    return;										\
 	}
 	
-#ifdef DEBUG
-	printf("[Function: read_repo_revision] Received repo %s and revision %s;\n", repo, rev);
-#endif
+	// printf("[Function: read_repo_revision] Received repo %s and revision %s;\n", repo, rev);
     char *rev_dir = NULL;
     char *file_path = NULL;
     FILE *file = NULL;

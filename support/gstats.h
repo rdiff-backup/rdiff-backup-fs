@@ -4,12 +4,15 @@
 #include "../headers.h"
 
 /*
- * basic structure holding description of one file stored in the rdiff-backup archive;
+ * basic structure holding description of one file stored in the rdiff-backup 
+ * archive;
  *
  * @path: full path of the file in the created filesystem;
- * @internal: full path of the file in the rdiff-backup repository; keep in mind, that this field may point at a part 
+ * @internal: full path of the file in the rdiff-backup repository; keep in 
+ *            mind, that this field may point at a part 
  *			  of path field to keep memory usage lower; free memory accordingly
- * @name: name of the file, that will be displayed in the filesystem; keep in mind, that this field may point at a part
+ * @name: name of the file, that will be displayed in the filesystem; keep in 
+ *        mind, that this field may point at a part
  *        of path field to keep memory usage lower; free memory accordingly;
  */
 struct stats { 
@@ -36,7 +39,7 @@ struct stats {
 
 typedef struct stats stats_t;
 
-#define set_directory_stats(stats){            	\
+#define set_directory_stats(stats){            	    \
             (stats)->nlink = 1;                   	\
             (stats)->type = S_IFDIR;              	\
             (stats)->rev = -1;                    	\

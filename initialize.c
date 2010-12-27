@@ -13,9 +13,7 @@ void check_repo(int index){
 
     char *rdiff_backup_dir = NULL;
 
-#ifdef DEBUG
-	printf("[Function: check_repo] Checking repo %s;\n", repos[index]);
-#endif
+	// printf("[Function: check_repo] Checking repo %s;\n", repos[index]);
 	if (gmstrcpy(&rdiff_backup_dir, repos[index], "/rdiff-backup-data", 0) == -1)
 		fail(-1);
 	if (gpthpro(&rdiff_backup_dir) != 0)
@@ -23,9 +21,7 @@ void check_repo(int index){
 	gstrdel(rdiff_backup_dir);
 	if (gpthpro(&repos[index]) != 0)
 		fail(ERR_NO_REPO);
-#ifdef DEBUG
-	printf("[Function: check_repo] Setting repo to %s;\n", repos[index]);
-#endif
+	//printf("[Function: check_repo] Setting repo to %s;\n", repos[index]);
 	
 };
 
@@ -94,9 +90,7 @@ void fuse_operations_setup(){
 
 void create_tmp_dir(char **tmp_dir, char **tmp_file){
 
-#ifdef DEBUG
-    printf("[Function: create_tmp_dir] Creating temporary directory\n");
-#endif    
+    // printf("[Function: create_tmp_dir] Creating temporary directory\n");
     char *tmpdirprefix = getenv("TMPDIR");
     if (!tmpdirprefix) 
 		tmpdirprefix = DEFAULT_TMP_DIR;
@@ -110,15 +104,12 @@ void create_tmp_dir(char **tmp_dir, char **tmp_file){
 
     strcpy(tmp_template, *tmp_dir);
    	strcpy(tmp_template + strlen(*tmp_dir), "/" TMP_DIR_NAME);
-    printf("%s\n", tmp_template);
     if (mkdtemp(tmp_template) == NULL)
 		fail(-1);
     if (((*tmp_file) = gstralloc(length)) == NULL)
     	fail(-1);
     strcpy((*tmp_file), tmp_template);
-#ifdef DEBUG
-    printf("[Function: create_tmp_dir] Created directory %s;\n", *tmp_file);
-#endif
+    // printf("[Function: create_tmp_dir] Created directory %s;\n", *tmp_file);
         
 };
 

@@ -40,14 +40,10 @@ int set_mount(int argc, char **argv, int *index){
 		return -1;
     if (mount != NULL)
 		return -1;
-	
     if (gstrcpy(&mount, argv[(*index) + 1]) != 0)
     	return -1;
     (*index) += 1;
-#ifdef DEBUG
-	printf("[Function: set_mount] Mount point set to %s;\n", mount);
-#endif
-        
+	// printf("[Function: set_mount] Mount point set to %s;\n", mount);
     return 0;
     
 };
@@ -167,9 +163,7 @@ void parse_mount(char *arg){
 		fail(ERR_PARAMETRES);
     if (gstrcpy(&mount, arg) != 0)
     	fail(-1);
-#ifdef DEBUG
-	printf("[Function: parse_mount] Mount point set to %s;\n", mount);
-#endif
+	//printf("[Function: parse_mount] Mount point set to %s;\n", mount);
 
 };
 
