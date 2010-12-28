@@ -62,4 +62,6 @@ int snapshot_copy(char *);
 
 int snapshot_append(char *file);
 
+int update_tree(tree_t, stats_t *);
+
 #endif

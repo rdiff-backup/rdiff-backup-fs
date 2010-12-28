@@ -14,6 +14,8 @@
  * @name: name of the file, that will be displayed in the filesystem; keep in 
  *        mind, that this field may point at a part
  *        of path field to keep memory usage lower; free memory accordingly;
+ * @rev: number of revision but in backward order, so revision 0 is written as
+ *       rev_count - 1
  */
 struct stats { 
  
@@ -31,8 +33,6 @@ struct stats {
     time_t ctime; 
     time_t atime; 
 
-    // it seems, that this revision number is an inverted one (revision 0 is
-    // rev_count - 1)
     int rev;
 
 };

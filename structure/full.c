@@ -175,12 +175,8 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 		read_revision_error;
     add_revs_dir(rev, repo);
 
-    while (read_stats_all(stats, rev_dir, repo_index, rev_index, file) == 0){
-    	if (stats->type == -1)
-    		gtreedel(structure_tree, stats->path);
-    	else
-			gtreeadd(structure_tree, stats);
-	};
+    while (read_stats_all(stats, rev_dir, repo_index, rev_index, file) == 0)
+        update_tree(structure_tree, stats);
 
     fclose(file);
     gmstrcpy(&file_path, data_dir, "/", rev, 0);

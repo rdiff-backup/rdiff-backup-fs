@@ -293,10 +293,7 @@ int read_revision_necessary(char *snapshot, tree_t tree, int revision){
         stats.rev = revision;
         if (gpthcldptr(&stats.name, stats.path) == -1)
             read_snapshot_finish(-1);
-    	if (stats.type == -1)
-    		gtreedel(tree, stats.internal);
-    	else
-			gtreeadd(tree, &stats);
+        update_tree(tree, &stats);
     }
 #ifdef DEBUG
     printf("[grdiff.read_snapshot: done reading snapshot\n");

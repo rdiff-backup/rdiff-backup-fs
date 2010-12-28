@@ -4,6 +4,15 @@
 
 int unzip(char *path);
 
+// public:
+
+int update_tree(tree_t tree, stats_t *stats){
+    if (stats->type == -1)
+        return gtreedel(tree, stats->path);
+    else
+        return gtreeadd(tree, stats);
+}
+
 int unzip_revs(char *path){
 
     DIR *dir = NULL;
