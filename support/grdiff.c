@@ -13,7 +13,7 @@ int update_tree(tree_t tree, stats_t *stats){
         return gtreeadd(tree, stats);
 }
 
-int unzip_revs(char *path){
+int unzip_revs(char *path, char *dest){
 
     DIR *dir = NULL;
     int rev_count = 0;
@@ -39,7 +39,7 @@ int unzip_revs(char *path){
             }
             else{
                 gstrdel(extension);
-            	if (gmstrcpy(&mirror, data_dir, "/", entry->d_name, 0) == -1)
+            	if (gmstrcpy(&mirror, dest, "/", entry->d_name, 0) == -1)
             		continue;
             	if ((descriptor = open(mirror, O_WRONLY | O_CREAT)) == -1)
             		continue;
@@ -87,7 +87,7 @@ int gather_revisions(char *repo_path, char ***revisions) {
 
 	if (gmstrcpy(&path, repo_path, "/rdiff-backup-data", 0) != 0)
 		gather_revisions_finish(-1);
-    if ((count = unzip_revs(path)) == -1)
+    if ((count = unzip_revs(path, data_dir)) == -1)
     	gather_revisions_finish(-1);
     if (((*revisions) = calloc(count, sizeof(char *))) == NULL)
     	gather_revisions_finish(-1);
@@ -345,11 +345,7 @@ int unzip(char *path){
 		unzip_error;
     if (gpthugz(&temp) == -1)
 		unzip_error;
-    if (gstrcpy(&target, data_dir) == -1)
-		unzip_error;
-    if (gstrcat(&target, "/") == -1)
-		unzip_error;
-    if (gstrcat(&target, temp) == -1)
+    if (gmstrcpy(&target, data_dir, "/", temp, 0) == -1)
 		unzip_error;
 	    
     if ((file = fopen(target, "w")) == NULL)

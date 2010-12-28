@@ -39,7 +39,7 @@ int versions_init(char *repo){
 		versions_init_finish(-1);
 	gtreenew(&version_tree);
 	rev_count = single(int);
-	rev_count[0] = unzip_revs(path);
+	rev_count[0] = unzip_revs(path, data_dir);
 
     revs = calloc(rev_count[0], sizeof(char *));
     get_revisions(rev_count[0], revs);
@@ -86,7 +86,7 @@ int versions_init_multi(int count, char **repos){
 	for (i = 0; i < repo_count; i++){
 		if (gmstrcpy(&path, repos[i], "/rdiff-backup-data", 0) == -1)
 			continue;
-		if ((rev_count[i] = unzip_revs(path)) == -1)
+		if ((rev_count[i] = unzip_revs(path, data_dir)) == -1)
 			continue;
 		if ((revs = calloc(rev_count[i], sizeof(char *))) == NULL)
 			continue;

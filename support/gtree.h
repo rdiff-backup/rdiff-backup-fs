@@ -5,7 +5,6 @@
 #include "gstats.h"
 #include "gstring.h"
 #include "gpath.h"
-#include "../externs.h"
 
 // #define TREE_DEBUG
 

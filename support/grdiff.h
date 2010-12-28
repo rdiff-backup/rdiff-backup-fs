@@ -10,13 +10,14 @@
 #include "../externs.h"
 
 /*
- * unzips all rdiff-backup mirror_metada files in a given directory
+ * unzips all rdiff-backup mirror_metadata files in a given directory
  * 
- * @1: path to the directory
+ * @1: path to the directory with mirror_metada
+ * @2: path to where unzipped files should be copied
  * 
  * returns: 0 on success, -1 otherwise
  */
-int unzip_revs(char *);
+int unzip_revs(char *, char *);
 
 /*
  * counts all rdiff-backup mirror_metada files in a given directory

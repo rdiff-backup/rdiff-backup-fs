@@ -86,7 +86,7 @@ int full_build_multi(int count, char **repo){
     for (i = 0; i < repo_count; i++){
 		if (gmstrcpy(&repo_dir, repos[i], "/rdiff-backup-data", NULL) == -1)
 			continue;
-		if ((rev_count[i] = unzip_revs(repo_dir)) == -1)
+		if ((rev_count[i] = unzip_revs(repo_dir, data_dir)) == -1)
 			continue;
 		if ((revs = calloc(rev_count[i], sizeof(char *))) == NULL)
 			continue;
@@ -135,6 +135,8 @@ char** full_get_children(char *repo, char *revision, char *internal){
 	return result;
 
 };
+
+// private:
 
 void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 
