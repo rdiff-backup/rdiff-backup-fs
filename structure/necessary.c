@@ -51,7 +51,6 @@ static int revision_exists(char *repo_name, char *revision_name);
 int necessary_build(char *repo){
 
     #define necessary_build_finish(value) {                     \
-        gstrdel(path);                                          \
         if (revs){                                              \
             for (i = 0; i < rev_count[0]; i++)                  \
                 if (revs[i])                                    \
@@ -61,21 +60,13 @@ int necessary_build(char *repo){
         return value;                                           \
     }
 
-    char *path = NULL;
     char **revs = NULL;
     int i = 0;
 
-	if (gmstrcpy(&path, repo, "/rdiff-backup-data", 0) != 0)
-		necessary_build_finish(-1);	
 	if ((rev_count = single(int)) == NULL)
 		necessary_build_finish(-1);
-    if ((rev_count[0] = unzip_revs(path)) == -1)
-    	necessary_build_finish(-1);
-    if ((revs = calloc(rev_count[0], sizeof(char *))) == NULL)
-    	necessary_build_finish(-1);
-    if (get_revisions(rev_count[0], revs) == -1)
-    	necessary_build_finish(-1);
-    gstrsort(revs, rev_count[0]);
+    if ((rev_count[0] = gather_revisions(repo, &revs)) == -1)
+        necessary_build_finish(-1);
     if ((repositories = single(repository_t)) == NULL)
         necessary_build_finish(-1);
     repositories[0].revisions = calloc(rev_count[0], sizeof(revision_t));

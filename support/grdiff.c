@@ -75,6 +75,29 @@ int count_revs(char *path){
     return rev_count;
 };
 
+int gather_revisions(char *repo_path, char ***revisions) {
+    
+    #define gather_revisions_finish(value) {            \
+        gstrdel(path);                                  \
+        return value;                                   \
+    }
+    
+    char *path = NULL;
+    int count = 0;
+
+	if (gmstrcpy(&path, repo_path, "/rdiff-backup-data", 0) != 0)
+		gather_revisions_finish(-1);
+    if ((count = unzip_revs(path)) == -1)
+    	gather_revisions_finish(-1);
+    if (((*revisions) = calloc(count, sizeof(char *))) == NULL)
+    	gather_revisions_finish(-1);
+    if (get_revisions(count, *revisions) == -1)
+    	gather_revisions_finish(-1);
+    gstrsort(*revisions, count);
+    gather_revisions_finish(count);
+    
+};
+
 // FIXME: what about seasonal time?
 time_t get_revs_date(char *mirror){
 

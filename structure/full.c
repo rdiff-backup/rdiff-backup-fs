@@ -19,7 +19,6 @@ tree_t structure_tree = NULL;
 int full_build(char *repo){
 
 #define full_build_finish(value) {					\
-			gstrdel(path);							\
 			if (revs != NULL){						\
 				for (i = 0; i < rev_count[0]; i++)	\
 					if (revs[i] != NULL)			\
@@ -31,21 +30,13 @@ int full_build(char *repo){
 
     char **revs = NULL;
     char *extension = NULL;
-    char *path = NULL;
     int i = 0;
 	
-	gtreenew(&structure_tree);
-	if (gmstrcpy(&path, repo, "/rdiff-backup-data", 0) != 0)
-		full_build_finish(-1);
+    gtreenew(&structure_tree);
 	if ((rev_count = single(int)) == NULL)
 		full_build_finish(-1);
-    if ((rev_count[0] = unzip_revs(path)) == -1)
-    	full_build_finish(-1);
-    if ((revs = calloc(rev_count[0], sizeof(char *))) == NULL)
-    	full_build_finish(-1);
-    if (get_revisions(rev_count[0], revs) == -1)
-    	full_build_finish(-1);
-    gstrsort(revs, rev_count[0]);
+    if ((rev_count[0] = gather_revisions(repo, &revs)) == -1)
+        full_build_finish(-1);
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
     	if (strcmp(extension, "snapshot") == 0)
@@ -215,9 +206,7 @@ int add_revs_dir(char *revision, char *repository){
 		return -1;
     if (repository == NULL){
 		gmstrcpy(&stats->path, "/", get_revs_dir(revision), NULL);
-#ifdef DEBUG_DEEP
-		printf("[Function: add_revs_dir] Adding revision %s to the data structure;\n", stats->path);
-#endif
+		// printf("[Function: add_revs_dir] Adding revision %s to the data structure;\n", stats->path);
 		// stats->name = stats->path + strlen("/")'
 		stats->name = stats->path + 1;
     }
