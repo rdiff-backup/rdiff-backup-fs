@@ -17,7 +17,6 @@ int versions_add_repo_dir(char *, int);
 int versions_init(char *repo){
 
 #define versions_init_finish(value) {						\
-			gstrdel(path);									\
 			if (revs != NULL){								\
 				for (i = 0; i < rev_count[0]; i++)			\
 					if (revs[i] != NULL)					\
@@ -28,7 +27,6 @@ int versions_init(char *repo){
 		}
 
     char **revs = NULL;
-    char *path = NULL;
     char *extension = NULL;
     int i = 0;
 
@@ -69,7 +67,6 @@ int versions_init_multi(int count, char **repos){
 		}
 
 	int i = 0, j = 0, k = 0;
-	char *path = NULL;
 	char **revs = NULL;
 	char *extension = NULL;
 	char *snapshot = NULL;
@@ -77,16 +74,8 @@ int versions_init_multi(int count, char **repos){
 	gtreenew(&version_tree);
 	rev_count = calloc(repo_count, sizeof(int));
 	for (i = 0; i < repo_count; i++){
-		if (gmstrcpy(&path, repos[i], "/rdiff-backup-data", 0) == -1)
-			continue;
-		if ((rev_count[i] = unzip_revs(path, data_dir)) == -1)
-			continue;
-		if ((revs = calloc(rev_count[i], sizeof(char *))) == NULL)
-			continue;
-		if (get_revisions(rev_count[i], revs) == -1){
-			versions_init_multi_free_revs;
-			continue;
-		};
+        if ((rev_count[i] = gather_revisions(repos[i], &revs)) == -1)
+            continue;
 		if (versions_add_repo_dir(repo_names[i], i) == -1){
 			versions_init_multi_free_revs;
 			continue;
