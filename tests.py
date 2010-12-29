@@ -21,8 +21,10 @@ class RdiffBackupTestMeta(type):
                                  if name.startswith('fixture')]
         for name, attr in fixtures:
             for option, sufix in (('-f', 'full'), ('-n', 'necessary')):
-                test = Meta.build_test(attr, option)
+                test = Meta.build_test(attr, option, Meta.verify)
                 classdict['test' + name[len('fixture'):] + '_' + sufix] = test
+            # test = Meta.build_test(attr, '-l', Meta.verify_last)
+            # classdict['test' + name[len('fixture'):] + '_' + sufix] = test
             del classdict[name]
         classdict['TEST_DATA_DIRECTORY'] = Meta.TEST_DATA_DIRECTORY
         classdict['TEST_RDIFF_DIRECTORY'] = Meta.TEST_RDIFF_DIRECTORY
@@ -31,7 +33,7 @@ class RdiffBackupTestMeta(type):
         return Class
             
     @classmethod
-    def build_test(Meta, fixture, option):
+    def build_test(Meta, fixture, option, verify_method):
         def test(self):
             mkdir(Meta.TEST_DATA_DIRECTORY)
             mkdir(Meta.TEST_RDIFF_DIRECTORY)
@@ -48,9 +50,9 @@ class RdiffBackupTestMeta(type):
                     remove_directory(Meta.TEST_DATA_DIRECTORY)
                     sleep(1)
             Meta.run_fs(fixture.keys(), option)
-            Meta.verify(self, fixture)
+            verify_method(self, fixture)
         return test
-    
+        
     @classmethod
     def create_dirs(Meta, path):
         path = path.split(fssep)
@@ -64,16 +66,31 @@ class RdiffBackupTestMeta(type):
         
     @classmethod
     def verify(Meta, self, fixture):
-        for name, data in fixture.items():
-            repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
-            revisions = sorted(listdir(repo_path))
-            for files, directory in zip(data, revisions):
-                for path, content in files.items():
-                    full_path = join(repo_path, directory, path)
-                    file = open(full_path)
-                    read_content = file.read()
-                    file.close()
-                    self.assertEqual(content, read_content)
+        self.assert_(len(fixture) > 0)
+        if len(fixture) == 1: # single repo
+            Meta.verify_revisions(self, Meta.TEST_MOUNT_DIRECTORY, 
+                                  fixture.values()[0])
+        else:
+            for name, data in fixture.items():
+                repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
+                Meta.verify_revisions(self, repo_path, data)
+                    
+    @classmethod
+    def verify_revisions(Meta, self, repo_path, data):
+        revisions = sorted(listdir(repo_path))
+        for files, directory in zip(data, revisions):
+            for path, content in files.items():
+                full_path = join(repo_path, directory, path)
+                file = open(full_path)
+                read_content = file.read()
+                file.close()
+                self.assertEqual(content, read_content)
+        
+        
+    
+    @classmethod
+    def verify_last(Meta, self, fixture):
+        pass
 
     @classmethod
     def create_mount_directory(Meta):
