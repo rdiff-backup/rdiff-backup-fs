@@ -91,9 +91,9 @@ int gather_revisions(char *repo_path, char ***revisions) {
     	gather_revisions_finish(-1);
     if (((*revisions) = calloc(count, sizeof(char *))) == NULL)
     	gather_revisions_finish(-1);
-    if (get_revisions(count, *revisions) == -1)
+    if (get_revisions(data_dir, count, *revisions) == -1)
     	gather_revisions_finish(-1);
-    gstrsort(*revisions, count);
+    gstrsort(*revisions, count);        
     gather_revisions_finish(count);
     
 };
@@ -229,30 +229,24 @@ int read_stats(stats_t *stats, FILE *file){
 
 };
 
-int get_revisions(int count, char **revs){
+int get_revisions(char *where, int count, char **revs){
     
     DIR *dir = NULL;
     struct dirent *entry;
     int i = 0;
 
-#ifdef DEBUG_DEEP                           
-    printf("[Function: get_revisions] Received place for %d revisions;\n", count);
-#endif
-    if ((dir = opendir(data_dir)) == NULL)
+    // printf("[Function: get_revisions] Received place for %d revisions;\n", count);
+    if ((dir = opendir(where)) == NULL)
         return -1;
-    for (entry = readdir(dir); (i < count) && (entry != NULL); entry = readdir(dir)){
+    for (entry = readdir(dir); (i < count) && (entry != NULL); entry = readdir(dir))
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0){
             gstrcpy(&revs[i], entry->d_name);
             i++;
         };
-    };
     closedir(dir);
     if (i != count)
         return -1;
-    gstrsort(revs, count);
-#ifdef DEBUG_DEEP                           
-    printf("[Function: get_revisions] Retrieved and sorted %d revisions;\n", count);
-#endif
+    // printf("[Function: get_revisions] Retrieved and sorted %d revisions;\n", count);
     return 0;
     
 }

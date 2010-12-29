@@ -57,7 +57,7 @@ char* get_revs_dir(char *);
  */
 int read_stats(struct stats *stats, FILE *file);
 
-int get_revisions(int, char **);
+int get_revisions(char *, int, char **);
 
 int snapshot_copy(char *);
 
@@ -65,6 +65,14 @@ int snapshot_append(char *file);
 
 int update_tree(tree_t, stats_t *);
 
+/*
+ * finds revision names for the given repository
+ * 
+ * @1: path to the rdiff-backup repository
+ * @2: pointer which will point to allocated memory with revision names
+ * 
+ * returns: number of revisions found on success, -1 otherwise
+ */ 
 int gather_revisions(char *, char ***);
 
 #endif
