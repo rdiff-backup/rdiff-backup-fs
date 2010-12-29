@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from os import walk, remove, rmdir, mknod, mkdir, listdir
-from os.path import join, exists, split, sep as fssep
+from os.path import join, exists, split, sep as fssep, isdir
 from unittest import TestCase, main
 from subprocess import Popen
 from time import sleep
@@ -23,8 +23,8 @@ class RdiffBackupTestMeta(type):
             for option, sufix in (('-f', 'full'), ('-n', 'necessary')):
                 test = Meta.build_test(attr, option, Meta.verify)
                 classdict['test' + name[len('fixture'):] + '_' + sufix] = test
-            # test = Meta.build_test(attr, '-l', Meta.verify_last)
-            # classdict['test' + name[len('fixture'):] + '_' + sufix] = test
+            test = Meta.build_test(attr, '-l', Meta.verify_last)
+            classdict['test' + name[len('fixture'):] + '_last'] = test
             del classdict[name]
         classdict['TEST_DATA_DIRECTORY'] = Meta.TEST_DATA_DIRECTORY
         classdict['TEST_RDIFF_DIRECTORY'] = Meta.TEST_RDIFF_DIRECTORY
@@ -86,11 +86,22 @@ class RdiffBackupTestMeta(type):
                 file.close()
                 self.assertEqual(content, read_content)
         
-        
-    
     @classmethod
     def verify_last(Meta, self, fixture):
-        pass
+        if len(fixture) == 1:
+            Meta.verify_last_revisions(self, Meta.TEST_MOUNT_DIRECTORY,
+                                       fixture.values()[0])
+        else:
+            for name, data in fixture.items():
+                repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
+                Meta.verify_last_revisions(self, repo_path, data)
+                
+    @classmethod
+    def verify_last_revisions(Meta, self, repo_path, data):
+        for file, content in data[-1].items():
+            path = join(repo_path, file)
+            self.assert_(exists(path))
+            self.assert_(isdir(path))
 
     @classmethod
     def create_mount_directory(Meta):

@@ -32,9 +32,7 @@ int versions_init(char *repo){
     char *extension = NULL;
     int i = 0;
 
-#ifdef DEBUG
-	printf("[Function: init_versions] Received repo path %s;\n", path);
-#endif
+	// printf("[Function: init_versions] Received repo path %s;\n", path);
 	gtreenew(&version_tree);
 	rev_count = single(int);
 
