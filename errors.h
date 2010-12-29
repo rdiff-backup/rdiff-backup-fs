@@ -11,6 +11,7 @@
 #define ERR_RDIFF 7
 
 #define ERR_FULL_ONLY 9
+#define ERR_REPO_READ 10
 
 void fail(int);
 

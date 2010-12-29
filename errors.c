@@ -33,6 +33,9 @@ void fail(int error){
 	    case (ERR_FULL_ONLY):
 	    	printf("Disk-only filesystem cannot be used, probably because of chosen layout;\n");
 	    	break;
+        case (ERR_REPO_READ):
+            printf("Failed to read repository;\n");
+            break;
 		default:
 		    printf("Unknown error\n");
 	    	break;

@@ -2,7 +2,15 @@
 
 // prototypes:
 
-int unzip(char *path);
+/*
+ * unzip target file to target directory
+ * 
+ * @1: file to be unzipped
+ * @2: directory where unzipped file should be stored
+ * 
+ * returns: 0 on sucesss, -1 otherwise
+ */
+int unzip(char *, char *);
 
 // public:
 
@@ -22,9 +30,7 @@ int unzip_revs(char *path, char *dest){
     char *extension = NULL;
     int descriptor = 0;
 
-#ifdef DEBUG_DEEP
-	printf("[Function: unzip_revs] Unzipping revisions in %s directory;\n", path);
-#endif
+	// printf("[Function: unzip_revs] Unzipping revisions in %s directory;\n", path);
     if ((dir = opendir(path)) == NULL)
     	return -1;
     for (entry = readdir(dir); entry != NULL; entry = readdir(dir)){
@@ -34,7 +40,7 @@ int unzip_revs(char *path, char *dest){
             extension = gpthext(entry->d_name);
             if (strcmp(extension, "gz") == 0){
 	            gstrdel(extension);
-            	if (unzip(mirror) == -1)
+            	if (unzip(mirror, dest) == -1)
             		continue;
             }
             else{
@@ -50,7 +56,6 @@ int unzip_revs(char *path, char *dest){
         };
     };
     closedir(dir);
-    
     return rev_count;
     
 };
@@ -312,7 +317,7 @@ int snapshot_append(char *file){
 
 // private:
 
-int unzip(char *path){
+int unzip(char *path, char *dest){
     
 #define unzip_error	{							\
     	    gstrdel(temp); 						\
@@ -333,13 +338,11 @@ int unzip(char *path){
     FILE *file = NULL;
     gzFile archive = NULL;
 
-    if (gstrcpy(&temp, path) == -1)
-		unzip_error;
-    if (gpthcld(&temp, temp) == -1)
+    if (gpthcld(&temp, path) == -1)
 		unzip_error;
     if (gpthugz(&temp) == -1)
 		unzip_error;
-    if (gmstrcpy(&target, data_dir, "/", temp, 0) == -1)
+    if (gmstrcpy(&target, dest, "/", temp, 0) == -1)
 		unzip_error;
 	    
     if ((file = fopen(target, "w")) == NULL)

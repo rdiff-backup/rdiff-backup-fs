@@ -125,8 +125,10 @@ void initialize(){
 	layout_setup();
     fuse_operations_setup();
 
-    if (repo_count == 1)
-		init(repos[0]);
+    if (repo_count == 1){
+		if (init(repos[0]) == -1)
+            fail(ERR_REPO_READ);
+    }
     else if (repo_count > 1)
 		init_multi(repo_count, repos);
     else

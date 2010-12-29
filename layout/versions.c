@@ -33,7 +33,8 @@ int versions_init(char *repo){
 	// printf("[Function: init_versions] Received repo path %s;\n", path);
 	gtreenew(&version_tree);
 	rev_count = single(int);
-    rev_count[0] = gather_revisions(repo, &revs);    
+    if ((rev_count[0] = gather_revisions(repo, &revs)) <= 0)
+        versions_init_finish(-1);
     read_layout_versions(revs[rev_count[0] - 1], NULL);
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
@@ -139,7 +140,7 @@ int read_layout_versions(char *revision, char *prefix){
 	char *path = NULL;
 	FILE *file = NULL;
 	struct stats stats;
-		
+    
 	if (gmstrcpy(&path, data_dir, "/", revision, 0) != 0)
 		read_layout_versions_finish(-1);
 	if ((file = fopen(path, "r")) == NULL)

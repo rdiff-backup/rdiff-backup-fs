@@ -24,7 +24,7 @@ static struct stats root;
 
 static struct node * get_revision_tree(char *repo, char *revision);
 
-static void free_revision_tree(char *repo, char *revision);
+// static void free_revision_tree(char *repo, char *revision);
 
 static int build_revision_tree(revision_t *, int, int);
 
@@ -172,7 +172,7 @@ tree_t get_revision_tree(char *repo, char *rev){
     return revisions[j].tree;
 }
 
-void free_revision_tree(char *repo, char *rev){
+/*void free_revision_tree(char *repo, char *rev){
 
     revision_t *revisions = NULL;
     int count = 0;
@@ -201,7 +201,7 @@ void free_revision_tree(char *repo, char *rev){
         return;
     gtreedel(revisions[j].tree, "/");
     free(revisions[j].tree);
-};
+};*/
 
 int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
