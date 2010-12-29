@@ -82,16 +82,8 @@ int full_build_multi(int count, char **repo){
 	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
 		full_build_multi_finish(-1);
     for (i = 0; i < repo_count; i++){
-		if (gmstrcpy(&repo_dir, repos[i], "/rdiff-backup-data", NULL) == -1)
-			continue;
-		if ((rev_count[i] = unzip_revs(repo_dir, data_dir)) == -1)
-			continue;
-		if ((revs = calloc(rev_count[i], sizeof(char *))) == NULL)
-			continue;
-		if (get_revisions(rev_count[i], revs) == -1){
-			full_build_multi_free_revs;
-			continue;
-		};
+        if ((rev_count[i] = gather_revisions(repos[i], &revs)) == -1)
+            continue;
 		if (add_repo_dir(repo_names[i], i) == -1){
 			full_build_multi_free_revs;
 			continue;
