@@ -147,10 +147,10 @@ int gtreesave(struct node *tree, char *path){
 struct node * find_node(struct node *root, const char *path){
 
     #define find_node_finish(value) {           \
-        for (i = 0; i < count; i++)
-            gstrdel(parts[i]);
-        free(parts);
-        return node;        
+        for (i = 0; i < count; i++)             \
+            gstrdel(parts[i]);                  \
+        free(parts);                            \
+        return value;                           \
     }
 
 	char **parts = NULL;

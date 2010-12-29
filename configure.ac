@@ -1,4 +1,4 @@
-AC_INIT(archfs)
+AC_INIT(rdiff-backup-fs)
 
 rm --force config.h
 echo "/* System dependent options; */" >> config.h
