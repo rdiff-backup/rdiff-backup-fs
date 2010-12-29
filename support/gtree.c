@@ -144,7 +144,14 @@ int gtreesave(struct node *tree, char *path){
 
 // private:
 
-struct node* find_node(struct node *root, const char *path){
+struct node * find_node(struct node *root, const char *path){
+
+    #define find_node_finish(value) {           \
+        for (i = 0; i < count; i++)
+            gstrdel(parts[i]);
+        free(parts);
+        return node;        
+    }
 
 	char **parts = NULL;
 	int count = gpthdiv(path, &parts);
@@ -159,15 +166,12 @@ struct node* find_node(struct node *root, const char *path){
 			if (strcmp(node->children[j]->name, parts[i]) == 0)
 				next = node->children[j];
 		if (next == NULL)
-			return NULL;
+			find_node_finish(NULL);
 		node = next;
 		next = NULL;
 	};
 	// required clean up
-	for (i = 0; i < count; i++)
-		gstrdel(parts[i]);
-	free(parts);
-	return node;
+    find_node_finish(node);
 
 };
 
