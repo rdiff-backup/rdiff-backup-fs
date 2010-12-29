@@ -34,17 +34,20 @@ class RdiffBackupTestMeta(type):
     def build_test(Meta, fixture, option):
         def test(self):
             mkdir(Meta.TEST_DATA_DIRECTORY)
+            mkdir(Meta.TEST_RDIFF_DIRECTORY)
             Meta.create_mount_directory()
-            for revision in fixture:
-                for path, content in revision.items():
-                    Meta.create_dirs(path)
-                    file = open(join(Meta.TEST_DATA_DIRECTORY, path), 'w')
-                    file.write(content)
-                    file.close()
-                Main([Meta.TEST_DATA_DIRECTORY, Meta.TEST_RDIFF_DIRECTORY])
-                remove_directory(Meta.TEST_DATA_DIRECTORY)
-                sleep(1)
-            Meta.run_fs(option)
+            for repo, data in fixture.items():
+                for revision in data:
+                    for path, content in revision.items():
+                        Meta.create_dirs(path)
+                        file = open(join(Meta.TEST_DATA_DIRECTORY, path), 'w')
+                        file.write(content)
+                        file.close()
+                    backup_path = join(Meta.TEST_RDIFF_DIRECTORY, repo)
+                    Main([Meta.TEST_DATA_DIRECTORY, backup_path])
+                    remove_directory(Meta.TEST_DATA_DIRECTORY)
+                    sleep(1)
+            Meta.run_fs(fixture.keys(), option)
             Meta.verify(self, fixture)
         return test
     
@@ -61,14 +64,16 @@ class RdiffBackupTestMeta(type):
         
     @classmethod
     def verify(Meta, self, fixture):
-        revisions = sorted(listdir(Meta.TEST_MOUNT_DIRECTORY))
-        for files, directory in zip(fixture, revisions):
-            for path, content in files.items():
-                full_path = join(Meta.TEST_MOUNT_DIRECTORY, directory, path)
-                file = open(full_path)
-                read_content = file.read()
-                file.close()
-                self.assertEqual(content, read_content)
+        for name, data in fixture.items():
+            repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
+            revisions = sorted(listdir(repo_path))
+            for files, directory in zip(data, revisions):
+                for path, content in files.items():
+                    full_path = join(repo_path, directory, path)
+                    file = open(full_path)
+                    read_content = file.read()
+                    file.close()
+                    self.assertEqual(content, read_content)
 
     @classmethod
     def create_mount_directory(Meta):
@@ -79,9 +84,10 @@ class RdiffBackupTestMeta(type):
                 raise
 
     @classmethod
-    def run_fs(Meta, option):
-        Popen([Meta.EXECUTABLE, Meta.TEST_MOUNT_DIRECTORY, 
-               Meta.TEST_RDIFF_DIRECTORY, option]).wait()
+    def run_fs(Meta, repos, option):
+        repo_paths = [join(Meta.TEST_RDIFF_DIRECTORY, repo) for repo in repos]
+        Popen([Meta.EXECUTABLE, Meta.TEST_MOUNT_DIRECTORY] + 
+               repo_paths + [option]).wait()
         
     def unmount_fs(Meta):
         Popen([Meta.UNMOUNT_EXECUTABLE, '-u', 
@@ -90,6 +96,15 @@ class RdiffBackupTestMeta(type):
 
 class RdiffBackupTestCase(TestCase):
     __metaclass__ = RdiffBackupTestMeta
+
+    @staticmethod
+    def reverse_revisions(repos):
+        result = {}
+        for name, data in repos.items():
+            result[name] = list(data)
+            result[name].reverse()
+        return result
+
     
     def tearDown(self):
         self.__class__.unmount_fs()
@@ -99,53 +114,73 @@ class RdiffBackupTestCase(TestCase):
 
 class FlatTestCase(RdiffBackupTestCase):
     
-    fixture_single_file = [
-        {'file': 'content'},
-        {'file': 'new content'}
-    ]
+    fixture_single_file = {
+        'backup': [
+            {'file': 'content'},
+            {'file': 'new content'}
+        ]
+    }
     
-    fixture_two_files = [
-        {'file1': 'content1', 'file2': 'content2'},
-        {'file1': 'new content 1', 'file2': 'new content 2'}
-    ]
+    fixture_two_files = {
+        'backup': [
+            {'file1': 'content1', 'file2': 'content2'},
+            {'file1': 'new content 1', 'file2': 'new content 2'}
+        ]
+    }
     
-    fixture_adding_files = [
-        {'file1': 'content1'},
-        {'file1': 'content1', 'file2': 'content2'},
-        {'file1': 'content1', 'file2': 'content2', 'file3': 'content3'},
-        {'file1': 'content1', 'file2': 'content2', 'file3': 'content3',
-         'file4': 'content4'}
-    ]
+    fixture_adding_files = {
+        'backup': [
+            {'file1': 'content1'},
+            {'file1': 'content1', 'file2': 'content2'},
+            {'file1': 'content1', 'file2': 'content2', 'file3': 'content3'},
+            {'file1': 'content1', 'file2': 'content2', 'file3': 'content3',
+             'file4': 'content4'}
+        ]
+    }
     
-    fixture_removing_files = list(fixture_adding_files)
-    fixture_removing_files.reverse()
+    fixture_removing_files = RdiffBackupTestCase.reverse_revisions(fixture_adding_files)
         
 class NestedTestCase(RdiffBackupTestCase):
     
-    fixture_single_file = [
-        {'dir/file': 'content'},
-        {'dir/file': 'new content'}
-    ]
+    fixture_single_file = {
+        'nested_backup': [
+            {'dir/file': 'content'},
+            {'dir/file': 'new content'}
+        ]
+    }
     
-    fixture_two_files = [
-        {'file': 'content', 'dir/file': 'content 2'},
-        {'file': 'new content', 'dir/file': 'new content 2'}
-    ]
+    fixture_two_files = {
+        'nested_backup': [
+            {'file': 'content', 'dir/file': 'content 2'},
+            {'file': 'new content', 'dir/file': 'new content 2'}
+        ]
+    }
     
-    fixture_adding_files = [
-        {'file': '1'},
-        {'file': '2', 'dir/file': '2'},
-        {'file': '3', 'dir/file': '3', 'dir/dir/file': '3'},
-        {'file': '4', 'dir/file': '4', 'dir/dir/file': '4', 
-         'dir/dir/dir/file': '4'}
-    ]
+    fixture_adding_files = {
+        'nested_backup': [
+            {'file': '1'},
+            {'file': '2', 'dir/file': '2'},
+            {'file': '3', 'dir/file': '3', 'dir/dir/file': '3'},
+            {'file': '4', 'dir/file': '4', 'dir/dir/file': '4', 
+         '   dir/dir/dir/file': '4'}
+        ]
+    }
     
-    fixture_removing_files = list(fixture_adding_files)
-    fixture_removing_files.reverse()
+    fixture_removing_files = RdiffBackupTestCase.reverse_revisions(fixture_adding_files)
     
 
 class MultipleRepoTestCase(RdiffBackupTestCase):
-    pass
+
+    fixture_single_file = {
+        'first': [
+            {'file': 'content'},
+            {'file': 'new content'}
+        ],
+        'second': [
+            {'file': 'content'},
+            {'file': 'new content'}
+        ]
+    }
 
 
 def remove_directory(path, only_content=True):
@@ -160,6 +195,6 @@ def remove_directory(path, only_content=True):
         except OSError:
             # directory may not be yet created
             pass
-        
+                    
 if __name__ == "__main__":
     main()

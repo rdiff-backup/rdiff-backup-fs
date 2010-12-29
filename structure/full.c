@@ -77,9 +77,7 @@ int full_build_multi(int count, char **repo){
 	char *extension = NULL;
 	char *snapshot = NULL;
 
-#ifdef DEBUG
-    printf("[Function: init_multi] Received %d repos;\n", count);
-#endif
+    //printf("[Function: init_multi] Received %d repos;\n", count);
 	gtreenew(&structure_tree);
 	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
 		full_build_multi_finish(-1);
