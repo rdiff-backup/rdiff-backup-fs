@@ -35,13 +35,7 @@ int versions_init(char *repo){
 	// printf("[Function: init_versions] Received repo path %s;\n", path);
 	gtreenew(&version_tree);
 	rev_count = single(int);
-
-	if (gmstrcpy(&path, repo, "/rdiff-backup-data", 0) != 0)
-		versions_init_finish(-1);
-	rev_count[0] = unzip_revs(path, data_dir);
-
-    revs = calloc(rev_count[0], sizeof(char *));
-    get_revisions(rev_count[0], revs);
+    rev_count[0] = gather_revisions(repo, &revs);    
     read_layout_versions(revs[rev_count[0] - 1], NULL);
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
