@@ -317,18 +317,26 @@ char* gpthext(const char *path){
 			gstrcpy(&result, value);						\
 			return result;									\
 		}
+    
+    char *temp = gpthextptr((char *) path);
+    char *result = NULL;
+    
+    if (!temp)
+        return NULL;
+    gstrcpy(&result, temp);
+    return result;
 	
-	int i = 0;
-	char *result = NULL;
+};
 
-	if (path == NULL)
-		return NULL;
-	for (i = strlen(path) - 1; (i >= 0) && (path[i] != '.'); i--);
-	if (i <= 0)
-		gpthext_return("")
-	else
-		gpthext_return(path + i + 1);
-
+char * gpthextptr(char *path){
+    int i = 0;
+    if (path == NULL)
+        return NULL;
+    for (i = strlen(path) - 1; i >= 0 && path[i] != '.'; i--);
+    if (i <= 0)
+        return path + strlen(path) - 1; // returning pointer to an empty string
+    else
+        return path + i + 1;
 };
 
 int gpthdpt(const char *path){

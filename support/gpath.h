@@ -110,7 +110,16 @@ int gpthpro(char **);
  *
  * returns: extension of the file; memory must be freed
  */
-char* gpthext(const char *);
+char * gpthext(const char *);
+
+/*
+ * for a given path function extracts file's extension
+ *
+ * @1: path to the file, which extension is extracted
+ *
+ * returns: extension of the file; memory is shared with the parameter
+ */
+char * gpthextptr(char *);
 
 /*
  * for a given path function returns it's depth, meaning number of
