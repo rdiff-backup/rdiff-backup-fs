@@ -256,7 +256,7 @@ int get_revisions(char *where, int count, char **revs){
     
 }
 
-int snapshot_copy(char *revision, char *directory){
+int snapshot_copy(char *revision, char *target, char *directory){
 	
 	char *path = NULL;
 	char *snapshot = NULL;
@@ -266,7 +266,7 @@ int snapshot_copy(char *revision, char *directory){
 	size_t result = 0;
 
 	gmstrcpy(&path, directory, "/", revision, 0);
-	gmstrcpy(&snapshot, directory, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&snapshot, directory, "/", target, 0);
 #ifdef DEBUG_DEEP
 	printf("[Function: snapshot_copy] Copying from %s to %s\n", path, snapshot);
 #endif
@@ -285,23 +285,23 @@ int snapshot_copy(char *revision, char *directory){
 	
 };
 
-int snapshot_append(char *file, char *directory){
+int snapshot_append(char *revision, char *target, char *directory){
 
 	char *snapshot = NULL;
 	int snapshot_desc = 0;
-	char *revision = NULL;
+	char *path = NULL;
 	int revision_desc = 0;
 	char buffer[1024];
 	size_t result = 0;
 
-	gmstrcpy(&revision, directory, "/", file, 0);
-	gmstrcpy(&snapshot, directory, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&path, directory, "/", revision, 0);
+	gmstrcpy(&snapshot, directory, "/", target, 0);
 #ifdef DEBUG_DEEP
-	printf("[Function: snapshot_append] Appending from %s to %s\n", revision, snapshot);
+	printf("[Function: snapshot_append] Appending from %s to %s\n", path, snapshot);
 #endif
 	if ((snapshot_desc = open(snapshot, O_WRONLY | O_APPEND)) == -1)
 		return -1;
-	if ((revision_desc = open(revision, O_RDONLY)) == -1){
+	if ((revision_desc = open(path, O_RDONLY)) == -1){
 		close(snapshot_desc);
 		return -1;
 	};

@@ -45,8 +45,6 @@
 #define POLICY_SIMPLE 1
 #define POLICY_LIMIT 2
 
-#define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
-
 #define ARCHFS_DIR_FORMAT "%4d-%02d-%02dT%02d:%02d:%02d"
 #define ARCHFS_DIR_FORMAT_LENGTH "XXXX-XX-XXTXX:XX:XX"
 

@@ -58,9 +58,27 @@ int read_stats(struct stats *stats, FILE *file);
 
 int get_revisions(char *, int, char **);
 
-int snapshot_copy(char *, char *);
+/*
+ * copy given revision to a certain target in a given directory
+ * 
+ * @1: revision file name to be copied
+ * @2: target file name
+ * @3: directory where both files are stored
+ * 
+ * returns: 0 on sucess, -1 otherwise
+ */
+int snapshot_copy(char *, char *, char *);
 
-int snapshot_append(char *file, char *);
+/*
+ * append given revision to a certain target in a given directory
+ * 
+ * @1: revision file name to be appended
+ * @2: target file name
+ * @3: directory where both files are stored
+ * 
+ * returns: 0 on sucess, -1 otherwise
+ */
+int snapshot_append(char *, char *, char *);
 
 int update_tree(tree_t, stats_t *);
 

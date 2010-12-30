@@ -94,16 +94,11 @@ int necessary_build_multi(int count, char **repo){
     for (i = 0; i < repo_count; i++){
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             necessary_build_multi_finish(-1);
-        pass(4)
         repositories[i].revisions = calloc(rev_count[i], sizeof(revision_t));
         for (j = 0; j < rev_count[i]; j++){
-            pass(5);
             repositories[i].revisions[j].name = get_revs_dir(revs[i]);
-            pass(6);
             gstrcpy(&repositories[0].revisions[i].file, revs[i]);
-            pass(7);
         }
-        pass(8);
     }
     necessary_build_multi_finish(0);
 }
@@ -344,7 +339,7 @@ char * build_snapshot(revision_t *revisions, int count, int rev_index, int snaps
     if ((snapshot_desc = mkstemp(temp_snapshot)) == -1)
         build_snapshot_error;
     gmstrcpy(&snapshot, data_dir, "/", revisions[snapshot_index].file, 0);
-    printf("%s\n", snapshot);
+    
     if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
         build_snapshot_error;
     if (gdesccopy(revision_desc, snapshot_desc))

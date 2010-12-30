@@ -10,6 +10,8 @@ void read_revision_all(char *, char *, int, int);
 
 int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *file);
 
+#define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
+
 // variables:
 
 tree_t structure_tree = NULL;
@@ -40,9 +42,9 @@ int full_build(char *repo){
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
     	if (strcmp(extension, "snapshot") == 0)
-    		snapshot_copy(revs[i], data_dir);
+    		snapshot_copy(revs[i], CURRENT_SNAPSHOT, data_dir);
     	else // strcmp(extension, "diff") == 0)
-    		snapshot_append(revs[i], data_dir);
+    		snapshot_append(revs[i], CURRENT_SNAPSHOT, data_dir);
 		gstrdel(extension);
 		read_revision_all(NULL, revs[i], -1, rev_count[0] - i - 1);
 	};
@@ -91,9 +93,9 @@ int full_build_multi(int count, char **repo){
 		for (j = rev_count[i] - 1; j >= 0; j--){
 			extension = gpthext(revs[j]);
 			if (strcmp(extension, "snapshot") == 0)
-    			snapshot_copy(revs[j], data_dir);
+    			snapshot_copy(revs[j], CURRENT_SNAPSHOT, data_dir);
     		else // strcmp(extension, "diff") == 0)
-    			snapshot_append(revs[j], data_dir);
+    			snapshot_append(revs[j], CURRENT_SNAPSHOT, data_dir);
 		    gstrdel(extension);
 		    read_revision_all(repo_names[i], revs[j], i, rev_count[i] - j - 1);
 		};

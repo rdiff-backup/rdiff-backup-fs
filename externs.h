@@ -1,5 +1,4 @@
 #include <fuse.h>
-#include "support/gstring.h"
 
 extern int repo_count;
 extern int *rev_count;

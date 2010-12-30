@@ -12,6 +12,8 @@ void read_revision_versions(char *rev, int rev_index, char *, int);
 
 int versions_add_repo_dir(char *, int);
 
+#define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
+
 // public:
 
 int versions_init(char *repo){
@@ -39,9 +41,9 @@ int versions_init(char *repo){
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
     	if (strcmp(extension, "snapshot") == 0)
-    		snapshot_copy(revs[i], data_dir);
+    		snapshot_copy(revs[i], CURRENT_SNAPSHOT, data_dir);
     	else // strcmp(extension, "diff") == 0)
-    		snapshot_append(revs[i], data_dir);
+    		snapshot_append(revs[i], CURRENT_SNAPSHOT, data_dir);
 		gstrdel(extension);
 		read_revision_versions(revs[i], rev_count[0] - i - 1, NULL, -1);
 	};
@@ -88,9 +90,9 @@ int versions_init_multi(int count, char **repos){
 		for (j = rev_count[i] - 1; j >= 0; j--){
 	    	extension = gpthext(revs[j]);
 	    	if (strcmp(extension, "snapshot") == 0)
-	    		snapshot_copy(revs[j], data_dir);
+	    		snapshot_copy(revs[j], CURRENT_SNAPSHOT, data_dir);
 	    	else // strcmp(extension, "diff") == 0)
-	    		snapshot_append(revs[j], data_dir);
+	    		snapshot_append(revs[j], CURRENT_SNAPSHOT, data_dir);
 			gstrdel(extension);
 		    read_revision_versions(revs[j], rev_count[i] - j - 1, repo_names[i], i);
 		};
