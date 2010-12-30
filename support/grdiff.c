@@ -38,14 +38,12 @@ int unzip_revs(char *path, char *dest){
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0){
             if (gmstrcpy(&mirror, path, "/", entry->d_name, 0) == -1)
             	continue;
-            extension = gpthext(entry->d_name);
+            extension = gpthextptr(entry->d_name);
             if (strcmp(extension, "gz") == 0){
-	            gstrdel(extension);
             	if (unzip(mirror, dest) == -1)
             		continue;
             }
             else{
-                gstrdel(extension);
             	if (gmstrcpy(&mirror, dest, "/", entry->d_name, 0) == -1)
             		continue;
             	if ((descriptor = open(mirror, O_WRONLY | O_CREAT)) == -1)
@@ -262,14 +260,14 @@ int add_snapshot(char *revision, char *target, char *directory){
     char *extension = NULL;
     int result = 0;
 
-    extension = gpthext(revision);
+    if ((extension = gpthextptr(revision)) == NULL)
+        return -1;
     if (strcmp(extension, FULL_SNAPSHOT_EXT) == 0)
         result = snapshot_copy(revision, target, directory);
     else if (strcmp(extension, DIFF_SNAPSHOT_EXT) == 0)
         result = snapshot_append(revision, target, directory);
     else
         result = -1;
-    gstrdel(extension);
     return result;
 
 };

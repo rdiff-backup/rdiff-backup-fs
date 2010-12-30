@@ -153,7 +153,8 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
         return result;
     }
     else if (revision == NULL && (repo_count == 1 || repo != NULL)){
-        if ((index = repo_index(repo)) == -1)
+        index = 0;
+        if (repo && ((index = repo_index(repo)) == -1))
             return NULL;
         result = calloc(rev_count[index] + 1, sizeof(char *));
         for (i = 0; i < rev_count[index]; i++)
@@ -287,13 +288,10 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
 #endif            
     
     while (snapshot_index < count) {
-        if ((ext = gpthext(revisions[snapshot_index].file)) == NULL)
+        if ((ext = gpthextptr(revisions[snapshot_index].file)) == NULL)
             return -1;
-        if (strcmp(ext, "snapshot") == 0){
-            gstrdel(ext);
+        if (strcmp(ext, "snapshot") == 0)
             break;
-        }
-        gstrdel(ext);
         snapshot_index++;
     }
     if (snapshot_index == count)
