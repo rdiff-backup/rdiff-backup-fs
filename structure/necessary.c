@@ -37,6 +37,11 @@ static int free_cache();
 int read_revision_necessary(char *path, tree_t, int);
 
 /*
+ * retrieves index of a repo from name
+ */
+ static int repo_index(char *);
+
+/*
  * checks whether repo with given name exists
  */
 static int repo_exists(char *repo_name);
@@ -132,7 +137,7 @@ int necessary_get_file(char *repo, char *revision, char *internal,
 
 char** necessary_get_children(char *repo, char *revision, char *internal){
     
-    int i = 0;
+    int i = 0, index = 0;
     char **result = 0;
 
 #ifdef DEBUG
@@ -148,9 +153,11 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
         return result;
     }
     else if (revision == NULL && (repo_count == 1 || repo != NULL)){
-        result = calloc(rev_count[0] + 1, sizeof(char *));
-        for (i = 0; i < rev_count[0]; i++)
-            gstrcpy(&result[i], repositories[0].revisions[i].name);
+        if ((index = repo_index(repo)) == -1)
+            return NULL;
+        result = calloc(rev_count[index] + 1, sizeof(char *));
+        for (i = 0; i < rev_count[index]; i++)
+            gstrcpy(&result[i], repositories[index].revisions[i].name);
         return result;
     }
     else { // revision != NULL
@@ -379,11 +386,7 @@ int free_cache(){
 }
 
 int repo_exists(char *repo_name){
-    int i = 0;
-    for (i = 0; i < repo_count; i++)
-        if (strcmp(repositories[i].name, repo_name) == 0)
-            return 1;
-    return 0;
+    return repo_index(repo_name) != -1;
 };
 
 int revision_exists(char *repo_name, char *revision_name){
@@ -394,8 +397,7 @@ int revision_exists(char *repo_name, char *revision_name){
     if (repo_name == NULL)
         revisions = repositories[0].revisions;
     else{
-        for (i = 0; (i < repo_count) && (strcmp(repositories[i].name, repo_name) != 0); i++);
-        if (i == repo_count)
+        if ((i = repo_index(repo_name)) == -1)
             return 0;
         revisions = repositories[i].revisions;
     };
@@ -404,4 +406,14 @@ int revision_exists(char *repo_name, char *revision_name){
             return 1;
     return 0;
     
+};
+
+int repo_index(char *repo){
+
+    int i = 0;
+    for (; i < repo_count && strcmp(repositories[i].name, repo) != 0; i++);
+    if (i == repo_count) // failed to find repo
+        return -1;
+    return i;
+
 };
