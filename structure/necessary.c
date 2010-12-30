@@ -91,6 +91,7 @@ int necessary_build_multi(int count, char **repo){
     if ((repositories = calloc(repo_count, sizeof(revision_t))) == NULL)
         necessary_build_multi_finish(-1);
     for (i = 0; i < repo_count; i++){
+        gstrcpy(&repositories[i].name, repo_names[i]);
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             necessary_build_multi_finish(-1);
         repositories[i].revisions = calloc(rev_count[i], sizeof(revision_t));
@@ -100,6 +101,7 @@ int necessary_build_multi(int count, char **repo){
         }
         necessary_build_multi_free_revs;
     }
+    set_directory_stats(&root);
     necessary_build_multi_finish(0);
 }
 
@@ -135,22 +137,33 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
 
 #ifdef DEBUG
     printf("[necessary_get_children: getting children of %s/%s/%s\n", repo, revision, internal);
-#endif    
-    if (revision == NULL){
+#endif
+    if (revision != NULL && repo == NULL && repo_count > 1)
+        return NULL; // should not happen
+    if (revision == NULL && repo == NULL && repo_count > 1){
+        result = calloc(repo_count + 1, sizeof(char *));
+        for (i = 0; i < repo_count; i++){
+            gstrcpy(&result[i], repositories[i].name);
+        }
+        return result;
+    }
+    else if (revision == NULL && (repo_count == 1 || repo != NULL)){
         result = calloc(rev_count[0] + 1, sizeof(char *));
         for (i = 0; i < rev_count[0]; i++)
             gstrcpy(&result[i], repositories[0].revisions[i].name);
         return result;
     }
-    tree_t tree = get_revision_tree(repo, revision);
-#ifdef DEBUG
-    printf("[necessary_get_children: retrieved tree %d\n", (int) tree);
-#endif        
-    if (!tree)
-        return NULL;
-    result = gtreecld(tree, internal);
-    // free_revision_tree(repo, revision);
-    return result;
+    else { // revision != NULL
+        tree_t tree = get_revision_tree(repo, revision);
+    #ifdef DEBUG
+        printf("[necessary_get_children: retrieved tree %d\n", (int) tree);
+    #endif        
+        if (!tree)
+            return NULL;
+        result = gtreecld(tree, internal);
+        // free_revision_tree(repo, revision);
+        return result;
+    }
 }
 
 /* private functions */
@@ -366,6 +379,10 @@ int free_cache(){
 }
 
 int repo_exists(char *repo_name){
+    int i = 0;
+    for (i = 0; i < repo_count; i++)
+        if (strcmp(repositories[i].name, repo_name) == 0)
+            return 1;
     return 0;
 };
 
