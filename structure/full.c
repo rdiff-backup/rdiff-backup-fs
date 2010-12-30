@@ -35,14 +35,14 @@ int full_build(char *repo){
     gtreenew(&structure_tree);
 	if ((rev_count = single(int)) == NULL)
 		full_build_finish(-1);
-    if ((rev_count[0] = gather_revisions(repo, &revs)) == -1)
+    if ((rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
         full_build_finish(-1);
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
     	if (strcmp(extension, "snapshot") == 0)
-    		snapshot_copy(revs[i]);
+    		snapshot_copy(revs[i], data_dir);
     	else // strcmp(extension, "diff") == 0)
-    		snapshot_append(revs[i]);
+    		snapshot_append(revs[i], data_dir);
 		gstrdel(extension);
 		read_revision_all(NULL, revs[i], -1, rev_count[0] - i - 1);
 	};
@@ -82,7 +82,7 @@ int full_build_multi(int count, char **repo){
 	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
 		full_build_multi_finish(-1);
     for (i = 0; i < repo_count; i++){
-        if ((rev_count[i] = gather_revisions(repos[i], &revs)) == -1)
+        if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
 		if (add_repo_dir(repo_names[i], i) == -1){
 			full_build_multi_free_revs;
@@ -91,9 +91,9 @@ int full_build_multi(int count, char **repo){
 		for (j = rev_count[i] - 1; j >= 0; j--){
 			extension = gpthext(revs[j]);
 			if (strcmp(extension, "snapshot") == 0)
-    			snapshot_copy(revs[j]);
+    			snapshot_copy(revs[j], data_dir);
     		else // strcmp(extension, "diff") == 0)
-    			snapshot_append(revs[j]);
+    			snapshot_append(revs[j], data_dir);
 		    gstrdel(extension);
 		    read_revision_all(repo_names[i], revs[j], i, rev_count[i] - j - 1);
 		};

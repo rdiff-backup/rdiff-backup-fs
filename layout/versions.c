@@ -33,15 +33,15 @@ int versions_init(char *repo){
 	// printf("[Function: init_versions] Received repo path %s;\n", path);
 	gtreenew(&version_tree);
 	rev_count = single(int);
-    if ((rev_count[0] = gather_revisions(repo, &revs)) <= 0)
+    if ((rev_count[0] = gather_revisions(repo, data_dir, &revs)) <= 0)
         versions_init_finish(-1);
     read_layout_versions(revs[rev_count[0] - 1], NULL);
     for (i = rev_count[0] - 1; i >= 0; i--){
     	extension = gpthext(revs[i]);
     	if (strcmp(extension, "snapshot") == 0)
-    		snapshot_copy(revs[i]);
+    		snapshot_copy(revs[i], data_dir);
     	else // strcmp(extension, "diff") == 0)
-    		snapshot_append(revs[i]);
+    		snapshot_append(revs[i], data_dir);
 		gstrdel(extension);
 		read_revision_versions(revs[i], rev_count[0] - i - 1, NULL, -1);
 	};
@@ -75,7 +75,7 @@ int versions_init_multi(int count, char **repos){
 	gtreenew(&version_tree);
 	rev_count = calloc(repo_count, sizeof(int));
 	for (i = 0; i < repo_count; i++){
-        if ((rev_count[i] = gather_revisions(repos[i], &revs)) == -1)
+        if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
 		if (versions_add_repo_dir(repo_names[i], i) == -1){
 			versions_init_multi_free_revs;
@@ -88,9 +88,9 @@ int versions_init_multi(int count, char **repos){
 		for (j = rev_count[i] - 1; j >= 0; j--){
 	    	extension = gpthext(revs[j]);
 	    	if (strcmp(extension, "snapshot") == 0)
-	    		snapshot_copy(revs[j]);
+	    		snapshot_copy(revs[j], data_dir);
 	    	else // strcmp(extension, "diff") == 0)
-	    		snapshot_append(revs[j]);
+	    		snapshot_append(revs[j], data_dir);
 			gstrdel(extension);
 		    read_revision_versions(revs[j], rev_count[i] - j - 1, repo_names[i], i);
 		};

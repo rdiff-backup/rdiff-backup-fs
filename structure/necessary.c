@@ -65,7 +65,7 @@ int necessary_build(char *repo){
 
 	if ((rev_count = single(int)) == NULL)
 		necessary_build_finish(-1);
-    if ((rev_count[0] = gather_revisions(repo, &revs)) == -1)
+    if ((rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
         necessary_build_finish(-1);
     if ((repositories = single(repository_t)) == NULL)
         necessary_build_finish(-1);
@@ -79,7 +79,33 @@ int necessary_build(char *repo){
 }
 
 int necessary_build_multi(int count, char **repo){
-	return 0;
+    
+    #define necessary_build_multi_finish(value) {               \
+        return value;                                           \
+    }                                                           \
+    
+    int i = 0, j = 0;
+    char **revs = NULL;
+    
+	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
+        return -1;
+    if ((repositories = calloc(repo_count, sizeof(revision_t))) == NULL)
+        necessary_build_multi_finish(-1);
+    for (i = 0; i < repo_count; i++){
+        if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
+            necessary_build_multi_finish(-1);
+        pass(4)
+        repositories[i].revisions = calloc(rev_count[i], sizeof(revision_t));
+        for (j = 0; j < rev_count[i]; j++){
+            pass(5);
+            repositories[i].revisions[j].name = get_revs_dir(revs[i]);
+            pass(6);
+            gstrcpy(&repositories[0].revisions[i].file, revs[i]);
+            pass(7);
+        }
+        pass(8);
+    }
+    necessary_build_multi_finish(0);
 }
 
 int necessary_get_file(char *repo, char *revision, char *internal, 
@@ -205,12 +231,12 @@ tree_t get_revision_tree(char *repo, char *rev){
 
 int build_revision_tree(revision_t *revisions, int count, int rev_index){
     
-    #define build_revision_tree_finish(value) { \
-        if (current_snapshot){ \
-            unlink(current_snapshot); \
-            gstrdel(current_snapshot); \
-        } \
-        return value; \
+    #define build_revision_tree_finish(value) {             \
+        if (current_snapshot){                              \
+            unlink(current_snapshot);                       \
+            gstrdel(current_snapshot);                      \
+        }                                                   \
+        return value;                                       \
     }
     
     int snapshot_index = 0;
@@ -356,8 +382,10 @@ int revision_exists(char *repo_name, char *revision_name){
     if (repo_name == NULL)
         revisions = repositories[0].revisions;
     else{
-        // find repository
-        return -1;
+        for (i = 0; (i < repo_count) && (strcmp(repositories[i].name, repo_name) != 0); i++);
+        if (i == repo_count)
+            return 0;
+        revisions = repositories[i].revisions;
     };
     for (i = 0; i < rev_count[0]; i++)
         if (strcmp(revisions[i].name, revision_name) == 0)

@@ -80,7 +80,7 @@ int count_revs(char *path){
     return rev_count;
 };
 
-int gather_revisions(char *repo_path, char ***revisions) {
+int gather_revisions(char *repo_path, char *dest_dir, char ***revisions) {
     
     #define gather_revisions_finish(value) {            \
         gstrdel(path);                                  \
@@ -92,11 +92,11 @@ int gather_revisions(char *repo_path, char ***revisions) {
 
 	if (gmstrcpy(&path, repo_path, "/rdiff-backup-data", 0) != 0)
 		gather_revisions_finish(-1);
-    if ((count = unzip_revs(path, data_dir)) == -1)
+    if ((count = unzip_revs(path, dest_dir)) == -1)
     	gather_revisions_finish(-1);
     if (((*revisions) = calloc(count, sizeof(char *))) == NULL)
     	gather_revisions_finish(-1);
-    if (get_revisions(data_dir, count, *revisions) == -1)
+    if (get_revisions(dest_dir, count, *revisions) == -1)
     	gather_revisions_finish(-1);
     gstrsort(*revisions, count);        
     gather_revisions_finish(count);
@@ -256,7 +256,7 @@ int get_revisions(char *where, int count, char **revs){
     
 }
 
-int snapshot_copy(char *revision){
+int snapshot_copy(char *revision, char *directory){
 	
 	char *path = NULL;
 	char *snapshot = NULL;
@@ -265,8 +265,8 @@ int snapshot_copy(char *revision){
 	char buffer[1024];
 	size_t result = 0;
 
-	gmstrcpy(&path, data_dir, "/", revision, 0);
-	gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&path, directory, "/", revision, 0);
+	gmstrcpy(&snapshot, directory, "/", CURRENT_SNAPSHOT, 0);
 #ifdef DEBUG_DEEP
 	printf("[Function: snapshot_copy] Copying from %s to %s\n", path, snapshot);
 #endif
@@ -285,7 +285,7 @@ int snapshot_copy(char *revision){
 	
 };
 
-int snapshot_append(char *file){
+int snapshot_append(char *file, char *directory){
 
 	char *snapshot = NULL;
 	int snapshot_desc = 0;
@@ -294,8 +294,8 @@ int snapshot_append(char *file){
 	char buffer[1024];
 	size_t result = 0;
 
-	gmstrcpy(&revision, data_dir, "/", file, 0);
-	gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);
+	gmstrcpy(&revision, directory, "/", file, 0);
+	gmstrcpy(&snapshot, directory, "/", CURRENT_SNAPSHOT, 0);
 #ifdef DEBUG_DEEP
 	printf("[Function: snapshot_append] Appending from %s to %s\n", revision, snapshot);
 #endif

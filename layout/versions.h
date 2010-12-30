@@ -2,6 +2,7 @@
 #define _LAYOUT_VERSIONS_H_
 
 #include "../headers.h"
+#include "../externs.h"
 #include "core.h"
 #include "../support/gstring.h"
 #include "../support/gtree.h"

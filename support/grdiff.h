@@ -7,7 +7,6 @@
 #include "gpath.h"
 #include "gtree.h"
 #include "../headers.h"
-#include "../externs.h"
 
 /*
  * unzips all rdiff-backup mirror_metadata files in a given directory
@@ -59,20 +58,21 @@ int read_stats(struct stats *stats, FILE *file);
 
 int get_revisions(char *, int, char **);
 
-int snapshot_copy(char *);
+int snapshot_copy(char *, char *);
 
-int snapshot_append(char *file);
+int snapshot_append(char *file, char *);
 
 int update_tree(tree_t, stats_t *);
 
 /*
- * finds revision names for the given repository
+ * finds and unzips revision from the given repository
  * 
  * @1: path to the rdiff-backup repository
- * @2: pointer which will point to allocated memory with revision names
+ * @2: path to directory where revisions should be unzipped
+ * @3: pointer which will point to allocated memory with revision names
  * 
  * returns: number of revisions found on success, -1 otherwise
  */ 
-int gather_revisions(char *, char ***);
+int gather_revisions(char *, char *, char ***);
 
 #endif
