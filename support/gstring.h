@@ -40,9 +40,12 @@ int gstrswp(char **, char **);
     int k = 0;                          \
     if (list) {                         \
         for (k = 0; k < size; k++)      \
-            if (list[k])                \
+            if (list[k]) {              \
                 free(list[k]);          \
+                list[k] = NULL;         \
+            }                           \
         free(list);                     \
+        list = NULL;                    \
     }                                   \
 }
 	

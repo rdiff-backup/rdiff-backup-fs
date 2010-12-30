@@ -75,7 +75,11 @@ int necessary_build(char *repo){
 
 int necessary_build_multi(int count, char **repo){
 
+    #define necessary_build_multi_free_revs						\
+            gstrlistdel(revs, rev_count[i])                     \
+
     #define necessary_build_multi_finish(value) {               \
+        necessary_build_multi_free_revs                         \
         return value;                                           \
     }                                                           \
     
@@ -91,9 +95,10 @@ int necessary_build_multi(int count, char **repo){
             necessary_build_multi_finish(-1);
         repositories[i].revisions = calloc(rev_count[i], sizeof(revision_t));
         for (j = 0; j < rev_count[i]; j++){
-            repositories[i].revisions[j].name = get_revs_dir(revs[i]);
-            gstrcpy(&repositories[0].revisions[i].file, revs[i]);
+            repositories[i].revisions[j].name = get_revs_dir(revs[j]);
+            gstrcpy(&repositories[i].revisions[j].file, revs[j]);
         }
+        necessary_build_multi_free_revs;
     }
     necessary_build_multi_finish(0);
 }
