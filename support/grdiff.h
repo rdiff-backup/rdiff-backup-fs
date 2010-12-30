@@ -59,7 +59,16 @@ int read_stats(struct stats *stats, FILE *file);
 int get_revisions(char *, int, char **);
 
 /*
- * copy given revision to a certain target in a given directory
+ * adds given revision to target file in a given directory
+ * 
+ * @1: revision file name to be added
+ * @2: target file name
+ * @3: directory where both files are stored
+ */
+int add_snapshot(char *, char *, char *);
+
+/*
+ * copy given revision to target file in a given directory
  * 
  * @1: revision file name to be copied
  * @2: target file name
@@ -70,7 +79,7 @@ int get_revisions(char *, int, char **);
 int snapshot_copy(char *, char *, char *);
 
 /*
- * append given revision to a certain target in a given directory
+ * append given revision to target file in a given directory
  * 
  * @1: revision file name to be appended
  * @2: target file name

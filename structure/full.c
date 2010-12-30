@@ -31,7 +31,6 @@ int full_build(char *repo){
 		}
 
     char **revs = NULL;
-    char *extension = NULL;
     int i = 0;
 	
     gtreenew(&structure_tree);
@@ -40,12 +39,7 @@ int full_build(char *repo){
     if ((rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
         full_build_finish(-1);
     for (i = rev_count[0] - 1; i >= 0; i--){
-    	extension = gpthext(revs[i]);
-    	if (strcmp(extension, "snapshot") == 0)
-    		snapshot_copy(revs[i], CURRENT_SNAPSHOT, data_dir);
-    	else // strcmp(extension, "diff") == 0)
-    		snapshot_append(revs[i], CURRENT_SNAPSHOT, data_dir);
-		gstrdel(extension);
+        add_snapshot(revs[i], CURRENT_SNAPSHOT, data_dir);
 		read_revision_all(NULL, revs[i], -1, rev_count[0] - i - 1);
 	};
 	full_build_finish(0);
@@ -76,7 +70,6 @@ int full_build_multi(int count, char **repo){
     int k = 0;
     char **revs = NULL;
     char *repo_dir = NULL;
-	char *extension = NULL;
 	char *snapshot = NULL;
 
     //printf("[Function: init_multi] Received %d repos;\n", count);
@@ -91,12 +84,7 @@ int full_build_multi(int count, char **repo){
 			continue;
 		};
 		for (j = rev_count[i] - 1; j >= 0; j--){
-			extension = gpthext(revs[j]);
-			if (strcmp(extension, "snapshot") == 0)
-    			snapshot_copy(revs[j], CURRENT_SNAPSHOT, data_dir);
-    		else // strcmp(extension, "diff") == 0)
-    			snapshot_append(revs[j], CURRENT_SNAPSHOT, data_dir);
-		    gstrdel(extension);
+            add_snapshot(revs[j], CURRENT_SNAPSHOT, data_dir);
 		    read_revision_all(repo_names[i], revs[j], i, rev_count[i] - j - 1);
 		};
 		full_build_multi_free_revs;

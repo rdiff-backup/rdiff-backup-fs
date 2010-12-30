@@ -1,4 +1,5 @@
 #include "grdiff.h"
+#include "../constants.h"
 
 // prototypes:
 
@@ -255,6 +256,23 @@ int get_revisions(char *where, int count, char **revs){
     return 0;
     
 }
+
+int add_snapshot(char *revision, char *target, char *directory){
+
+    char *extension = NULL;
+    int result = 0;
+
+    extension = gpthext(revision);
+    if (strcmp(extension, FULL_SNAPSHOT_EXT) == 0)
+        result = snapshot_copy(revision, target, directory);
+    else if (strcmp(extension, DIFF_SNAPSHOT_EXT) == 0)
+        result = snapshot_append(revision, target, directory);
+    else
+        result = -1;
+    gstrdel(extension);
+    return result;
+
+};
 
 int snapshot_copy(char *revision, char *target, char *directory){
 	
