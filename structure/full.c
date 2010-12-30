@@ -21,12 +21,7 @@ tree_t structure_tree = NULL;
 int full_build(char *repo){
 
 #define full_build_finish(value) {					\
-			if (revs != NULL){						\
-				for (i = 0; i < rev_count[0]; i++)	\
-					if (revs[i] != NULL)			\
-						free(revs[i]);				\
-				free(revs);							\
-			};										\
+            gstrlistdel(revs, rev_count[0]);            \
 			return value;							\
 		}
 
@@ -49,11 +44,8 @@ int full_build(char *repo){
 int full_build_multi(int count, char **repo){
 
 #define full_build_multi_free_revs											\
-			if (revs != NULL){												\
-				for (k = 0; k < rev_count[i]; k++)							\
-					if (revs[k] != NULL)									\
-						free(revs[k]);										\
-				free(revs);													\
+            if (revs != NULL){												\
+                gstrlistdel(revs, rev_count[i])                             \
 				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
@@ -65,9 +57,7 @@ int full_build_multi(int count, char **repo){
 			return value;													\
 		}
 
-    int i = 0;
-    int j = 0;
-    int k = 0;
+    int i = 0, j = 0;
     char **revs = NULL;
     char *repo_dir = NULL;
 	char *snapshot = NULL;

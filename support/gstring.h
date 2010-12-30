@@ -35,11 +35,21 @@ int gstrswp(char **, char **);
 			string = NULL;				\
 	    }								\
 	}
+    
+#define gstrlistdel(list, size) {       \
+    int k = 0;                          \
+    if (list) {                         \
+        for (k = 0; k < size; k++)      \
+            if (list[k])                \
+                free(list[k]);          \
+        free(list);                     \
+    }                                   \
+}
 	
-#endif
-
 #ifdef HAVE_GETLINE
 	#define gstrline(line, length, file) getline(line, length, file)
 #else
 	int gstrline(char **, size_t *, FILE *);
+#endif
+
 #endif

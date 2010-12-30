@@ -19,12 +19,7 @@ int versions_add_repo_dir(char *, int);
 int versions_init(char *repo){
 
 #define versions_init_finish(value) {						\
-			if (revs != NULL){								\
-				for (i = 0; i < rev_count[0]; i++)			\
-					if (revs[i] != NULL)					\
-						free(revs[i]);						\
-				free(revs);									\
-			};												\
+            gstrlistdel(revs, rev_count[0]);                \
 			return value;									\
 		}
 
@@ -49,10 +44,7 @@ int versions_init_multi(int count, char **repos){
 
 #define versions_init_multi_free_revs										\
 			if (revs != NULL){												\
-				for (k = 0; k < rev_count[i]; k++)							\
-					if (revs[k] != NULL)									\
-						free(revs[k]);										\
-				free(revs);													\
+                gstrlistdel(revs, rev_count[i]);                            \
 				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
@@ -63,7 +55,7 @@ int versions_init_multi(int count, char **repos){
 			return value;													\
 		}
 
-	int i = 0, j = 0, k = 0;
+	int i = 0, j = 0;
 	char **revs = NULL;
 	char *snapshot = NULL;
 

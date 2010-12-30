@@ -51,12 +51,7 @@ static int revision_exists(char *repo_name, char *revision_name);
 int necessary_build(char *repo){
 
     #define necessary_build_finish(value) {                     \
-        if (revs){                                              \
-            for (i = 0; i < rev_count[0]; i++)                  \
-                if (revs[i])                                    \
-                    free(revs[i]);                              \
-            free(revs);                                         \
-        }                                                       \
+        gstrlistdel(revs, rev_count[0]);                        \
         return value;                                           \
     }
 
@@ -79,7 +74,7 @@ int necessary_build(char *repo){
 }
 
 int necessary_build_multi(int count, char **repo){
-    
+
     #define necessary_build_multi_finish(value) {               \
         return value;                                           \
     }                                                           \
@@ -334,7 +329,7 @@ char * build_snapshot(revision_t *revisions, int count, int rev_index, int snaps
     
 #ifdef DEBUG
     printf("[build_snapshot: building full snapshot for index %d with snapshot %d\n", rev_index, snapshot_index);
-#endif            
+#endif
     gmstrcpy(&temp_snapshot, data_dir, "/temp-snapshot-XXXXXX", 0);
     if ((snapshot_desc = mkstemp(temp_snapshot)) == -1)
         build_snapshot_error;
