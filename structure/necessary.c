@@ -119,7 +119,7 @@ int necessary_get_file(char *repo, char *revision, char *internal,
         *stats = &root;
         return 0;
     }
-    else if (revision != NULL && internal == NULL){
+    else if (revision != NULL && repo != NULL && internal == NULL){
         if (!revision_exists(repo, revision))
             return -1;
         else {
@@ -391,15 +391,19 @@ int revision_exists(char *repo_name, char *revision_name){
     
     revision_t *revisions = NULL;
     int i = 0;
+    int count = 0;
     
-    if (repo_name == NULL)
+    if (repo_name == NULL){
         revisions = repositories[0].revisions;
+        count = rev_count[0];
+    }
     else{
         if ((i = repo_index(repo_name)) == -1)
             return 0;
         revisions = repositories[i].revisions;
+        count = rev_count[i];
     };
-    for (i = 0; i < rev_count[0]; i++)
+    for (i = 0; i < count; i++)
         if (strcmp(revisions[i].name, revision_name) == 0)
             return 1;
     return 0;
