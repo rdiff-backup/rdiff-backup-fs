@@ -163,6 +163,7 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
     }
     else { // revision != NULL
         tree_t tree = get_revision_tree(repo, revision);
+        printf("%d\n", (int) tree);
     #ifdef DEBUG
         printf("[necessary_get_children: retrieved tree %d\n", (int) tree);
     #endif        
@@ -190,21 +191,15 @@ tree_t get_revision_tree(char *repo, char *rev){
         count = rev_count[0];
     }
     else {
-        for (i = 0; i < repo_count; i++)
-            if (strcmp(repo, repos[i]) == 0){
-                revisions = repositories[i].revisions;
-                count = rev_count[i];
-                break;
-            }
-        if (i == repo_count)
-            // should never happen
+        if ((i = repo_index(repo)) == -1)
             return NULL;
+        revisions = repositories[i].revisions;
+        count = rev_count[i];            
     }        
     for (j = 0; j < count; j++)
         if (strcmp(rev, revisions[j].name) == 0)
             break;
-    if (j == count)
-        // should never happen
+    if (j == count) // should never happen
         return NULL;
     if (!revisions[j].tree && build_revision_tree(revisions, rev_count[i], j))
         return NULL;
