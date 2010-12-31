@@ -8,9 +8,9 @@ struct node *version_tree = NULL;
 
 int read_layout_versions(char *, char *);
 
-void read_revision_versions(char *rev, int rev_index, char *, int);
+void read_revision_versions(char *rev, int rev_index, char *);
 
-int versions_add_repo_dir(char *, int);
+int versions_add_repo_dir(char *);
 
 #define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
 
@@ -34,7 +34,7 @@ int versions_init(char *repo){
     read_layout_versions(revs[rev_count[0] - 1], NULL);
     for (i = rev_count[0] - 1; i >= 0; i--){
         add_snapshot(revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_versions(revs[i], rev_count[0] - i - 1, NULL, -1);
+		read_revision_versions(revs[i], rev_count[0] - i - 1, NULL);
 	};
 	versions_init_finish(0);
 
@@ -61,10 +61,10 @@ int versions_init_multi(int count, char **repos){
 
 	gtreenew(&version_tree);
 	rev_count = calloc(repo_count, sizeof(int));
-	for (i = 0; i < repo_count; i++){
+	for (i = 0; i < count; i++){
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
-		if (versions_add_repo_dir(repo_names[i], i) == -1){
+		if (versions_add_repo_dir(repo_names[i]) == -1){
 			versions_init_multi_free_revs;
 			continue;
 		};
@@ -74,7 +74,7 @@ int versions_init_multi(int count, char **repos){
 		};
 		for (j = rev_count[i] - 1; j >= 0; j--){
             add_snapshot(revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_versions(revs[j], rev_count[i] - j - 1, repo_names[i], i);
+		    read_revision_versions(revs[j], rev_count[i] - j - 1, repo_names[i]);
 		};
 		versions_init_multi_free_revs;
 	};
@@ -92,7 +92,7 @@ char** versions_get_children(const char *path){
 
 // private:
 
-int versions_add_repo_dir(char *repository, int index){
+int versions_add_repo_dir(char *repository){
 
 	struct stats *stats = single(struct stats);
 
@@ -144,7 +144,7 @@ int read_layout_versions(char *revision, char *prefix){
 
 };
 
-void read_revision_versions(char *revision, int rev_index, char *prefix, int repo){
+void read_revision_versions(char *revision, int rev_index, char *prefix){
 
 #define read_revision_versions_finish {						\
 			gmstrcpy(&path, data_dir, "/", revision, 0);	\

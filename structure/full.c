@@ -4,11 +4,11 @@
 
 int add_revs_dir(char *, char *);
 
-int add_repo_dir(char *, int);
+int add_repo_dir(char *);
 
-void read_revision_all(char *, char *, int, int);
+void read_revision_all(char *, char *, int);
 
-int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *file);
+int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file);
 
 #define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
 
@@ -35,13 +35,13 @@ int full_build(char *repo){
         full_build_finish(-1);
     for (i = rev_count[0] - 1; i >= 0; i--){
         add_snapshot(revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_all(NULL, revs[i], -1, rev_count[0] - i - 1);
+		read_revision_all(NULL, revs[i], rev_count[0] - i - 1);
 	};
 	full_build_finish(0);
 
 };
 
-int full_build_multi(int count, char **repo){
+int full_build_multi(int count, char **repos){
 
 #define full_build_multi_free_revs											\
             if (revs != NULL){												\
@@ -64,18 +64,18 @@ int full_build_multi(int count, char **repo){
 
     //printf("[Function: init_multi] Received %d repos;\n", count);
 	gtreenew(&structure_tree);
-	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
+	if ((rev_count = calloc(count, sizeof(int))) == NULL)
 		full_build_multi_finish(-1);
-    for (i = 0; i < repo_count; i++){
+    for (i = 0; i < count; i++){
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
-		if (add_repo_dir(repo_names[i], i) == -1){
+		if (add_repo_dir(repo_names[i]) == -1){
 			full_build_multi_free_revs;
 			continue;
 		};
 		for (j = rev_count[i] - 1; j >= 0; j--){
             add_snapshot(revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_all(repo_names[i], revs[j], i, rev_count[i] - j - 1);
+		    read_revision_all(repo_names[i], revs[j], rev_count[i] - j - 1);
 		};
 		full_build_multi_free_revs;
     };
@@ -108,7 +108,7 @@ char** full_get_children(char *repo, char *revision, char *internal){
 
 // private:
 
-void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
+void read_revision_all(char *repo, char *rev, int rev_index){
 
 #define read_revision_error {						\
 	    gstrdel(file);									\
@@ -138,7 +138,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
 		read_revision_error;
     add_revs_dir(rev, repo);
 
-    while (read_stats_all(stats, rev_dir, repo_index, rev_index, file) == 0)
+    while (read_stats_all(stats, rev_dir, rev_index, file) == 0)
         update_tree(structure_tree, stats);
 
     fclose(file);
@@ -150,7 +150,7 @@ void read_revision_all(char *repo, char *rev, int repo_index, int rev_index){
     
 };
 
-int read_stats_all(struct stats *stats, char *prefix, int repo, int rev, FILE *file){
+int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file){
 
 	if (read_stats(stats, file) != 0)
 		return -1;
@@ -192,7 +192,7 @@ int add_revs_dir(char *revision, char *repository){
     
 };
 
-int add_repo_dir(char *repository, int index){
+int add_repo_dir(char *repository){
 
 	struct stats *stats = single(struct stats);
 

@@ -30,7 +30,7 @@ static int build_revision_tree(revision_t *, int, int);
 
 static int find_snapshot(revision_t *, int, int);
 
-static char * build_snapshot(revision_t *, int, int, int);
+static char * build_snapshot(revision_t *, int, int);
 
 static int free_cache();
 
@@ -78,7 +78,7 @@ int necessary_build(char *repo){
 	necessary_build_finish(0);
 }
 
-int necessary_build_multi(int count, char **repo){
+int necessary_build_multi(int count, char **repos){
 
     #define necessary_build_multi_free_revs						\
             gstrlistdel(revs, rev_count[i])                     \
@@ -91,9 +91,9 @@ int necessary_build_multi(int count, char **repo){
     int i = 0, j = 0;
     char **revs = NULL;
     
-	if ((rev_count = calloc(repo_count, sizeof(int))) == NULL)
+	if ((rev_count = calloc(count, sizeof(int))) == NULL)
         return -1;
-    if ((repositories = calloc(repo_count, sizeof(revision_t))) == NULL)
+    if ((repositories = calloc(count, sizeof(revision_t))) == NULL)
         necessary_build_multi_finish(-1);
     for (i = 0; i < repo_count; i++){
         gstrcpy(&repositories[i].name, repo_names[i]);
@@ -261,7 +261,7 @@ int build_revision_tree(revision_t *revisions, int count, int rev_index){
         build_revision_tree_finish(-1);
     if ((snapshot_index = find_snapshot(revisions, count, rev_index)) == -1)
         build_revision_tree_finish(-1);
-    if ((current_snapshot = build_snapshot(revisions, count, rev_index, snapshot_index)) == NULL)
+    if ((current_snapshot = build_snapshot(revisions, rev_index, snapshot_index)) == NULL)
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
@@ -327,7 +327,7 @@ int read_revision_necessary(char *snapshot, tree_t tree, int revision){
 	
 };
 
-char * build_snapshot(revision_t *revisions, int count, int rev_index, int snapshot_index) {
+char * build_snapshot(revision_t *revisions, int rev_index, int snapshot_index) {
     
     #define build_snapshot_error {          \
         if (snapshot_desc > 0)              \

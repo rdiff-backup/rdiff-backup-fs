@@ -34,6 +34,9 @@ int revs_getattr(const char *path, struct stat *stbuf){
 
 int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){
 
+    (void) offset;
+    (void) fi;
+
     int i = 0;
     struct stats *stats = 0;
 
@@ -68,6 +71,8 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 };
 
 int revs_readlink(const char *path, char *buf, size_t size){
+
+    (void) size;
 	
 	struct stats *stats;
 	
@@ -79,6 +84,8 @@ int revs_readlink(const char *path, char *buf, size_t size){
 };
 
 int revs_open(const char *path, struct fuse_file_info *fi){
+
+    (void) fi;
 
     struct stats *stats;
     
@@ -93,6 +100,8 @@ int revs_open(const char *path, struct fuse_file_info *fi){
 };
 
 int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi){
+
+    (void) fi;
 
 #define revs_read_finish(value) {					\
 			close(descriptor);						\
@@ -124,6 +133,8 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 
 int revs_release(const char *path, struct fuse_file_info *fi){
 
+    (void) fi;
+
     struct stats *stats = NULL;
     
     get_file(path, &stats);
@@ -134,6 +145,8 @@ int revs_release(const char *path, struct fuse_file_info *fi){
 };
 
 void revs_destroy(void *ptr){
+
+    (void) ptr;
 
 	DIR *dir = NULL;
 	char *path = NULL;
