@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-from os import walk, remove, rmdir, mknod, mkdir, listdir
+# TODO:
+# - check for files, that should not exist
+
+from os import walk, remove, rmdir, mknod, mkdir, listdir, stat
 from os.path import join, exists, split, sep as fssep, isdir
 from unittest import TestCase, main
 from subprocess import Popen
@@ -78,6 +81,7 @@ class RdiffBackupTestMeta(type):
     @classmethod
     def verify_revisions(Meta, self, repo_path, data):
         revisions = sorted(listdir(repo_path))
+        previous = {}
         for files, directory in zip(data, revisions):
             for path, content in files.items():
                 full_path = join(repo_path, directory, path)
@@ -85,6 +89,11 @@ class RdiffBackupTestMeta(type):
                 read_content = file.read()
                 file.close()
                 self.assertEqual(content, read_content)
+            previous = set(previous.keys()) - set(files.keys())
+            for path in previous:
+                full_path = join(repo_path, directory, path)
+                self.assertRaises(OSError, stat, path)
+            previous = files
         
     @classmethod
     def verify_last(Meta, self, fixture):

@@ -147,9 +147,8 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
         return NULL; // should not happen
     if (revision == NULL && repo == NULL && repo_count > 1){
         result = calloc(repo_count + 1, sizeof(char *));
-        for (i = 0; i < repo_count; i++){
+        for (i = 0; i < repo_count; i++)
             gstrcpy(&result[i], repositories[i].name);
-        }
         return result;
     }
     else if (revision == NULL && (repo_count == 1 || repo != NULL)){
@@ -163,7 +162,6 @@ char** necessary_get_children(char *repo, char *revision, char *internal){
     }
     else { // revision != NULL
         tree_t tree = get_revision_tree(repo, revision);
-        printf("%d\n", (int) tree);
     #ifdef DEBUG
         printf("[necessary_get_children: retrieved tree %d\n", (int) tree);
     #endif        
