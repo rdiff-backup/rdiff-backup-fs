@@ -102,4 +102,14 @@ int update_tree(tree_t, stats_t *);
  */ 
 int gather_revisions(char *, char *, char ***);
 
+/*
+ * adds repository stat to a structure tree
+ * 
+ * @1: repository name
+ * @2: tree with structure
+ * 
+ * returns: returns 0 on sucess, -1 otherwise
+ */
+int add_repo_dir(char *, tree_t);
+
 #endif

@@ -331,6 +331,22 @@ int snapshot_append(char *revision, char *target, char *directory){
 	
 };
 
+int add_repo_dir(char *repository, tree_t tree){
+
+	struct stats *stats = single(struct stats);
+
+	// printf("[Function: add_repo_dir] Adding repository %s;\n", repository);
+	if (gmstrcpy(&stats->path, "/", repository, NULL))
+        return -1;
+	stats->name = stats->path + 1;
+	stats->internal = NULL;
+	stats->rev = -1;
+	set_directory_stats(stats);
+	gtreeadd(tree, stats);
+	return 0;
+
+};
+
 // private:
 
 int unzip(char *path, char *dest){

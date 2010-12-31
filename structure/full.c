@@ -4,8 +4,6 @@
 
 int add_revs_dir(char *, char *);
 
-int add_repo_dir(char *);
-
 void read_revision_all(char *, char *, int);
 
 int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file);
@@ -69,7 +67,7 @@ int full_build_multi(int count, char **repos){
     for (i = 0; i < count; i++){
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
-		if (add_repo_dir(repo_names[i]) == -1){
+		if (add_repo_dir(repo_names[i], structure_tree) == -1){
 			full_build_multi_free_revs;
 			continue;
 		};
@@ -190,22 +188,4 @@ int add_revs_dir(char *revision, char *repository){
 	set_directory_stats(stats);
     return gtreeadd(structure_tree, stats);
     
-};
-
-int add_repo_dir(char *repository){
-
-	struct stats *stats = single(struct stats);
-
-#ifdef DEBUG_DEEP
-	printf("[Function: add_repo_dir] Adding repository %s;\n", repository);
-#endif
-	gmstrcpy(&stats->path, "/", repository, NULL);
-	stats->name = stats->path + 1;
-	stats->internal = NULL;
-	stats->rev = -1;
-	set_directory_stats(stats);
-	gtreeadd(structure_tree, stats);
-
-	return 0;
-
 };

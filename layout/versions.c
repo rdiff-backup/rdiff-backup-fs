@@ -10,8 +10,6 @@ int read_layout_versions(char *, char *);
 
 void read_revision_versions(char *rev, int rev_index, char *);
 
-int versions_add_repo_dir(char *);
-
 #define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
 
 // public:
@@ -64,7 +62,7 @@ int versions_init_multi(int count, char **repos){
 	for (i = 0; i < count; i++){
         if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
-		if (versions_add_repo_dir(repo_names[i]) == -1){
+		if (add_repo_dir(repo_names[i], version_tree) == -1){
 			versions_init_multi_free_revs;
 			continue;
 		};
@@ -91,24 +89,6 @@ char** versions_get_children(const char *path){
 };
 
 // private:
-
-int versions_add_repo_dir(char *repository){
-
-	struct stats *stats = single(struct stats);
-
-#ifdef DEBUG_DEEP
-	printf("[Function: add_repo_dir] Adding repository %s;\n", repository);
-#endif
-	gmstrcpy(&stats->path, "/", repository, NULL);
-	stats->name = stats->path + 1;
-	stats->internal = NULL;
-	stats->rev = -1;
-	set_directory_stats(stats);
-	gtreeadd(version_tree, stats);
-
-	return 0;
-
-};
 
 int read_layout_versions(char *revision, char *prefix){
 
