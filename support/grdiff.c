@@ -79,7 +79,7 @@ int count_revs(char *path){
     return rev_count;
 };
 
-int gather_revisions(char *repo_path, char *dest_dir, char ***revisions) {
+int gather_revisions(struct file_system_info *fsinfo, char *repo_path, char *dest_dir) {
     
     #define gather_revisions_finish(value) {            \
         gstrdel(path);                                  \
@@ -93,11 +93,11 @@ int gather_revisions(char *repo_path, char *dest_dir, char ***revisions) {
 		gather_revisions_finish(-1);
     if ((count = unzip_revs(path, dest_dir)) == -1)
     	gather_revisions_finish(-1);
-    if (((*revisions) = calloc(count, sizeof(char *))) == NULL)
+    if ((fsinfo->revs = calloc(count, sizeof(char *))) == NULL)
     	gather_revisions_finish(-1);
-    if (get_revisions(dest_dir, count, *revisions) == -1)
+    if (get_revisions(fsinfo, dest_dir, count) == -1)
     	gather_revisions_finish(-1);
-    gstrsort(*revisions, count);        
+    gstrsort(fsinfo->revs, count);
     gather_revisions_finish(count);
     
 };
@@ -233,7 +233,7 @@ int read_stats(stats_t *stats, FILE *file){
 
 };
 
-int get_revisions(char *where, int count, char **revs){
+int get_revisions(struct file_system_info *fsinfo, char *where, int count){
     
     DIR *dir = NULL;
     struct dirent *entry;
@@ -244,7 +244,7 @@ int get_revisions(char *where, int count, char **revs){
         return -1;
     for (entry = readdir(dir); (i < count) && (entry != NULL); entry = readdir(dir))
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0){
-            gstrcpy(&revs[i], entry->d_name);
+            gstrcpy(&fsinfo->revs[i], entry->d_name);
             i++;
         };
     closedir(dir);

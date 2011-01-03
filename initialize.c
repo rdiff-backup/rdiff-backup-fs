@@ -9,19 +9,19 @@ void check_mount(){
             
 };
 
-void check_repo(int index){
+void check_repo(struct file_system_info *fsinfo, int index){
 
     char *rdiff_backup_dir = NULL;
 
-	// printf("[Function: check_repo] Checking repo %s;\n", repos[index]);
-	if (gmstrcpy(&rdiff_backup_dir, repos[index], "/rdiff-backup-data", 0) == -1)
+	// printf("[Function: check_repo] Checking repo %s;\n", fsinfo->repos[index]);
+	if (gmstrcpy(&rdiff_backup_dir, fsinfo->repos[index], "/rdiff-backup-data", 0) == -1)
 		fail(-1);
 	if (gpthpro(&rdiff_backup_dir) != 0)
 		fail(ERR_NO_REPO);
 	gstrdel(rdiff_backup_dir);
-	if (gpthpro(&repos[index]) != 0)
+	if (gpthpro(&fsinfo->repos[index]) != 0)
 		fail(ERR_NO_REPO);
-	//printf("[Function: check_repo] Setting repo to %s;\n", repos[index]);
+	//printf("[Function: check_repo] Setting repo to %s;\n", fsinfo->repos[index]);
 	
 };
 
@@ -29,12 +29,13 @@ void check_repos(struct file_system_info *fsinfo){
     
     int i = 0;
     
-    repo_names = calloc(fsinfo->repo_count, sizeof(char *));
+    fsinfo->repo_names = calloc(fsinfo->repo_count, sizeof(char *));
     for (i = 0; i < fsinfo->repo_count; i++)
-		if (gpthcld(&repo_names[i], repos[i]) == -1)	
+		if (gpthcld(&fsinfo->repo_names[i], fsinfo->repos[i]) == -1)	
 			fail(-1);
     for (i = 0; i < fsinfo->repo_count; i++)
-		check_repo(i);
+		check_repo(fsinfo, i);
+    fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int));
     
 };
 
@@ -126,11 +127,11 @@ void initialize(struct file_system_info *fsinfo){
     fuse_operations_setup();
 
     if (fsinfo->repo_count == 1){
-		if (init(fsinfo, repos[0]) == -1)
+		if (init(fsinfo) == -1)
             fail(ERR_REPO_READ);
     }
     else if (fsinfo->repo_count > 1)
-		init_multi(fsinfo, repos);
+		init_multi(fsinfo);
     else
 		fail(ERR_NO_REPO);
 

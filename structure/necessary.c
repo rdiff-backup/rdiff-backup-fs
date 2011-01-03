@@ -35,7 +35,7 @@ static char * build_snapshot(revision_t *, int, int);
 
 static int free_cache();
 
-int read_revision_necessary(struct file_system_info *fsinfo, char *path, tree_t, int);
+int read_revision_necessary(char *path, tree_t, int);
 
 /*
  * retrieves index of a repo from name
@@ -54,61 +54,41 @@ static int revision_exists(struct file_system_info *, char *repo_name, char *rev
 
 /* public functions */
 
-int necessary_build(struct file_system_info *fsinfo, char *repo){
+int necessary_build(struct file_system_info *fsinfo){
 
-    #define necessary_build_finish(value) {                     \
-        gstrlistdel(revs, fsinfo->rev_count[0]);                        \
-        return value;                                           \
-    }
-
-    char **revs = NULL;
     int i = 0;
 
-	if ((fsinfo->rev_count = single(int)) == NULL)
-		necessary_build_finish(-1);
-    if ((fsinfo->rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
-        necessary_build_finish(-1);
+    if ((fsinfo->rev_count[0] = gather_revisions(fsinfo, fsinfo->repos[0], data_dir)) == -1)
+        return -1;
     if ((repositories = single(repository_t)) == NULL)
-        necessary_build_finish(-1);
+        return -1;
     repositories[0].revisions = calloc(fsinfo->rev_count[0], sizeof(revision_t));
     for (i = 0; i < fsinfo->rev_count[0]; i++) {
-        repositories[0].revisions[i].name = get_revs_dir(revs[i]);
-        gstrcpy(&repositories[0].revisions[i].file, revs[i]);
+        repositories[0].revisions[i].name = get_revs_dir(fsinfo->revs[i]);
+        gstrcpy(&repositories[0].revisions[i].file, fsinfo->revs[i]);
     }
     set_directory_stats(&root);
-	necessary_build_finish(0);
+	return 0;
 }
 
-int necessary_build_multi(struct file_system_info *fsinfo, char **repos){
-
-    #define necessary_build_multi_free_revs						\
-            gstrlistdel(revs, fsinfo->rev_count[i])                     \
-
-    #define necessary_build_multi_finish(value) {               \
-        necessary_build_multi_free_revs                         \
-        return value;                                           \
-    }                                                           \
+int necessary_build_multi(struct file_system_info *fsinfo){
     
     int i = 0, j = 0;
-    char **revs = NULL;
     
-	if ((fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int))) == NULL)
-        return -1;
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
-        necessary_build_multi_finish(-1);
+        return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
-        gstrcpy(&repositories[i].name, repo_names[i]);
-        if ((fsinfo->rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
-            necessary_build_multi_finish(-1);
+        gstrcpy(&repositories[i].name, fsinfo->repo_names[i]);
+        if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], data_dir)) == -1)
+            return -1;
         repositories[i].revisions = calloc(fsinfo->rev_count[i], sizeof(revision_t));
         for (j = 0; j < fsinfo->rev_count[i]; j++){
-            repositories[i].revisions[j].name = get_revs_dir(revs[j]);
-            gstrcpy(&repositories[i].revisions[j].file, revs[j]);
+            repositories[i].revisions[j].name = get_revs_dir(fsinfo->revs[j]);
+            gstrcpy(&repositories[i].revisions[j].file, fsinfo->revs[j]);
         }
-        necessary_build_multi_free_revs;
     }
     set_directory_stats(&root);
-    necessary_build_multi_finish(0);
+    return -1;
 }
 
 int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revision, char *internal, 
@@ -220,7 +200,7 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     }
     else {
         for (i = 0; i < fsinfo->repo_count; i++)
-            if (strcmp(repo, repos[i]) == 0){
+            if (strcmp(repo, fsinfo->repos[i]) == 0){
                 revisions = repositories[i].revisions;
                 count = fsinfo->rev_count[i];
                 break;
@@ -264,7 +244,7 @@ int build_revision_tree(struct file_system_info *fsinfo, revision_t *revisions, 
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
-    if (read_revision_necessary(fsinfo, current_snapshot, revisions[rev_index].tree, fsinfo->rev_count[0] - rev_index - 1))
+    if (read_revision_necessary(current_snapshot, revisions[rev_index].tree, fsinfo->rev_count[0] - rev_index - 1))
         build_revision_tree_finish(-1);
 #ifdef DEBUG
     printf("[build_revision_tree: done building");
@@ -296,7 +276,7 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
 };
 
 
-int read_revision_necessary(struct file_system_info *fsinfo, char *snapshot, tree_t tree, int revision){
+int read_revision_necessary(char *snapshot, tree_t tree, int revision){
 
     #define read_snapshot_finish(value){            \
         if (file)                                   \

@@ -1,7 +1,6 @@
 #include "simple.h"
 #include "support.h"
 
-int __retrieve_simple(struct stats *, int);
 int __release_simple(struct stats *, int);
 
 // public:
@@ -15,7 +14,7 @@ int retrieve_simple(struct file_system_info *fsinfo, struct stats *stats){
 #endif
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
-	return __retrieve_simple(stats, repo);
+    return retrieve_common(fsinfo, stats, repo);
 		
 };
 
@@ -33,12 +32,6 @@ int release_simple(struct file_system_info *fsinfo, struct stats *stats){
 };
 
 // private:
-
-int __retrieve_simple(struct stats *stats, int index){
-
-	return retrieve_common(stats, index);
-
-};
 
 int __release_simple(struct stats *stats, int index){
 

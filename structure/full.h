@@ -5,9 +5,9 @@
 #include "../support/gtree.h"
 #include "../support/grdiff.h"
 
-int full_build(struct file_system_info *, char *);
+int full_build(struct file_system_info *);
 
-int full_build_multi(struct file_system_info *, char **);
+int full_build_multi(struct file_system_info *);
 
 int full_get_file(struct file_system_info *, char *, char *, char *, struct stats **);
 

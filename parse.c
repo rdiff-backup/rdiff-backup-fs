@@ -59,11 +59,11 @@ int set_repos(struct file_system_info *fsinfo, int argc, char **argv, int *index
 	
     for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++)
 		fsinfo->repo_count++;
-    repos = calloc(fsinfo->repo_count, sizeof(char *));
+    fsinfo->repos = calloc(fsinfo->repo_count, sizeof(char *));
     fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int));
     fsinfo->repo_count = 0;
     for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++){
-		gstrcpy(&repos[fsinfo->repo_count], argv[i]);
+		gstrcpy(&fsinfo->repos[fsinfo->repo_count], argv[i]);
 		fsinfo->repo_count++;
     };
     *index += fsinfo->repo_count;
@@ -150,9 +150,9 @@ void parse_repo(struct file_system_info *fsinfo, int argc, char** argv, int *ind
 		fail(ERR_PARAMETRES);
     for (i = *index; (i < argc) && (!isOption(argv[i])); i++){ };
     fsinfo->repo_count = i - *index;
-    repos = calloc(fsinfo->repo_count, sizeof(char *));
+    fsinfo->repos = calloc(fsinfo->repo_count, sizeof(char *));
     for (i = *index; (i < argc) && (!isOption(argv[i])); i++)
-		gstrcpy(&repos[i - *index], argv[i]);
+		gstrcpy(&fsinfo->repos[i - *index], argv[i]);
     *index += fsinfo->repo_count - 1;
     
 };

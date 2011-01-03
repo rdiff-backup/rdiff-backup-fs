@@ -11,7 +11,7 @@ pthread_mutex_t cache_mutex = PTHREAD_MUTEX_INITIALIZER;
 struct cache *cache = NULL;
 struct cache *last = NULL;
 
-int __retrieve_limit(struct stats *, int);
+int __retrieve_limit(struct file_system_info *fsinfo, struct stats *, int);
 int __release_limit(struct stats *, int);
 
 int cache_add(struct stats *);
@@ -29,7 +29,7 @@ int retrieve_limit(struct file_system_info *fsinfo, struct stats *stats){
 #endif
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
-	return __retrieve_limit(stats, repo);
+	return __retrieve_limit(fsinfo, stats, repo);
 
 };
 
@@ -49,7 +49,7 @@ int release_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 // private:
 
-int __retrieve_limit(struct stats *stats, int repo){
+int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int repo){
 
 #define __retrieve_limit_finish(value){						\
 			unlock(file_mutex[repo][stats->rev]);			\
@@ -72,7 +72,7 @@ int __retrieve_limit(struct stats *stats, int repo){
 	// retrieving file
 	if (create_tmp_file(stats) == -1)
 		__retrieve_limit_finish(-1);
-	if (gmstrcpy(&file, repos[repo], "/", stats->internal, 0) == -1)
+	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		__retrieve_limit_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)

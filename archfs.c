@@ -3,11 +3,6 @@
 #include "parse.h"
 #include "initialize.h"
 
-// paths to repositories
-char **repos = NULL;
-// names of repositories
-char **repo_names = NULL;
-
 char *mount = NULL;
 char *tmp_dir = NULL;
 char *data_dir = NULL;

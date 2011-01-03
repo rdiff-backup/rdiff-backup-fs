@@ -6,12 +6,12 @@ int get_internals(struct file_system_info *, const char *path, char **repo, char
 
 // public:
 
-int all_init(struct file_system_info *fsinfo, char *repo){
-	return struct_build(fsinfo, repo);
+int all_init(struct file_system_info *fsinfo){
+	return struct_build(fsinfo);
 };
 
-int all_init_multi(struct file_system_info *fsinfo,  char **repo){
-	return struct_build_multi(fsinfo, repo);
+int all_init_multi(struct file_system_info *fsinfo){
+	return struct_build_multi(fsinfo);
 };
 
 int all_get_file(struct file_system_info *fsinfo, const char *path, struct stats **stats){

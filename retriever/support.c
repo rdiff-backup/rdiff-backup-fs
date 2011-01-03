@@ -1,6 +1,6 @@
 #include "support.h"
 
-int retrieve_common(struct stats *stats, int repo){
+int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int repo){
 
 #define retrieve_common_finish(value){								\
 			unlock(file_mutex[repo][stats->rev]);			\
@@ -24,7 +24,7 @@ int retrieve_common(struct stats *stats, int repo){
 	};
 	if (create_tmp_file(stats) == -1)
 		retrieve_common_finish(-1);
-	if (gmstrcpy(&file, repos[repo], "/", stats->internal, 0) == -1)
+	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		retrieve_common_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
@@ -53,7 +53,7 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 		repo_number_finish(0);
 	if ((repo = gpthprt(stats->path, 0)) == NULL)
 		repo_number_finish(-1);
-	for (i = 0; (i < fsinfo->repo_count) && (strcmp(repo, repo_names[i]) != 0); i++);
+	for (i = 0; (i < fsinfo->repo_count) && (strcmp(repo, fsinfo->repo_names[i]) != 0); i++);
 	if (i == fsinfo->repo_count)
 		repo_number_finish(-1);
 	repo_number_finish(i);

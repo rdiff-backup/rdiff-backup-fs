@@ -56,7 +56,7 @@ char* get_revs_dir(char *);
  */
 int read_stats(struct stats *stats, FILE *file);
 
-int get_revisions(char *, int, char **);
+int get_revisions(struct file_system_info *, char *, int);
 
 /*
  * adds given revision to target file in a given directory
@@ -100,7 +100,7 @@ int update_tree(tree_t, stats_t *);
  * 
  * returns: number of revisions found on success, -1 otherwise
  */ 
-int gather_revisions(char *, char *, char ***);
+int gather_revisions(struct file_system_info *, char *, char *);
 
 /*
  * adds repository stat to a structure tree

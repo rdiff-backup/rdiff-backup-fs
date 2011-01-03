@@ -51,6 +51,11 @@
 struct file_system_info {
 	int repo_count;
 	int *rev_count;
+    
+    char **repos;
+    char **repo_names;
+    
+    char **revs;
 };
 
 #endif

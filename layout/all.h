@@ -8,9 +8,9 @@
 #include "../structure/core.h"
 
 
-int all_init(struct file_system_info *fsinfo, char *);
+int all_init(struct file_system_info *fsinfo);
 
-int all_init_multi(struct file_system_info *fsinfo, char **);
+int all_init_multi(struct file_system_info *fsinfo);
 
 int all_get_file(struct file_system_info *fsinfo, const char *, struct stats **);
 

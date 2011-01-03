@@ -12,9 +12,9 @@
 
 extern int necessary_limit;
 
-int necessary_build(struct file_system_info *, char *);
+int necessary_build(struct file_system_info *);
 
-int necessary_build_multi(struct file_system_info *, char **);
+int necessary_build_multi(struct file_system_info *);
 
 int necessary_get_file(struct file_system_info *, char *, char *, char *, struct stats **);
 				  

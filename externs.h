@@ -1,8 +1,5 @@
 #include <fuse.h>
 
-extern char **repos;
-extern char **repo_names;
-
 extern char *mount;
 // directory where data directory should be created
 extern char *tmp_dir;

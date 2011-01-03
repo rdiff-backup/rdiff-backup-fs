@@ -4,9 +4,9 @@
 #include "../headers.h"
 #include "../support/gstats.h"
 
-extern int (*struct_build)(struct file_system_info *, char *repo);
+extern int (*struct_build)(struct file_system_info *);
 
-extern int (*struct_build_multi)(struct file_system_info *, char **repos);
+extern int (*struct_build_multi)(struct file_system_info *);
 
 extern int (*struct_get_file)(struct file_system_info *, char *, char *, char *, struct stats **);
 

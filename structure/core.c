@@ -1,8 +1,8 @@
 #include "core.h"
 
-int (*struct_build)(struct file_system_info *, char *repo) = NULL;
+int (*struct_build)(struct file_system_info *) = NULL;
 
-int (*struct_build_multi)(struct file_system_info *,  char **repos) = NULL;
+int (*struct_build_multi)(struct file_system_info *) = NULL;
 
 int (*struct_get_file)(struct file_system_info *, char *repo, char *revision, char *internal, struct stats **stats) = NULL;
 

@@ -14,35 +14,28 @@ void read_revision_versions(char *rev, int rev_index, char *);
 
 // public:
 
-int versions_init(struct file_system_info *fsinfo, char *repo){
+int versions_init(struct file_system_info *fsinfo){
 
-#define versions_init_finish(value) {						\
-            gstrlistdel(revs, fsinfo->rev_count[0]);                \
-			return value;									\
-		}
-
-    char **revs = NULL;
     int i = 0;
 
 	// printf("[Function: init_versions] Received repo path %s;\n", path);
 	gtreenew(&version_tree);
 	fsinfo->rev_count = single(int);
-    if ((fsinfo->rev_count[0] = gather_revisions(repo, data_dir, &revs)) <= 0)
-        versions_init_finish(-1);
-    read_layout_versions(revs[fsinfo->rev_count[0] - 1], NULL);
+    if ((fsinfo->rev_count[0] = gather_revisions(fsinfo, fsinfo->repos[0], data_dir)) <= 0)
+        return -1;
+    read_layout_versions(fsinfo->revs[fsinfo->rev_count[0] - 1], NULL);
     for (i = fsinfo->rev_count[0] - 1; i >= 0; i--){
-        add_snapshot(revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_versions(revs[i], fsinfo->rev_count[0] - i - 1, NULL);
+        add_snapshot(fsinfo->revs[i], CURRENT_SNAPSHOT, data_dir);
+		read_revision_versions(fsinfo->revs[i], fsinfo->rev_count[0] - i - 1, NULL);
 	};
-	versions_init_finish(0);
+    return 0;
 
 };
 
-int versions_init_multi(struct file_system_info *fsinfo, char **repos){
+int versions_init_multi(struct file_system_info *fsinfo){
 
 #define versions_init_multi_free_revs										\
-			if (revs != NULL){												\
-                gstrlistdel(revs, fsinfo->rev_count[i]);                            \
+			if (fsinfo->revs != NULL){										\
 				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
@@ -54,25 +47,24 @@ int versions_init_multi(struct file_system_info *fsinfo, char **repos){
 		}
 
 	int i = 0, j = 0;
-	char **revs = NULL;
 	char *snapshot = NULL;
 
 	gtreenew(&version_tree);
 	fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int));
 	for (i = 0; i < fsinfo->repo_count; i++){
-        if ((fsinfo->rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
+        if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], data_dir)) == -1)
             continue;
-		if (add_repo_dir(repo_names[i], version_tree) == -1){
+		if (add_repo_dir(fsinfo->repo_names[i], version_tree) == -1){
 			versions_init_multi_free_revs;
 			continue;
 		};
-		if (read_layout_versions(revs[fsinfo->rev_count[i] - 1], repo_names[i]) == -1){
+		if (read_layout_versions(fsinfo->revs[fsinfo->rev_count[i] - 1], fsinfo->repo_names[i]) == -1){
 			versions_init_multi_free_revs;
 			continue;
 		};
 		for (j = fsinfo->rev_count[i] - 1; j >= 0; j--){
-            add_snapshot(revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_versions(revs[j], fsinfo->rev_count[i] - j - 1, repo_names[i]);
+            add_snapshot(fsinfo->revs[j], CURRENT_SNAPSHOT, data_dir);
+		    read_revision_versions(fsinfo->revs[j], fsinfo->rev_count[i] - j - 1, fsinfo->repo_names[i]);
 		};
 		versions_init_multi_free_revs;
 	};
@@ -81,10 +73,16 @@ int versions_init_multi(struct file_system_info *fsinfo, char **repos){
 };
 
 int versions_get_file(struct file_system_info *fsinfo, const char *path, struct stats **stats){
+    
+    (void) fsinfo;
+    
 	return gtreeget(version_tree, path, stats);
 };
 
 char** versions_get_children(struct file_system_info *fsinfo, const char *path){
+    
+    (void) fsinfo;
+    
 	return gtreecld(version_tree, path);
 };
 
