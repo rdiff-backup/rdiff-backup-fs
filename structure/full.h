@@ -5,10 +5,10 @@
 #include "../support/gtree.h"
 #include "../support/grdiff.h"
 
-int full_build(char *);
+int full_build(struct file_system_info *, char *);
 
-int full_build_multi(int, char **);
+int full_build_multi(struct file_system_info *, char **);
 
-int full_get_file(char *, char *, char *, struct stats **);
+int full_get_file(struct file_system_info *, char *, char *, char *, struct stats **);
 
-char** full_get_children(char *, char *, char *);
+char** full_get_children(struct file_system_info *, char *, char *, char *);

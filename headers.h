@@ -48,4 +48,9 @@
 #define ARCHFS_DIR_FORMAT "%4d-%02d-%02dT%02d:%02d:%02d"
 #define ARCHFS_DIR_FORMAT_LENGTH "XXXX-XX-XXTXX:XX:XX"
 
+struct file_system_info {
+	int repo_count;
+	int *rev_count;
+};
+
 #endif

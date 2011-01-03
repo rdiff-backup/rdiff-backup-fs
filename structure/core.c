@@ -1,9 +1,9 @@
 #include "core.h"
 
-int (*struct_build)(char *repo) = NULL;
+int (*struct_build)(struct file_system_info *, char *repo) = NULL;
 
-int (*struct_build_multi)(int count, char **repos) = NULL;
+int (*struct_build_multi)(struct file_system_info *,  char **repos) = NULL;
 
-int (*struct_get_file)(char *repo, char *revision, char *internal, struct stats **stats) = NULL;
+int (*struct_get_file)(struct file_system_info *, char *repo, char *revision, char *internal, struct stats **stats) = NULL;
 
-char** (*struct_get_children)(char *repo, char *revision, char *internal) = NULL;
+char** (*struct_get_children)(struct file_system_info *, char *repo, char *revision, char *internal) = NULL;

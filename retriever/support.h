@@ -16,7 +16,7 @@ extern pthread_mutex_t **file_mutex;
 
 int retrieve_common(struct stats *, int);
 
-int repo_number(struct stats *);
+int repo_number(struct file_system_info *, struct stats *);
 
 int retrieve_rdiff(char *, char *, char *);
 

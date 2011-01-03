@@ -10,12 +10,12 @@
 #include "../support/grdiff.h"
 #include "../structure/core.h"
 
-int versions_init(char *);
+int versions_init(struct file_system_info *fsinfo, char *);
 
-int versions_init_multi(int, char **);
+int versions_init_multi(struct file_system_info *fsinfo, char **);
 
-int versions_get_file(const char *path, struct stats **);
+int versions_get_file(struct file_system_info *fsinfo, const char *path, struct stats **);
 
-char** versions_get_children(const char *path);
+char** versions_get_children(struct file_system_info *fsinfo, const char *path);
 
 #endif

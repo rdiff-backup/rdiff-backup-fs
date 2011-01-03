@@ -19,7 +19,7 @@ int cache_delete();
 
 // public:
 
-int retrieve_limit(struct stats *stats){
+int retrieve_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 
@@ -27,13 +27,13 @@ int retrieve_limit(struct stats *stats){
 	printf("[Function: retrieve_limit] Retrieving file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
 #endif
-	if ((repo = repo_number(stats)) == -1)
+	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __retrieve_limit(stats, repo);
 
 };
 
-int release_limit(struct stats *stats){
+int release_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 
@@ -41,7 +41,7 @@ int release_limit(struct stats *stats){
 	printf("[Function: retrieve_limit] Releasing file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
 #endif
-	if ((repo == repo_number(stats)) == -1)
+	if ((repo == repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_limit(stats, repo);
 		
@@ -148,10 +148,10 @@ int cache_add(struct stats *stats){
 	
 };
 
-int cache_delete(){
+int cache_delete(struct file_system_info *fsinfo){
 
 	struct cache *temp = NULL;
-	int repo = repo_number(cache->stats);
+	int repo = repo_number(fsinfo, cache->stats);
 	
 	if (cache == NULL)
 		return -1;

@@ -3,10 +3,6 @@
 #include "parse.h"
 #include "initialize.h"
 
-// number of repositories
-int repo_count = 0;
-// number of revisions in every repository
-int *rev_count = NULL;
 // paths to repositories
 char **repos = NULL;
 // names of repositories
@@ -21,13 +17,16 @@ int layout = LAYOUT_ALL;
 int debug = 0;
 
 struct fuse_operations operations;
+struct file_system_info *file_system_info;
 
 int run(int argc, char **argv){
 
     char *args[3];
+    
+    file_system_info = single(struct file_system_info);
 
-    parse(argc, argv);
-    initialize();
+    parse(file_system_info, argc, argv);
+    initialize(file_system_info);
     
     args[0] = argv[0];
     args[1] = mount;

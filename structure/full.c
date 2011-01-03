@@ -16,10 +16,10 @@ tree_t structure_tree = NULL;
 
 // public:
 
-int full_build(char *repo){
+int full_build(struct file_system_info *fsinfo, char *repo){
 
 #define full_build_finish(value) {					\
-            gstrlistdel(revs, rev_count[0]);            \
+            gstrlistdel(revs, fsinfo->rev_count[0]);            \
 			return value;							\
 		}
 
@@ -27,23 +27,23 @@ int full_build(char *repo){
     int i = 0;
 	
     gtreenew(&structure_tree);
-	if ((rev_count = single(int)) == NULL)
+	if ((fsinfo->rev_count = single(int)) == NULL)
 		full_build_finish(-1);
-    if ((rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
+    if ((fsinfo->rev_count[0] = gather_revisions(repo, data_dir, &revs)) == -1)
         full_build_finish(-1);
-    for (i = rev_count[0] - 1; i >= 0; i--){
+    for (i = fsinfo->rev_count[0] - 1; i >= 0; i--){
         add_snapshot(revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_all(NULL, revs[i], rev_count[0] - i - 1);
+		read_revision_all(NULL, revs[i], fsinfo->rev_count[0] - i - 1);
 	};
 	full_build_finish(0);
 
 };
 
-int full_build_multi(int count, char **repos){
+int full_build_multi(struct file_system_info *fsinfo, char **repos){
 
 #define full_build_multi_free_revs											\
             if (revs != NULL){												\
-                gstrlistdel(revs, rev_count[i])                             \
+                gstrlistdel(revs, fsinfo->rev_count[i])                             \
 				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
@@ -62,25 +62,25 @@ int full_build_multi(int count, char **repos){
 
     //printf("[Function: init_multi] Received %d repos;\n", count);
 	gtreenew(&structure_tree);
-	if ((rev_count = calloc(count, sizeof(int))) == NULL)
+	if ((fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int))) == NULL)
 		full_build_multi_finish(-1);
-    for (i = 0; i < count; i++){
-        if ((rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
+    for (i = 0; i < fsinfo->repo_count; i++){
+        if ((fsinfo->rev_count[i] = gather_revisions(repos[i], data_dir, &revs)) == -1)
             continue;
 		if (add_repo_dir(repo_names[i], structure_tree) == -1){
 			full_build_multi_free_revs;
 			continue;
 		};
-		for (j = rev_count[i] - 1; j >= 0; j--){
+		for (j = fsinfo->rev_count[i] - 1; j >= 0; j--){
             add_snapshot(revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_all(repo_names[i], revs[j], rev_count[i] - j - 1);
+		    read_revision_all(repo_names[i], revs[j], fsinfo->rev_count[i] - j - 1);
 		};
 		full_build_multi_free_revs;
     };
     return 0;
 };
 
-int full_get_file(char *repo, char *revision, char *internal, stats_t **stats){
+int full_get_file(struct file_system_info *fsinfo, char *repo, char *revision, char *internal, stats_t **stats){
 	
 	char *path = NULL;
 	int result = 0;
@@ -92,7 +92,7 @@ int full_get_file(char *repo, char *revision, char *internal, stats_t **stats){
 	
 };
 
-char** full_get_children(char *repo, char *revision, char *internal){
+char** full_get_children(struct file_system_info *fsinfo, char *repo, char *revision, char *internal){
 
 	char *path = NULL;
 	char **result = NULL;

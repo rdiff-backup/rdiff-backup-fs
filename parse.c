@@ -48,25 +48,25 @@ int set_mount(int argc, char **argv, int *index){
     
 };
 
-int set_repos(int argc, char **argv, int *index){
+int set_repos(struct file_system_info *fsinfo, int argc, char **argv, int *index){
 
     int i = 0;
 
     if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
 		return -1;
-    if (repo_count != 0)
+    if (fsinfo->repo_count != 0)
 		return -1;
 	
     for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++)
-		repo_count++;
-    repos = calloc(repo_count, sizeof(char *));
-    rev_count = calloc(repo_count, sizeof(int));
-    repo_count = 0;
+		fsinfo->repo_count++;
+    repos = calloc(fsinfo->repo_count, sizeof(char *));
+    fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int));
+    fsinfo->repo_count = 0;
     for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++){
-		gstrcpy(&repos[repo_count], argv[i]);
-		repo_count++;
+		gstrcpy(&repos[fsinfo->repo_count], argv[i]);
+		fsinfo->repo_count++;
     };
-    *index += repo_count;
+    *index += fsinfo->repo_count;
 
     return 0;
     
@@ -107,14 +107,14 @@ int set_directory(int argc, char **argv, int *index){
 	
 };
 
-void parse_option(int argc, char **argv, int *index){
+void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *index){
 
     if ((strcmp(argv[(*index)], OPT_MOUNT) == 0) || (strcmp(argv[(*index)], OPT_MOUNT_FULL) == 0)){
 		if (set_mount(argc, argv, index) != 0)
 			fail(ERR_PARAMETRES);
 	}
     else if ((strcmp(argv[*index], OPT_REPOS) == 0) || (strcmp(argv[*index], OPT_REPOS_FULL) == 0)){
-		if (set_repos(argc, argv, index) != 0)
+		if (set_repos(fsinfo, argc, argv, index) != 0)
 			fail(ERR_PARAMETRES);
     }
     else if ((strcmp(argv[*index], OPT_FULL) == 0) || (strcmp(argv[*index], OPT_FULL_FULL) == 0))
@@ -142,18 +142,18 @@ void parse_option(int argc, char **argv, int *index){
 
 };
 
-void parse_repo(int argc, char** argv, int *index){
+void parse_repo(struct file_system_info *fsinfo, int argc, char** argv, int *index){
 
     int i = 0;
 
-    if (repo_count != 0)
+    if (fsinfo->repo_count != 0)
 		fail(ERR_PARAMETRES);
     for (i = *index; (i < argc) && (!isOption(argv[i])); i++){ };
-    repo_count = i - *index;
-    repos = calloc(repo_count, sizeof(char *));
+    fsinfo->repo_count = i - *index;
+    repos = calloc(fsinfo->repo_count, sizeof(char *));
     for (i = *index; (i < argc) && (!isOption(argv[i])); i++)
 		gstrcpy(&repos[i - *index], argv[i]);
-    *index += repo_count - 1;
+    *index += fsinfo->repo_count - 1;
     
 };
 
@@ -169,7 +169,7 @@ void parse_mount(char *arg){
 
 // public functions
 
-int parse(int argc, char **argv){
+int parse(struct file_system_info *fsinfo, int argc, char **argv){
         
     int i = 0;
         
@@ -181,15 +181,15 @@ int parse(int argc, char **argv){
 		fail(ERR_PARAMETRES);
     for (i = 1; i < argc; i++){
 		if (isOption(argv[i]) == 1)
-	    	parse_option(argc, argv, &i);
+	    	parse_option(fsinfo, argc, argv, &i);
 		else if (mount == NULL)
 	    	parse_mount(argv[i]);
 		else
-	    	parse_repo(argc, argv, &i);
+	    	parse_repo(fsinfo, argc, argv, &i);
 	};
     if (mount == NULL)
 		fail(ERR_NO_MOUNT);
-    if (repo_count == 0)
+    if (fsinfo->repo_count == 0)
 		fail(ERR_NO_REPO);
 	if ((layout == LAYOUT_LAST) && (structure != STRUCTURE_FULL))
 		fail(ERR_FULL_ONLY);

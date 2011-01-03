@@ -1,9 +1,9 @@
 #include "core.h"
 
-int (*init)(char *repo) = NULL;
+int (*init)(struct file_system_info *fsinfo, char *repo) = NULL;
 
-int (*init_multi)(int count, char **repos) = NULL;
+int (*init_multi)(struct file_system_info *fsinfo,  char **repos) = NULL;
 
-int (*get_file)(const char *path, struct stats **stats) = NULL;
+int (*get_file)(struct file_system_info *fsinfo, const char *path, struct stats **stats) = NULL;
 
-char** (*get_children)(const char *path) = NULL;
+char** (*get_children)(struct file_system_info *fsinfo, const char *path) = NULL;

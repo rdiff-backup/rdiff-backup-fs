@@ -4,12 +4,12 @@
 #include "../headers.h"
 #include "../support/gstats.h"
 
-extern int (*init)(char *repo);
+extern int (*init)(struct file_system_info *, char *repo);
 
-extern int (*init_multi)(int count, char **repos);
+extern int (*init_multi)(struct file_system_info *, char **repos);
 
-extern int (*get_file)(const char *path, struct stats **stats);
+extern int (*get_file)(struct file_system_info *, const char *path, struct stats **stats);
 
-extern char** (*get_children)(const char *path);
+extern char** (*get_children)(struct file_system_info *, const char *path);
 
 #endif

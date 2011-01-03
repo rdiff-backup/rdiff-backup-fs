@@ -25,15 +25,15 @@ void check_repo(int index){
 	
 };
 
-void check_repos(){
+void check_repos(struct file_system_info *fsinfo){
     
     int i = 0;
     
-    repo_names = calloc(repo_count, sizeof(char *));
-    for (i = 0; i < repo_count; i++)
+    repo_names = calloc(fsinfo->repo_count, sizeof(char *));
+    for (i = 0; i < fsinfo->repo_count; i++)
 		if (gpthcld(&repo_names[i], repos[i]) == -1)	
 			fail(-1);
-    for (i = 0; i < repo_count; i++)
+    for (i = 0; i < fsinfo->repo_count; i++)
 		check_repo(i);
     
 };
@@ -115,28 +115,28 @@ void create_tmp_dir(char **tmp_dir, char **tmp_file){
 
 // public:
 
-void initialize(){
+void initialize(struct file_system_info *fsinfo){
 
     check_mount();
-    check_repos();
+    check_repos(fsinfo);
    	create_tmp_dir(&tmp_dir, &data_dir);
 
     data_structure_setup();
 	layout_setup();
     fuse_operations_setup();
 
-    if (repo_count == 1){
-		if (init(repos[0]) == -1)
+    if (fsinfo->repo_count == 1){
+		if (init(fsinfo, repos[0]) == -1)
             fail(ERR_REPO_READ);
     }
-    else if (repo_count > 1)
-		init_multi(repo_count, repos);
+    else if (fsinfo->repo_count > 1)
+		init_multi(fsinfo, repos);
     else
 		fail(ERR_NO_REPO);
 
     if (cache_limit == 0)
-   		retriever_init_simple(repo_count, rev_count);
+   		retriever_init_simple(fsinfo);
    	else
-   		retriever_init_limit(repo_count, rev_count);
+   		retriever_init_limit(fsinfo);
    	
 };

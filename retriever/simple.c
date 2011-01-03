@@ -6,27 +6,27 @@ int __release_simple(struct stats *, int);
 
 // public:
 
-int retrieve_simple(struct stats *stats){
+int retrieve_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
 #ifdef DEBUG
 	printf("[Function: retrieve_simple] Retrieving file %s;\n", stats->path);
 #endif
-	if ((repo = repo_number(stats)) == -1)
+	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __retrieve_simple(stats, repo);
 		
 };
 
-int release_simple(struct stats *stats){
+int release_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
 #ifdef DEBUG
 	printf("[Function: release_simple] Retrieving file %s;\n", stats->path);
 #endif
-	if ((repo = repo_number(stats)) == -1)
+	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_simple(stats, repo);
 		

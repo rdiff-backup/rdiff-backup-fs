@@ -16,7 +16,7 @@ struct cache {
 	struct cache *next;
 };
 
-int retrieve_limit(struct stats *);
-int release_limit(struct stats *);
+int retrieve_limit(struct file_system_info *fsinfo, struct stats *);
+int release_limit(struct file_system_info *fsinfo, struct stats *);
 
 #endif

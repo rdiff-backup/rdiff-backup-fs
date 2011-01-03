@@ -1,7 +1,5 @@
 #include <fuse.h>
 
-extern int repo_count;
-extern int *rev_count;
 extern char **repos;
 extern char **repo_names;
 
@@ -12,6 +10,7 @@ extern char *tmp_dir;
 extern char *data_dir;
 
 extern struct fuse_operations operations;
+extern struct file_system_info *file_system_info;
 
 extern int structure;
 extern int layout;

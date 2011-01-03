@@ -10,7 +10,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
 #ifdef DEBUG
 	printf("[FUSE: getattr] Attributes for path %s;\n", path);
 #endif
-    if (get_file(path, &stats) != 0) {
+    if (get_file(file_system_info, path, &stats) != 0) {
 #ifdef DEBUG
         printf("[FUSE: getattr] Failed to retrieve stats;\n");
 #endif
@@ -43,13 +43,13 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 #ifdef DEBUG
     printf("[FUSE: readdir] Received path %s;\n", path);
 #endif
-    if (get_file(path, &stats) != 0)
+    if (get_file(file_system_info, path, &stats) != 0)
 		return -ENOENT;
 	
     filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
     
-    char **content = get_children(path);
+    char **content = get_children(file_system_info, path);
     if (content == NULL){
 #ifdef DEBUG
     	printf("[FUSE: readdir] ALERT: Error occured while looking for children;");
@@ -76,7 +76,7 @@ int revs_readlink(const char *path, char *buf, size_t size){
 	
 	struct stats *stats;
 	
-	if ((get_file(path, &stats) != 0) || (stats->type != S_IFLNK))
+	if ((get_file(file_system_info, path, &stats) != 0) || (stats->type != S_IFLNK))
 		return -1;
 	strcpy(buf, stats->link);		
 	return 0;
@@ -89,7 +89,7 @@ int revs_open(const char *path, struct fuse_file_info *fi){
 
     struct stats *stats;
     
-    get_file(path, &stats);
+    get_file(file_system_info, path, &stats);
     if (stats->type & S_IFDIR)
 		return -1;
 	if (retrieve(stats) != 0)
@@ -115,7 +115,7 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 #ifdef DEBUG
     printf("[FUSE: Read] Reading file %s;\n", path);
 #endif
-    get_file(path, &stats);
+    get_file(file_system_info, path, &stats);
     if ((stats == NULL) || (stats->shared == 0))
 		return -1;
     if ((descriptor = open(stats->tmp_path, O_RDONLY)) == -1)
@@ -137,7 +137,7 @@ int revs_release(const char *path, struct fuse_file_info *fi){
 
     struct stats *stats = NULL;
     
-    get_file(path, &stats);
+    get_file(file_system_info, path, &stats);
     if (stats == NULL)
 		return -1;
     return release(stats);

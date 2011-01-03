@@ -12,12 +12,12 @@
 
 extern int necessary_limit;
 
-int necessary_build(char *);
+int necessary_build(struct file_system_info *, char *);
 
-int necessary_build_multi(int, char **);
+int necessary_build_multi(struct file_system_info *, char **);
 
-int necessary_get_file(char *, char *, char *, struct stats **);
+int necessary_get_file(struct file_system_info *, char *, char *, char *, struct stats **);
 				  
-char** necessary_get_children(char *, char *, char *);
+char** necessary_get_children(struct file_system_info *, char *, char *, char *);
 
 #endif
