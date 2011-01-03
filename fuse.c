@@ -7,13 +7,9 @@ int revs_getattr(const char *path, struct stat *stbuf){
     struct stats *stats;
     memset(stbuf, 0, sizeof(struct stat));
 
-#ifdef DEBUG
 	printf("[FUSE: getattr] Attributes for path %s;\n", path);
-#endif
     if (get_file(file_system_info, path, &stats) != 0) {
-#ifdef DEBUG
         printf("[FUSE: getattr] Failed to retrieve stats;\n");
-#endif
         return -1;
     }
     stbuf->st_size = stats->size;
@@ -25,9 +21,8 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_mtime = stats->ctime;
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
-#ifdef DEBUG
-	printf("[FUSE: getattr] Retrieved attributes");
-#endif    
+	
+    printf("[FUSE: getattr] Retrieved attributes");
     return 0;
     
 };

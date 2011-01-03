@@ -27,7 +27,7 @@ static struct node * get_revision_tree(struct file_system_info *, char *, char *
 
 // static void free_revision_tree(char *repo, char *revision);
 
-static int build_revision_tree(struct file_system_info *fsinfo, revision_t *, int, int);
+static int build_revision_tree(struct file_system_info *fsinfo, char *, revision_t *, int, int);
 
 static int find_snapshot(revision_t *, int, int);
 
@@ -35,7 +35,7 @@ static char * build_snapshot(revision_t *, int, int);
 
 static int free_cache();
 
-int read_revision_necessary(char *path, tree_t, int);
+int read_revision_necessary(char *, char *, tree_t, int);
 
 /*
  * retrieves index of a repo from name
@@ -161,29 +161,32 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     revision_t *revisions = NULL;
     int count = 0;
     int i = 0, j = 0;
+    char *prefix = NULL;
 
 #ifdef DEBUG
-    printf("[get_revision_tree: getting revision tree for %s/%s/\n", repo, rev);
+    printf("get_revision_tree: getting revision tree for %s/%s/\n", repo, rev);
 #endif    
     if (!repo) {
         revisions = repositories[0].revisions;
         count = fsinfo->rev_count[0];
+        gmstrcpy(&prefix, "/", rev, 0);
     }
     else {
         if ((i = repo_index(fsinfo, repo)) == -1)
             return NULL;
         revisions = repositories[i].revisions;
         count = fsinfo->rev_count[i];            
+        gmstrcpy(&prefix, "/", repo, "/", rev, 0);
     }        
     for (j = 0; j < count; j++)
         if (strcmp(rev, revisions[j].name) == 0)
             break;
     if (j == count) // should never happen
         return NULL;
-    if (!revisions[j].tree && build_revision_tree(fsinfo, revisions, fsinfo->rev_count[i], j))
+    if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, fsinfo->rev_count[i], j))
         return NULL;
 #ifdef DEBUG
-    printf("[get_revision_tree: retrieved revision tree\n");
+    printf("get_revision_tree: retrieved revision tree\n");
 #endif            
     return revisions[j].tree;
 }
@@ -219,7 +222,7 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     free(revisions[j].tree);
 };*/
 
-int build_revision_tree(struct file_system_info *fsinfo, revision_t *revisions, int count, int rev_index){
+int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_t *revisions, int count, int rev_index){
     
     #define build_revision_tree_finish(value) {             \
         if (current_snapshot){                              \
@@ -244,7 +247,7 @@ int build_revision_tree(struct file_system_info *fsinfo, revision_t *revisions, 
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
-    if (read_revision_necessary(current_snapshot, revisions[rev_index].tree, fsinfo->rev_count[0] - rev_index - 1))
+    if (read_revision_necessary(current_snapshot, prefix, revisions[rev_index].tree, fsinfo->rev_count[0] - rev_index - 1))
         build_revision_tree_finish(-1);
 #ifdef DEBUG
     printf("[build_revision_tree: done building");
@@ -276,7 +279,7 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
 };
 
 
-int read_revision_necessary(char *snapshot, tree_t tree, int revision){
+int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revision){
 
     #define read_snapshot_finish(value){            \
         if (file)                                   \
@@ -292,12 +295,21 @@ int read_revision_necessary(char *snapshot, tree_t tree, int revision){
     
     if ((file = fopen(snapshot, "r")) == NULL)
         read_snapshot_finish(-1);
+    memset(&stats, 0, sizeof(stats));
     while (read_stats(&stats, file) == 0){
         stats.path = stats.internal;
         stats.rev = revision;
         if (gpthcldptr(&stats.name, stats.path) == -1)
             read_snapshot_finish(-1);
         update_tree(tree, &stats);
+        // hack: update tree doesn't work right and should be passed the path, where
+        // stats should be put
+        stats.path = 0;
+        gmstrcpy(&stats.path, prefix, "/", stats.internal, 0);
+        gstrdel(stats.internal);
+        stats.internal = stats.path + strlen(prefix) + strlen("/");        
+        stats.path = stats.internal;
+        memset(&stats, 0, sizeof(stats));
     }
 #ifdef DEBUG
     printf("[grdiff.read_snapshot: done reading snapshot\n");
