@@ -92,7 +92,7 @@ int revs_open(const char *path, struct fuse_file_info *fi){
     get_file(file_system_info, path, &stats);
     if (stats->type & S_IFDIR)
 		return -1;
-	if (retrieve(stats) != 0)
+	if (retrieve(file_system_info, stats) != 0)
 		return -1;	    
     stats->atime = time(0);
     return 0;
@@ -140,7 +140,7 @@ int revs_release(const char *path, struct fuse_file_info *fi){
     get_file(file_system_info, path, &stats);
     if (stats == NULL)
 		return -1;
-    return release(stats);
+    return release(file_system_info, stats);
 
 };
 

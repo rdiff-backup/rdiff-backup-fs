@@ -5,8 +5,8 @@ pthread_mutex_t **file_mutex = NULL;
 int cache_limit = 0;
 
 int retriever_init_common(struct file_system_info *);
-int (*retrieve)(struct stats *stats);
-int (*release)(struct stats *stats);
+int (*retrieve)(struct file_system_info *fsinfo, stats_t *stats);
+int (*release)(struct file_system_info *fsinfo, stats_t *stats);
 
 int retriever_init_simple(struct file_system_info *fsinfo){
 

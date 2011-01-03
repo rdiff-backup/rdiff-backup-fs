@@ -17,7 +17,7 @@ extern int cache_limit;
 int retriever_init_simple(struct file_system_info *);
 int retriever_init_limit(struct file_system_info *);
 
-extern int (*retrieve)(struct stats *stats);
-extern int (*release)(struct stats *stats);
+extern int (*retrieve)(struct file_system_info *, stats_t *);
+extern int (*release)(struct file_system_info *, stats_t *);
 
 #endif

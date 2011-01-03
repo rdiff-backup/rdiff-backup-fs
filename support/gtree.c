@@ -112,10 +112,8 @@ int gtreedel(struct node *tree, const char *path){
 	struct node *parent = NULL;
 	struct node *node = NULL;
 	int i = 0;
-	
-#ifdef TREE_DEBUG
-	printf("[Function: tree_delete] Deleting path %s;\n", path);
-#endif
+
+	// printf("[Function: tree_delete] Deleting path %s;\n", path);
 	if ((node = find_node(tree, path)) == NULL)
 		return -1;
 	if ((parent = find_parent(tree, path)) == NULL)
