@@ -119,10 +119,8 @@ int gtreedel(struct node *tree, const char *path){
 	if ((parent = find_parent(tree, path)) == NULL)
 		return -1;
 	for (i = 0; (i < parent->size) && (parent->children[i] != node); i++);
-	while (i < parent->size - 1){
+	for (;i < parent->size - 1; i++)
 		parent->children[i] = parent->children[i + 1];
-		i++;
-	};
 	parent->size--;
 	return delete_node(node);
 
