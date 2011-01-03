@@ -89,7 +89,7 @@ int snapshot_copy(char *, char *, char *);
  */
 int snapshot_append(char *, char *, char *);
 
-int update_tree(tree_t, stats_t *);
+int update_tree(tree_t, stats_t *, char *);
 
 /*
  * finds and unzips revision from the given repository

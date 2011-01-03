@@ -116,7 +116,7 @@ int read_layout_versions(char *revision, char *prefix){
 		stats.ctime = time(0);
 		stats.atime = time(0);
 		stats.size = DIR_SIZE;
-		gtreeadd(version_tree, &stats);
+		gtreeadd(version_tree, &stats, stats.path);
 	};
 	read_layout_versions_finish(0);
 
@@ -159,7 +159,7 @@ void read_revision_versions(char *revision, int rev_index, char *prefix){
 		else if ((gtreeget(version_tree, file_path, &temp) == 0) && (stats.type == S_IFREG)){
 			gpthcldptr(&stats.name, stats.path);
 			stats.rev = rev_index;
-			gtreeadd(version_tree, &stats);
+			gtreeadd(version_tree, &stats, stats.path);
 		};
 	};
 	read_revision_versions_finish;

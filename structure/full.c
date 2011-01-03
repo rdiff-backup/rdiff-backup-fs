@@ -127,7 +127,7 @@ void read_revision_all(char *repo, char *rev, int rev_index){
     add_revs_dir(rev, repo);
 
     while (read_stats_all(stats, rev_dir, rev_index, file) == 0)
-        update_tree(structure_tree, stats);
+        update_tree(structure_tree, stats, stats->path);
 
     fclose(file);
     gmstrcpy(&file_path, data_dir, "/", rev, 0);
@@ -160,22 +160,23 @@ int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file){
 
 int add_revs_dir(char *revision, char *repository){
     
-    struct stats *stats = calloc(1, sizeof(struct stats));
+    struct stats stats;
     
+    memset(&stats, 0, sizeof(stats));
     if (revision == NULL)
 		return -1;
     if (repository == NULL){
-		gmstrcpy(&stats->path, "/", get_revs_dir(revision), NULL);
+		gmstrcpy(&stats.path, "/", get_revs_dir(revision), NULL);
 		// printf("[Function: add_revs_dir] Adding revision %s to the data structure;\n", stats->path);
 		// stats->name = stats->path + strlen("/")'
-		stats->name = stats->path + 1;
+		stats.name = stats.path + 1;
     }
     else{
-		gmstrcpy(&stats->path, "/", repository, "/", get_revs_dir(revision), NULL);
+		gmstrcpy(&stats.path, "/", repository, "/", get_revs_dir(revision), NULL);
 		// stats->name = stats->path + strlen("/") + strlen(repository) + strlen("/");
-		stats->name = stats->path + 1 + strlen(repository) + 1;
+		stats.name = stats.path + 1 + strlen(repository) + 1;
     };
-	set_directory_stats(stats);
-    return gtreeadd(structure_tree, stats);
+	set_directory_stats(&stats);
+    return gtreeadd(structure_tree, &stats, stats.path);
     
 };

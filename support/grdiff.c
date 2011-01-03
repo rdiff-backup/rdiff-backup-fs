@@ -15,11 +15,11 @@ int unzip(char *, char *);
 
 // public:
 
-int update_tree(tree_t tree, stats_t *stats){
+int update_tree(tree_t tree, stats_t *stats, char *path){
     if (stats->type == -1)
-        return gtreedel(tree, stats->path);
+        return gtreedel(tree, path);
     else
-        return gtreeadd(tree, stats);
+        return gtreeadd(tree, stats, path);
 }
 
 int unzip_revs(char *path, char *dest){
@@ -333,16 +333,17 @@ int snapshot_append(char *revision, char *target, char *directory){
 
 int add_repo_dir(char *repository, tree_t tree){
 
-	struct stats *stats = single(struct stats);
+	struct stats stats;
 
+    memset(&stats, 0, sizeof(stats));
 	// printf("[Function: add_repo_dir] Adding repository %s;\n", repository);
-	if (gmstrcpy(&stats->path, "/", repository, NULL))
+	if (gmstrcpy(&stats.path, "/", repository, NULL))
         return -1;
-	stats->name = stats->path + 1;
-	stats->internal = NULL;
-	stats->rev = -1;
-	set_directory_stats(stats);
-	gtreeadd(tree, stats);
+	stats.name = stats.path + 1;
+	stats.internal = NULL;
+	stats.rev = -1;
+	set_directory_stats(&stats);
+	gtreeadd(tree, &stats, stats.path);
 	return 0;
 
 };

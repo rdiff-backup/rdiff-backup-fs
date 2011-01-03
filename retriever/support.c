@@ -51,6 +51,7 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 #endif
 	if (fsinfo->repo_count == 1)
 		repo_number_finish(0);
+    printf("%s\n", stats->path);
 	if ((repo = gpthprt(stats->path, 0)) == NULL)
 		repo_number_finish(-1);
 	for (i = 0; (i < fsinfo->repo_count) && (strcmp(repo, fsinfo->repo_names[i]) != 0); i++);

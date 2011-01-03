@@ -12,10 +12,8 @@ int retrieve_simple(struct file_system_info *fsinfo, struct stats *stats){
 #ifdef DEBUG
 	printf("[Function: retrieve_simple] Retrieving file %s;\n", stats->path);
 #endif
-    pass(1);
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
-    pass(2);
     return retrieve_common(fsinfo, stats, repo);
 		
 };

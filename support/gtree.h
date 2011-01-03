@@ -36,10 +36,11 @@ int gtreenew(struct node **);
  * 
  * @1: pointer to the directory tree;
  * @2: pointer to the information about the file;
+ * @3: path used to position element in the tree
  * 
  * returns: 0 on sucess, -1 otherwise
  */
-int gtreeadd(tree_t, struct stats *);
+int gtreeadd(tree_t, struct stats *, char *);
 
 /*
  * finds and returns array of names of all children of a given

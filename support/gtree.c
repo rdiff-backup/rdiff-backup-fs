@@ -42,11 +42,11 @@ int gtreenew(tree_t *tree){
 	
 };
 
-int gtreeadd(struct node *tree, struct stats *stats){
+int gtreeadd(struct node *tree, struct stats *stats, char *path){
 	
     struct node *node = tree, *next = NULL;
     char **parts = NULL;
-    int count = gpthdiv(stats->path, &parts);
+    int count = gpthdiv(path, &parts);
     int i = 0, j = 0;
 
 #ifdef TREE_DEBUG

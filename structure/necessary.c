@@ -297,18 +297,13 @@ int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revis
         read_snapshot_finish(-1);
     memset(&stats, 0, sizeof(stats));
     while (read_stats(&stats, file) == 0){
-        stats.path = stats.internal;
-        stats.rev = revision;
-        if (gpthcldptr(&stats.name, stats.path) == -1)
-            read_snapshot_finish(-1);
-        update_tree(tree, &stats);
-        // hack: update tree doesn't work right and should be passed the path, where
-        // stats should be put
-        stats.path = 0;
         gmstrcpy(&stats.path, prefix, "/", stats.internal, 0);
         gstrdel(stats.internal);
         stats.internal = stats.path + strlen(prefix) + strlen("/");        
-        stats.path = stats.internal;
+        stats.rev = revision;
+        if (gpthcldptr(&stats.name, stats.path) == -1)
+            read_snapshot_finish(-1);
+        update_tree(tree, &stats, stats.internal);
         memset(&stats, 0, sizeof(stats));
     }
 #ifdef DEBUG
