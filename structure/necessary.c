@@ -93,9 +93,9 @@ int necessary_build_multi(struct file_system_info *fsinfo){
 
 int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revision, char *internal, 
 					   stats_t **stats){
-#ifdef DEBUG
-    printf("[necessary_get_file: checking file %s/%s/%s\n", repo, revision, internal);
-#endif
+
+    // printf("[necessary_get_file: checking file %s/%s/%s\n", repo, revision, internal);
+
     if (revision == NULL && (repo == NULL || repo_exists(fsinfo, repo))){
         *stats = &root;
         return 0;

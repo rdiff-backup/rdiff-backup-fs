@@ -154,9 +154,7 @@ struct node * find_node(struct node *root, const char *path){
 	struct node *node = root, *next = NULL;
 	int i = 0, j = 0;
 
-#ifdef TREE_DEBUG
-	printf("[Function: find_node] Finding node with path %s;\n", path);
-#endif
+	// printf("[Function: find_node] Finding node with path %s;\n", path);
 	for (i = 0; i < count; i++){
 		for (j = 0; (j < node->size) && (next == NULL); j++)
 			if (strcmp(node->children[j]->name, parts[i]) == 0)

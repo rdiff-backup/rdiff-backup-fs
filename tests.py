@@ -24,7 +24,7 @@ class RdiffBackupTestMeta(type):
                                  if name.startswith('fixture')]
         for name, attr in fixtures:
             for option, sufix in (('-f', 'full'), ('-n', 'necessary')):
-                test = Meta.build_test(attr, option, Meta.verify)
+                test = Meta.build_test(attr, option, Meta.verify_revisions)
                 classdict['test' + name[len('fixture'):] + '_' + sufix] = test
             test = Meta.build_test(attr, '-l', Meta.verify_last)
             classdict['test' + name[len('fixture'):] + '_last'] = test
@@ -43,6 +43,8 @@ class RdiffBackupTestMeta(type):
             Meta.create_mount_directory()
             for repo, data in fixture.items():
                 for revision in data:
+                    if isinstance(revision, tuple):
+                        revision, _ = revision
                     for path, content in revision.items():
                         Meta.create_dirs(path)
                         file = open(join(Meta.TEST_DATA_DIRECTORY, path), 'w')
@@ -53,7 +55,7 @@ class RdiffBackupTestMeta(type):
                     remove_directory(Meta.TEST_DATA_DIRECTORY)
                     sleep(1)
             Meta.run_fs(fixture.keys(), option)
-            verify_method(self, fixture)
+            Meta.verify(self, fixture, verify_method)
         return test
         
     @classmethod
@@ -68,21 +70,25 @@ class RdiffBackupTestMeta(type):
                 pass
         
     @classmethod
-    def verify(Meta, self, fixture):
+    def verify(Meta, self, fixture, verify_method):
         self.assert_(len(fixture) > 0)
         if len(fixture) == 1: # single repo
-            Meta.verify_revisions(self, Meta.TEST_MOUNT_DIRECTORY, 
+            verify_method(self, Meta.TEST_MOUNT_DIRECTORY, 
                                   fixture.values()[0])
         else:
             for name, data in fixture.items():
                 repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
-                Meta.verify_revisions(self, repo_path, data)
+                verify_method(self, repo_path, data)
                     
     @classmethod
     def verify_revisions(Meta, self, repo_path, data):
         revisions = sorted(listdir(repo_path))
         previous = {}
         for files, directory in zip(data, revisions):
+            if isinstance(files, tuple):
+                files, forbidden = files
+            else:
+                forbidden = ()
             for path, content in files.items():
                 full_path = join(repo_path, directory, path)
                 file = open(full_path)
@@ -92,22 +98,20 @@ class RdiffBackupTestMeta(type):
             previous = set(previous.keys()) - set(files.keys())
             for path in previous:
                 full_path = join(repo_path, directory, path)
-                self.assertRaises(OSError, stat, path)
+                self.assertRaises(OSError, stat, full_path)
             previous = files
-        
+            for path in forbidden:
+                full_path = join(repo_path, directory, path)
+                self.assertRaises(OSError, stat, full_path)
+                self.assert_(not exists(full_path))
+
     @classmethod
-    def verify_last(Meta, self, fixture):
-        if len(fixture) == 1:
-            Meta.verify_last_revisions(self, Meta.TEST_MOUNT_DIRECTORY,
-                                       fixture.values()[0])
+    def verify_last(Meta, self, repo_path, data):
+        if isinstance(data[-1], tuple):
+            data, _ = data[-1]
         else:
-            for name, data in fixture.items():
-                repo_path = join(Meta.TEST_MOUNT_DIRECTORY, name)
-                Meta.verify_last_revisions(self, repo_path, data)
-                
-    @classmethod
-    def verify_last_revisions(Meta, self, repo_path, data):
-        for file, content in data[-1].items():
+            data = data[-1]
+        for file, content in data.items():
             path = join(repo_path, file)
             self.assert_(exists(path))
             self.assert_(isdir(path))
@@ -195,11 +199,11 @@ class NestedTestCase(RdiffBackupTestCase):
     
     fixture_adding_files = {
         'nested_backup': [
-            {'file': '1'},
-            {'file': '2', 'dir/file': '2'},
+            ({'file': '1'}, ('dir/file',)),
+            ({'file': '2', 'dir/file': '2'}, ('dir/dir/file',)),
             {'file': '3', 'dir/file': '3', 'dir/dir/file': '3'},
             {'file': '4', 'dir/file': '4', 'dir/dir/file': '4', 
-         '   dir/dir/dir/file': '4'}
+             'dir/dir/dir/file': '4'}
         ]
     }
     
@@ -216,6 +220,15 @@ class MultipleRepoTestCase(RdiffBackupTestCase):
         'second': [
             {'file': 'content'},
             {'file': 'new content'}
+        ]
+    }
+    
+class RegressionTestCase(RdiffBackupTestCase):
+    
+    fixture_simple = {
+        'repo': [
+            ({'file1': '1'}, ('file2',)),
+            {'file1': '2', 'file2': '1'}
         ]
     }
 
