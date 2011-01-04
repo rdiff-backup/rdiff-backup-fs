@@ -97,9 +97,7 @@ int gtreeget(struct node *tree, const char *path, struct stats **stats){
 
 	struct node *node = find_node(tree, path);
 
-#ifdef TREE_DEBUG
-	printf("[Function: tree_get_file] Getting file for %s;\n", path);
-#endif
+	// printf("[Function: tree_get_file] Getting file for %s;\n", path);
 	if (node == NULL)
 		return -1;
 	*stats = node->stats;

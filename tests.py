@@ -223,12 +223,19 @@ class MultipleRepoTestCase(RdiffBackupTestCase):
         ]
     }
     
-class RegressionTestCase(RdiffBackupTestCase):
+class FutureFilesRegressionTestCase(RdiffBackupTestCase):
     
-    fixture_simple = {
+    fixture_flat = {
         'repo': [
             ({'file1': '1'}, ('file2',)),
             {'file1': '2', 'file2': '1'}
+        ]
+    }
+    
+    fixture_nested = {
+        'repo': [
+            ({'file': '1'}, ('dir/file')),
+            {'file': '1', 'dir/file': '1'}
         ]
     }
 
