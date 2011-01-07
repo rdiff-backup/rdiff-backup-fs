@@ -22,7 +22,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
 	
-    printf("[FUSE: getattr] Retrieved attributes");
+    printf("[FUSE: getattr] Retrieved attributes\n");
     return 0;
     
 };

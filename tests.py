@@ -234,7 +234,7 @@ class FutureFilesRegressionTestCase(RdiffBackupTestCase):
     
     fixture_nested = {
         'repo': [
-            ({'file': '1'}, ('dir/file')),
+            ({'file': '1'}, ('dir', 'dir/file')),
             {'file': '1', 'dir/file': '1'}
         ]
     }

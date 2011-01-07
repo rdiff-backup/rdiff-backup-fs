@@ -95,9 +95,9 @@ char** gtreecld(struct node *tree, const char *path){
 
 int gtreeget(struct node *tree, const char *path, struct stats **stats){
 
-	struct node *node = find_node(tree, path);
 
-	// printf("[Function: tree_get_file] Getting file for %s;\n", path);
+    printf("tree_get_file: Getting stats for %s;\n", path);    
+	struct node *node = find_node(tree, path);
 	if (node == NULL)
 		return -1;
 	*stats = node->stats;
@@ -152,7 +152,7 @@ struct node * find_node(struct node *root, const char *path){
 	struct node *node = root, *next = NULL;
 	int i = 0, j = 0;
 
-	// printf("[Function: find_node] Finding node with path %s;\n", path);
+	printf("[Function: find_node] Finding node with path %s;\n", path);
 	for (i = 0; i < count; i++){
 		for (j = 0; (j < node->size) && (next == NULL); j++)
 			if (strcmp(node->children[j]->name, parts[i]) == 0)
@@ -162,7 +162,6 @@ struct node * find_node(struct node *root, const char *path){
 		node = next;
 		next = NULL;
 	};
-	// required clean up
     find_node_finish(node);
 
 };
