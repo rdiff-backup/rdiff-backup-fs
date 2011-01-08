@@ -1,15 +1,15 @@
 #include "fuse.h"
 
-// public 
+// public:
 
 int revs_getattr(const char *path, struct stat *stbuf){
 
     struct stats *stats;
     memset(stbuf, 0, sizeof(struct stat));
 
-	printf("[FUSE: getattr] Attributes for path %s;\n", path);
+	// printf("[FUSE: getattr] Attributes for path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0) {
-        printf("[FUSE: getattr] Failed to retrieve stats;\n");
+        // printf("[FUSE: getattr] Failed to retrieve stats;\n");
         return -1;
     }
     stbuf->st_size = stats->size;
@@ -22,7 +22,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
 	
-    printf("[FUSE: getattr] Retrieved attributes\n");
+    // printf("[FUSE: getattr] Retrieved attributes\n");
     return 0;
     
 };

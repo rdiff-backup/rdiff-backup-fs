@@ -49,9 +49,7 @@ int gtreeadd(struct node *tree, struct stats *stats, char *path){
     int count = gpthdiv(path, &parts);
     int i = 0, j = 0;
 
-#ifdef TREE_DEBUG
-	printf("[Function: tree_add_file] Received file on path %s;\n", stats->path);
-#endif
+	// ("[Function: tree_add_file] Received file on path %s;\n", path);
     if (count == 0)
 		return -1;
     for (i = 0; i < count; i++){
@@ -81,9 +79,7 @@ char** gtreecld(struct node *tree, const char *path){
 	int i = 0;
 	struct node *node = find_node(tree, path);
 
-#ifdef TREE_DEBUG
-	printf("[Function: tree_get_children] Received path %s;\n", path);
-#endif
+	// printf("[Function: tree_get_children] Received path %s;\n", path);
 	if (node == NULL)
 		return NULL;
 	results = calloc(node->size + 1, sizeof(char *));
@@ -96,7 +92,7 @@ char** gtreecld(struct node *tree, const char *path){
 int gtreeget(struct node *tree, const char *path, struct stats **stats){
 
 
-    printf("tree_get_file: Getting stats for %s;\n", path);    
+    // printf("tree_get_file: Getting stats for %s;\n", path);    
 	struct node *node = find_node(tree, path);
 	if (node == NULL)
 		return -1;
@@ -114,6 +110,7 @@ int gtreedel(struct node *tree, const char *path){
 	// printf("[Function: tree_delete] Deleting path %s;\n", path);
 	if ((node = find_node(tree, path)) == NULL)
 		return -1;
+    // TODO: tu jest fuckup dla plikow w glownym katalogu; zwraca NULL
 	if ((parent = find_parent(tree, path)) == NULL)
 		return -1;
 	for (i = 0; (i < parent->size) && (parent->children[i] != node); i++);
@@ -152,7 +149,7 @@ struct node * find_node(struct node *root, const char *path){
 	struct node *node = root, *next = NULL;
 	int i = 0, j = 0;
 
-	printf("[Function: find_node] Finding node with path %s;\n", path);
+	// printf("[Function: find_node] Finding node with path %s;\n", path);
 	for (i = 0; i < count; i++){
 		for (j = 0; (j < node->size) && (next == NULL); j++)
 			if (strcmp(node->children[j]->name, parts[i]) == 0)
@@ -174,7 +171,7 @@ struct node* find_parent(struct node *root, const char *path){
 	struct node *node = NULL;
 	int i = 0;
 
-	if (gpthdpt(path) <= 1)
+	if (gpthdpt(path) <= 0)
 		return NULL;
 	length = strlen(path);
 	gpthcln(path, __path, length, __length);
@@ -189,9 +186,7 @@ struct node* find_parent(struct node *root, const char *path){
 
 int tree_add_node(struct node *node, char *name){
 
-#ifdef TREE_DEBUG
-	printf("[Function: tree_add_node] Adding file %s;\n", name);
-#endif
+	// printf("[Function: tree_add_node] Adding file %s;\n", name);
     if (node->size == node->capacity)
 		tree_increase_capacity(node);
     node->children[node->size] = calloc(1, sizeof(struct node));
@@ -227,6 +222,7 @@ int tree_increase_capacity(struct node *node){
 int delete_node(struct node *node){
 
 	int i = 0;
+    //printf("delete_node: completely deleting node with path %s\n", node->stats->path);
 
 	for (i = 0; i < node->size; i++)
 		delete_node(node->children[i]);

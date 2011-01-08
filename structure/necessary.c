@@ -163,9 +163,7 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     int i = 0, j = 0;
     char *prefix = NULL;
 
-#ifdef DEBUG
     printf("get_revision_tree: getting revision tree for %s/%s/\n", repo, rev);
-#endif    
     if (!repo) {
         revisions = repositories[0].revisions;
         count = fsinfo->rev_count[0];
@@ -185,9 +183,6 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
         return NULL;
     if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, fsinfo->rev_count[i], j))
         return NULL;
-#ifdef DEBUG
-    printf("get_revision_tree: retrieved revision tree\n");
-#endif            
     return revisions[j].tree;
 }
 
@@ -235,23 +230,20 @@ int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_
     int snapshot_index = 0;
     char *current_snapshot = NULL;
 
-#ifdef DEBUG
     printf("[build_revision_tree: building revision tree for index %d\n", rev_index);
-#endif            
     
     if (free_cache())
         build_revision_tree_finish(-1);
     if ((snapshot_index = find_snapshot(revisions, count, rev_index)) == -1)
         build_revision_tree_finish(-1);
+    printf("%d %d\n", snapshot_index, rev_index);
     if ((current_snapshot = build_snapshot(revisions, rev_index, snapshot_index)) == NULL)
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
     if (read_revision_necessary(current_snapshot, prefix, revisions[rev_index].tree, fsinfo->rev_count[0] - rev_index - 1))
         build_revision_tree_finish(-1);
-#ifdef DEBUG
-    printf("[build_revision_tree: done building");
-#endif            
+    printf("[build_revision_tree: done building\n");
     build_revision_tree_finish(0);
 }
 
