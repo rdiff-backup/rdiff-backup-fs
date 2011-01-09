@@ -25,7 +25,7 @@ static struct stats root;
 
 static struct node * get_revision_tree(struct file_system_info *, char *, char *);
 
-// static void free_revision_tree(char *repo, char *revision);
+static void free_revision_tree(struct file_system_info *, char *repo, char *revision);
 
 static int build_revision_tree(struct file_system_info *fsinfo, char *, revision_t *, int, int);
 
@@ -110,7 +110,9 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
         if (!tree)
             return -1;
-        return gtreeget(tree, internal, stats);
+        int result = gtreeget(tree, internal, stats);
+        free_revision_tree(fsinfo, repo, revision);
+        return result;
     }
 }
 
@@ -143,7 +145,7 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
         if (!tree)
             return NULL;
         result = gtreecld(tree, internal);
-        // free_revision_tree(repo, revision);
+        free_revision_tree(fsinfo, repo, revision);
         return result;
     }
 }
@@ -180,12 +182,13 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     return revisions[j].tree;
 }
 
-/*void free_revision_tree(char *repo, char *rev){
+void free_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev){
 
     revision_t *revisions = NULL;
     int count = 0;
     int i = 0, j = 0;
-
+    
+    debug(2, "freeing revision tree for %s/%s\n", repo, rev);
     if (!repo) {
         revisions = repositories[0].revisions;
         count = fsinfo->rev_count[0];
@@ -209,7 +212,9 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
         return;
     gtreedel(revisions[j].tree, "/");
     free(revisions[j].tree);
-};*/
+    revisions[j].tree = NULL;
+    debug(2, "revision tree deleted\n");
+};
 
 int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_t *revisions, int repo_index, int rev_index){
     
