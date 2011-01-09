@@ -1,5 +1,7 @@
 #include "gutils.h"
 
+int debug_level = -1;
+
 int gdesccopy(int source, int dest){
 	char buffer[1024];
     int result = 0;

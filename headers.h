@@ -55,6 +55,8 @@ struct file_system_info {
     char **repos;
     char **repo_names;
     
+    // TODO: this must be fixed; it doesn't hold actual information about revs,
+    // but only the most recent revs for multiple repos
     char **revs;
 };
 
