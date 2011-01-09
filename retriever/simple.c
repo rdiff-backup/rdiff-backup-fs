@@ -1,6 +1,6 @@
 #include "simple.h"
 #include "support.h"
-#include "../support/gutils.h"
+#include "support/gutils.h"
 
 int __release_simple(struct stats *, int);
 

@@ -1,5 +1,5 @@
 #include "retriever.h"
-#include "../support/gutils.h"
+#include "support/gutils.h"
 
 int policy = POLICY_SIMPLE;
 pthread_mutex_t **file_mutex = NULL;

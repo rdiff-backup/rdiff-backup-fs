@@ -1,4 +1,5 @@
 #include "limit.h"
+#include "support/gutils.h"
 
 extern int cache_limit;
 // count of all opened files
@@ -23,10 +24,8 @@ int retrieve_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 
-#ifdef DEBUG
-	printf("[Function: retrieve_limit] Retrieving file; currently %d open and %d cached files;\n", 
+	debug(3, "Retrieving file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
-#endif
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __retrieve_limit(fsinfo, stats, repo);
@@ -37,10 +36,8 @@ int release_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 
-#ifdef DEBUG
-	printf("[Function: retrieve_limit] Releasing file; currently %d open and %d cached files;\n", 
+	debug(3, "Releasing file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
-#endif
 	if ((repo == repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_limit(stats, repo);
@@ -77,7 +74,7 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
 		__retrieve_limit_finish(-1);
-	printf("[Fuse: __retrieve_limit] Retrieved to %s\n", stats->tmp_path);
+	debug(3, "[Fuse: __retrieve_limit] Retrieved to %s\n", stats->tmp_path);
 	if (stat(stats->tmp_path, temp) != 0)
 		__retrieve_limit_finish(-1);
 	stats->shared = 1;
@@ -131,9 +128,7 @@ int cache_add(struct stats *stats){
 
 	struct cache *temp = single(struct cache);
 
-#ifdef DEBUG
-	printf("[Function: cache add] Expanding cache with %s file with %d open and %d cached files;\n", stats->path, open_count, cache_count);
-#endif
+	debug(3, "[Function: cache add] Expanding cache with %s file with %d open and %d cached files;\n", stats->path, open_count, cache_count);
 	cache_count++;
 	temp->stats = stats;
 	if (cache == NULL){
@@ -155,9 +150,7 @@ int cache_delete(struct file_system_info *fsinfo){
 	
 	if (cache == NULL)
 		return -1;
-#ifdef DEBUG
-	printf("[Function: cache_delete] Deleting from cache %s file with %d open and %d cached files;\n", cache->stats->path, open_count, cache_count);
-#endif
+	debug(3, "[Function: cache_delete] Deleting from cache %s file with %d open and %d cached files;\n", cache->stats->path, open_count, cache_count);
 	lock(file_mutex[repo][cache->stats->rev]);
 	if (cache->stats->shared > 1){
 		cache->stats->shared--;

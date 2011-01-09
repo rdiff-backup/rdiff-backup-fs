@@ -25,7 +25,7 @@ OBJS = archfs.o \
        layout/versions.o
 
 EXECUTABLE = rdiff-backup-fs
-FLAGS = -Wall -Wunused -Wunused-parameter `pkg-config --cflags fuse` -D_GNU_SOURCE
+FLAGS = -Wall -Wunused -Wunused-parameter `pkg-config --cflags fuse` -D_GNU_SOURCE -I.
 MAIN_FLAGS = ${FLAGS} `pkg-config --libs fuse`
 ALWAYS_REQUIRED = headers.h externs.h
 
