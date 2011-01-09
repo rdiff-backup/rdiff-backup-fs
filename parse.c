@@ -1,6 +1,7 @@
 #include "parse.h"
 #include "externs.h"
 #include "retriever/retriever.h"
+#include "support/gutils.h"
 
 // definitions
 
@@ -85,6 +86,14 @@ int set_caching(int argc, char **argv, int *index){
 
 };
 
+int set_debug_level(int argc, char **argv, int *index){
+    if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
+        return -1;
+    debug_level = atoi(argv[*index + 1]);
+    *index += 1;
+    return 0;
+}
+
 int set_directory(int argc, char **argv, int *index){
 
 #define set_directory_finish(value) {				\
@@ -135,8 +144,10 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
 		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
         exit(0);
     }
-    else if (strcmp(argv[*index], OPT_DEBUG_FULL) == 0)
-        debug = 1;
+    else if (strcmp(argv[*index], OPT_DEBUG_FULL) == 0) {
+        if (set_debug_level(argc, argv, index) != 0)
+            fail(ERR_PARAMETRES);
+    }
     else 
 		fail(ERR_UNKNOWN_OPTION);
 
