@@ -107,9 +107,7 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
     int descriptor = 0;
     int result = 0;
 
-#ifdef DEBUG
     printf("[FUSE: Read] Reading file %s;\n", path);
-#endif
     get_file(file_system_info, path, &stats);
     if ((stats == NULL) || (stats->shared == 0))
 		return -1;
@@ -119,9 +117,7 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 		revs_read_finish(-1);
 	if ((result = read(descriptor, buf, size)) == -1)
 		revs_read_finish(-1);
-#ifdef DEBUG
     printf("[FUSE: Read] %d bytes have been read;\n", result);
-#endif
 	revs_read_finish(result);
 	
 }

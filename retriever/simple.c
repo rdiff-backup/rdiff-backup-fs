@@ -22,9 +22,7 @@ int release_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
-#ifdef DEBUG
-	printf("[Function: release_simple] Retrieving file %s;\n", stats->path);
-#endif
+	printf("[Function: release_simple] Retrieving file %s from revision %dB;\n", stats->path, stats->rev);
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_simple(stats, repo);

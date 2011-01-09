@@ -34,19 +34,19 @@ int full_build(struct file_system_info *fsinfo){
 int full_build_multi(struct file_system_info *fsinfo){
 
 #define full_build_multi_free_revs											\
-            if (fsinfo->revs != NULL){												\
+            if (fsinfo->revs != NULL){										\
+            	char *snapshot = NULL;                                      \
 				gmstrcpy(&snapshot, data_dir, "/", CURRENT_SNAPSHOT, 0);	\
 				unlink(snapshot);											\
 				gstrdel(snapshot);											\
 			}
 
-#define full_build_multi_finish(value) {										\
-			full_build_multi_free_revs; \
+#define full_build_multi_finish(value) {								    \
+			full_build_multi_free_revs;                                     \
 			return value;													\
 		}
 
     int i = 0, j = 0;
-	char *snapshot = NULL;
 
     //printf("[Function: init_multi] Received %d fsinfo->repos;\n", count);
 	gtreenew(&structure_tree);
