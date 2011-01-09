@@ -12,7 +12,6 @@ struct revision {
 typedef struct revision revision_t;
 
 struct repository {
-    char *name;
     struct revision *revisions;
 };
 
@@ -78,7 +77,6 @@ int necessary_build_multi(struct file_system_info *fsinfo){
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
         return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
-        gstrcpy(&repositories[i].name, fsinfo->repo_names[i]);
         if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], data_dir)) == -1)
             return -1;
         repositories[i].revisions = calloc(fsinfo->rev_count[i], sizeof(revision_t));
@@ -128,7 +126,7 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
     if (revision == NULL && repo == NULL && fsinfo->repo_count > 1){
         result = calloc(fsinfo->repo_count + 1, sizeof(char *));
         for (i = 0; i < fsinfo->repo_count; i++)
-            gstrcpy(&result[i], repositories[i].name);
+            gstrcpy(&result[i], fsinfo->repo_names[i]);
         return result;
     }
     else if (revision == NULL && (fsinfo->repo_count == 1 || repo != NULL)){
@@ -385,7 +383,7 @@ int revision_exists(struct file_system_info *fsinfo, char *repo_name, char *revi
 int repo_index(struct file_system_info *fsinfo, char *repo){
 
     int i = 0;
-    for (; i < fsinfo->repo_count && strcmp(repositories[i].name, repo) != 0; i++);
+    for (; i < fsinfo->repo_count && strcmp(fsinfo->repo_names[i], repo) != 0; i++);
     if (i == fsinfo->repo_count) // failed to find repo
         return -1;
     return i;
