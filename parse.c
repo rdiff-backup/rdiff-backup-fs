@@ -89,6 +89,7 @@ int set_caching(int argc, char **argv, int *index){
 int set_debug_level(int argc, char **argv, int *index){
     if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
         return -1;
+    debug = 1;
     debug_level = atoi(argv[*index + 1]);
     *index += 1;
     return 0;

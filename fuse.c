@@ -1,4 +1,5 @@
 #include "fuse.h"
+#include "support/gutils.h"
 
 // public:
 
@@ -7,9 +8,9 @@ int revs_getattr(const char *path, struct stat *stbuf){
     struct stats *stats;
     memset(stbuf, 0, sizeof(struct stat));
 
-	// printf("[FUSE: getattr] Attributes for path %s;\n", path);
+	debug(1, "Attributes for path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0) {
-        // printf("[FUSE: getattr] Failed to retrieve stats;\n");
+        debug(1, "Failed to retrieve stats;\n");
         return -1;
     }
     stbuf->st_size = stats->size;
@@ -22,7 +23,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
 	
-    // printf("[FUSE: getattr] Retrieved attributes\n");
+    debug(1, "Retrieved attributes\n");
     return 0;
     
 };
@@ -35,9 +36,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     int i = 0;
     struct stats *stats = 0;
 
-#ifdef DEBUG
-    printf("[FUSE: readdir] Received path %s;\n", path);
-#endif
+    debug(1, "Received path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0)
 		return -ENOENT;
 	
@@ -46,18 +45,14 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     
     char **content = get_children(file_system_info, path);
     if (content == NULL){
-#ifdef DEBUG
-    	printf("[FUSE: readdir] ALERT: Error occured while looking for children;");
-#endif
+    	debug(1, "Error occured while looking for children;");
 		return 0;
 	}
     for (i = 0; content[i] != 0; i++)
 		filler(buf, content[i], NULL, 0);
     if (stats != 0)
 		stats->atime = time(0);
-#ifdef DEBUG
-	printf("[FUSE: readdir] There were %d children in this directory;\n", i);
-#endif
+	debug(1, "There were %d children in this directory;\n", i);
     for (i = 0; content[i] != 0; i++)
         free(content[i]);
     free(content);
@@ -107,7 +102,7 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
     int descriptor = 0;
     int result = 0;
 
-    printf("[FUSE: Read] Reading file %s;\n", path);
+    debug(1, "Reading file %s;\n", path);
     get_file(file_system_info, path, &stats);
     if ((stats == NULL) || (stats->shared == 0))
 		return -1;
@@ -117,7 +112,7 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 		revs_read_finish(-1);
 	if ((result = read(descriptor, buf, size)) == -1)
 		revs_read_finish(-1);
-    printf("[FUSE: Read] %d bytes have been read;\n", result);
+    debug(1, "%d bytes have been read;\n", result);
 	revs_read_finish(result);
 	
 }
@@ -153,9 +148,7 @@ void revs_destroy(void *ptr){
     	unlink(path);
     };
     closedir(dir);
-#ifdef DEBUG
-    printf("[FUSE: Destroy] Deleting temporary directory %s;\n", data_dir);
-#endif
+    debug(1, "Deleting temporary directory %s;\n", data_dir);
     rmdir(data_dir);
     gstrdel(path);
 

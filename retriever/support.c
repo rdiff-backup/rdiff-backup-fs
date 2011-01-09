@@ -1,4 +1,5 @@
 #include "support.h"
+#include "../support/gutils.h"
 
 int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int repo){
 
@@ -14,9 +15,7 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 	char *revision = calloc(20, sizeof(char));
 	struct stat *temp = single(struct stat);
 
-#ifdef DEBUG
-	printf("[Function: retrieve_common] Received file %s from repo %d;\n", stats->path, repo);
-#endif
+	debug(3, "[Function: retrieve_common] Received file %s from repo %d;\n", stats->path, repo);
 	lock(file_mutex[repo][stats->rev]);
 	if (stats->shared > 0){
 		stats->shared++;
@@ -46,12 +45,9 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 	int i = 0;
 	char *repo = NULL;
 
-#ifdef DEBUG
-	printf("[Function: repo_number] Received file %s;\n", stats->path);
-#endif
+	debug(3, "[Function: repo_number] Received file %s;\n", stats->path);
 	if (fsinfo->repo_count == 1)
 		repo_number_finish(0);
-    printf("%s\n", stats->path);
 	if ((repo = gpthprt(stats->path, 0)) == NULL)
 		repo_number_finish(-1);
 	for (i = 0; (i < fsinfo->repo_count) && (strcmp(repo, fsinfo->repo_names[i]) != 0); i++);
@@ -65,13 +61,11 @@ int retrieve_rdiff(char *revision, char *file, char *tmp_path){
 
 	int pid = 0;
 
-#ifdef DEBUG_DEEP
-	printf("[Function: retrieve_rdiff] Received file %s from revision %s retrieved to path %s\n", file, revision, tmp_path);
-#endif
+	debug(3, "[Function: retrieve_rdiff] Received file %s from revision %s retrieved to path %s\n", file, revision, tmp_path);
     if ((pid = fork()) == -1)
 		return -1;
     if (pid == 0){
-    	printf("%s %s %s\n", revision, file, tmp_path);
+    	debug(3, "%s %s %s\n", revision, file, tmp_path);
 		if (execlp("rdiff-backup", "rdiff-backup", "--force", "-r", revision, file, tmp_path, NULL) == -1)
 		    fail(ERR_RDIFF);
 	};
@@ -92,9 +86,7 @@ int create_tmp_file(struct stats *stats){
     char *tmp_template = NULL;
     int desc = -1;
 
-#ifdef DEBUG_DEEP
-	printf("[Function: create_tmp_file] Received file %s;\n", stats->path);
-#endif
+	debug(3, "[Function: create_tmp_file] Received file %s;\n", stats->path);
     if (gmstrcpy(&tmp_template, data_dir, "/", stats->name, "XXXXXX", 0) != 0)
 		create_tmp_file_error;
     desc = mkstemp(tmp_template);

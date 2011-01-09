@@ -13,5 +13,5 @@ extern int debug_level;
  */
 #define debug(level, format, ...) {                     \
     if (level <= debug_level)                           \
-        printf(format, ##__VA_ARGS__);                  \
+        printf("[%s, %d, %s] " format, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);                  \
 }
