@@ -1,9 +1,10 @@
-archfs was written by Filip Gruszczyński (gruszczy@gmail.com).
+rdiff-backup-fs was written by Filip Gruszczyński (gruszczy@gmail.com).
 A few fixes were provided by Anthony Toole.
 
 Other contributors:
 * Jon Dowland
 * jjmaestro
+* runesvend
 
 The idea of the filesystem was first presented by Łukasz Sznuk from the
 University of Warsaw as as one of the projects for course in Operating
