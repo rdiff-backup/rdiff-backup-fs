@@ -185,7 +185,7 @@ int parse(struct file_system_info *fsinfo, int argc, char **argv){
         
     int i = 0;
         
-    if ((argc == 2) && ((strcmp(argv[1], OPT_VERSION) == 0) || (strcmp(argv[1], OPT_VERSION) == 0))){
+    if ((argc == 2) && ((strcmp(argv[1], OPT_VERSION) == 0) || (strcmp(argv[1], OPT_VERSION_FULL) == 0))){
 		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
 		exit(0);	
     };	
