@@ -23,19 +23,22 @@ typedef struct repository repository_t;
 repository_t *repositories = NULL;
 static struct stats root;
 
+typedef struct stats_list {
+    stats_t *stats;
+    struct stats_list *next;
+} stats_list_t;
+
 /* private functions' prototypes */
 
 static struct node * get_revision_tree(struct file_system_info *, char *, char *);
 
-static void free_revision_tree(struct file_system_info *, char *repo, char *revision);
-
 static int build_revision_tree(struct file_system_info *fsinfo, char *, revision_t *, int, int);
+
+static void free_revision_tree(struct file_system_info *, char *repo, char *revision);
 
 static int find_snapshot(revision_t *, int, int);
 
 static char * build_snapshot(revision_t *, int, int);
-
-static int free_cache();
 
 int read_revision_necessary(char *, char *, tree_t, int);
 
@@ -56,10 +59,7 @@ static int repository_exists(struct file_system_info *, char *repo_name);
  */
 static int revision_exists(struct file_system_info *, char *repo_name, char *revision_name);
 
-typedef struct stats_list {
-    stats_t *stats;
-    struct stats_list *next;
-} stats_list_t;
+static void find_open(node_t *, stats_list_t *);
 
 #define STATS_LIST_COMPARATOR(first, second) (strcmp(first->stats->path, second->stats->path))
 
@@ -166,55 +166,6 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
 
 /* private functions */
 
-tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev){
-    
-    revision_t *revisions = NULL;
-    int count = 0;
-    int i = 0, j = 0;
-    char *prefix = NULL;
-
-    debug(2, "getting revision tree for %s/%s/\n", repo, rev);
-    if (!repo) {
-        revisions = repositories[0].revisions;
-        count = fsinfo->rev_count[0];
-        gmstrcpy(&prefix, "/", rev, 0);
-    }
-    else {
-        if ((i = repository_index(fsinfo, repo)) == -1)
-            return NULL;
-        revisions = repositories[i].revisions;
-        count = fsinfo->rev_count[i];            
-        gmstrcpy(&prefix, "/", repo, "/", rev, 0);
-    }        
-    for (j = 0; j < count; j++)
-        if (strcmp(rev, revisions[j].name) == 0)
-            break;
-    if (j == count) // should never happen
-        return NULL;
-    if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, i, j))
-        return NULL;
-    return revisions[j].tree;
-}
-
-void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *rev_name){
-
-    int rev_index = 0, repo_index = 0;
-    revision_t *rev = NULL;
-    
-    debug(2, "freeing revision tree for %s/%s\n", repo_name, rev_name);
-    
-    if ((repo_index = repository_index(fsinfo, repo_name)) == -1)
-        return;
-    if ((rev_index = revision_index(fsinfo, repo_name, rev_name)) == -1)
-        return;
-    rev = &repositories[repo_index].revisions[rev_index];
-
-    gtreedel(rev->tree, "/");
-    free(rev->tree);
-    rev->tree = NULL;
-    debug(2, "revision tree deleted\n");
-};
-
 int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_t *revisions, int repository_index, int rev_index){
     
     #define build_revision_tree_finish(value) {             \
@@ -230,8 +181,6 @@ int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_
 
     debug(2, "building revision tree for index %d\n", rev_index);
     
-    if (free_cache())
-        build_revision_tree_finish(-1);
     if ((snapshot_index = find_snapshot(revisions, fsinfo->rev_count[repository_index], rev_index)) == -1)
         build_revision_tree_finish(-1);
     if ((current_snapshot = build_snapshot(revisions, rev_index, snapshot_index)) == NULL)
@@ -267,6 +216,64 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
     
 };
 
+tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev){
+    
+    revision_t *revisions = NULL;
+    int count = 0;
+    int i = 0, j = 0;
+    char *prefix = NULL;
+
+    debug(2, "getting revision tree for %s/%s/\n", repo, rev);
+    if (!repo) {
+        revisions = repositories[0].revisions;
+        count = fsinfo->rev_count[0];
+        gmstrcpy(&prefix, "/", rev, 0);
+    }
+    else {
+        if ((i = repository_index(fsinfo, repo)) == -1)
+            return NULL;
+        revisions = repositories[i].revisions;
+        count = fsinfo->rev_count[i];            
+        gmstrcpy(&prefix, "/", repo, "/", rev, 0);
+    }        
+    for (j = 0; j < count; j++)
+        if (strcmp(rev, revisions[j].name) == 0)
+            break;
+    if (j == count) // should never happen
+        return NULL;
+    if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, i, j))
+        return NULL;
+    return revisions[j].tree;
+}
+
+void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *rev_name){
+    
+    int rev_index = 0, repo_index = 0;
+    revision_t *rev = NULL;
+    
+    debug(2, "freeing revision tree for %s/%s\n", repo_name, rev_name);
+    
+    if ((repo_index = repository_index(fsinfo, repo_name)) == -1)
+        return;
+    if ((rev_index = revision_index(fsinfo, repo_name, rev_name)) == -1)
+        return;
+    rev = &repositories[repo_index].revisions[rev_index];
+
+    find_open(rev->tree, NULL);
+    gtreedel(rev->tree, "/");
+    free(rev->tree);
+    rev->tree = NULL;
+    debug(2, "revision tree deleted\n");
+};
+
+void find_open(node_t *node, stats_list_t *list){
+    int i = 0;
+    
+    if (node->stats->shared > 0);
+        // add to list
+    for (i = 0; i < node->size; i++)
+        find_open(node->children[i], list);
+};
 
 int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revision){
 
@@ -340,10 +347,6 @@ char * build_snapshot(revision_t *revisions, int rev_index, int snapshot_index) 
     close(snapshot_desc);
     debug(2, "returning temp snapshot %s\n", temp_snapshot);
     return temp_snapshot;
-};
-
-int free_cache(){
-    return 0;
 };
 
 int repository_exists(struct file_system_info *fsinfo, char *repo_name){
