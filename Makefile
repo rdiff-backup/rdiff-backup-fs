@@ -9,6 +9,7 @@ OBJS = archfs.o \
        support/gstring.o \
        support/gutils.o \
        support/gpath.o \
+       support/glist.o \
        support/gtree.o \
        support/grdiff.o \
        support/gstats.o \
@@ -58,6 +59,9 @@ support/gstring.o: support/gstring.c support/gstring.h ${ALWAYS_REQUIRED}
 
 support/gpath.o: support/gpath.c support/gpath.h ${ALWAYS_REQUIRED}
 	${CC} ${FLAGS} support/gpath.c -o support/gpath.o
+
+support/glist.o: support/glist.c support/glist.h ${ALWAYS_REQUIRED}
+	${CC} ${FLAGS} support/glist.c -o support/glist.o
 
 support/gtree.o: support/gtree.c support/gtree.h ${ALWAYS_REQUIRED}
 	${CC} ${FLAGS} support/gtree.c -o support/gtree.o

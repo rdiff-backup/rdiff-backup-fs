@@ -49,4 +49,6 @@ typedef struct stats stats_t;
             (stats)->size = DIR_SIZE;             	\
 } 
 
+void copy_stats(stats_t *source, stats_t *dest);
+
 #endif

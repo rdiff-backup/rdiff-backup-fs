@@ -1,8 +1,9 @@
 #include "sglib.h"
 
 #include "necessary.h"
-#include "../headers.h"
-#include "../support/gutils.h"
+#include "headers.h"
+#include "support/gutils.h"
+#include "support/glist.h"
 
 int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
@@ -22,11 +23,7 @@ typedef struct repository repository_t;
 
 repository_t *repositories = NULL;
 static struct stats root;
-
-typedef struct stats_list {
-    stats_t *stats;
-    struct stats_list *next;
-} stats_list_t;
+list_t *open_files = NULL;
 
 /* private functions' prototypes */
 
@@ -59,19 +56,16 @@ static int repository_exists(struct file_system_info *, char *repo_name);
  */
 static int revision_exists(struct file_system_info *, char *repo_name, char *revision_name);
 
-static void find_open(node_t *, stats_list_t *);
-
-#define STATS_LIST_COMPARATOR(first, second) (strcmp(first->stats->path, second->stats->path))
-
-SGLIB_DEFINE_LIST_PROTOTYPES(stats_list_t, STATS_LIST_COMPARATOR, next);
-SGLIB_DEFINE_LIST_FUNCTIONS(stats_list_t, STATS_LIST_COMPARATOR, next);
+static void find_open(node_t *, list_t *);
 
 /* public functions */
 
 int necessary_build(struct file_system_info *fsinfo){
 
     int i = 0;
-
+    
+    if (list_new(&open_files))
+        return -1;
     if ((fsinfo->rev_count[0] = gather_revisions(fsinfo, fsinfo->repos[0], data_dir)) == -1)
         return -1;
     if ((repositories = single(repository_t)) == NULL)
@@ -89,6 +83,8 @@ int necessary_build_multi(struct file_system_info *fsinfo){
     
     int i = 0, j = 0;
     
+    if (list_new(&open_files))
+        return -1;
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
         return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
@@ -122,6 +118,7 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
     }
     else{
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
+        debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree)
             return -1;
         int result = gtreeget(tree, internal, stats);
@@ -216,27 +213,21 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
 tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev){
     
     revision_t *revisions = NULL;
-    int count = 0;
     int i = 0, j = 0;
     char *prefix = NULL;
 
     debug(2, "getting revision tree for %s/%s/\n", repo, rev);
     if (!repo) {
         revisions = repositories[0].revisions;
-        count = fsinfo->rev_count[0];
         gmstrcpy(&prefix, "/", rev, 0);
     }
     else {
         if ((i = repository_index(fsinfo, repo)) == -1)
             return NULL;
         revisions = repositories[i].revisions;
-        count = fsinfo->rev_count[i];            
         gmstrcpy(&prefix, "/", repo, "/", rev, 0);
     }        
-    for (j = 0; j < count; j++)
-        if (strcmp(rev, revisions[j].name) == 0)
-            break;
-    if (j == count) // should never happen
+    if ((j = revision_index(fsinfo, repo, rev)) == -1)
         return NULL;
     if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, i, j))
         return NULL;
@@ -256,18 +247,27 @@ void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *
         return;
     rev = &repositories[repo_index].revisions[rev_index];
 
-    find_open(rev->tree, NULL);
+    debug(2, "finding open files in the tree %d\n", (int) rev->tree);
+    find_open(rev->tree, open_files);
     gtreedel(rev->tree, "/");
     free(rev->tree);
     rev->tree = NULL;
     debug(2, "revision tree deleted\n");
 };
 
-void find_open(node_t *node, stats_list_t *list){
+void find_open(node_t *node, list_t *list){
     int i = 0;
     
-    if (node->stats->shared > 0);
-        // add to list
+    pass(0);
+    if (node->stats->shared){
+        pass(1);
+        stats_t *new = single(stats_t);
+        pass(2);
+        copy_stats(node->stats, new);
+        pass(3);
+        list_add(list, new);
+        pass(4);
+    }
     for (i = 0; i < node->size; i++)
         find_open(node->children[i], list);
 };
