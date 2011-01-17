@@ -117,11 +117,25 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         }
     }
     else{
+        // trying to find stats in cache
+        char *full_path = NULL;
+        if (repo)
+            gmstrcpy(&full_path, repo, "/", revision, "/", internal, 0);
+        else
+            gmstrcpy(&full_path, revision, "/", internal, 0);
+        int result = list_find_by_path(open_files, full_path, stats);
+        free(full_path);
+        if (!result) {
+            debug(1, "found stats in on demand cache");
+            return 0;
+        }
+            
+        // haven't found stats in cache, trying in the whole tree
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree)
             return -1;
-        int result = gtreeget(tree, internal, stats);
+        result = gtreeget(tree, internal, stats);
         free_revision_tree(fsinfo, repo, revision);
         return result;
     }
