@@ -1,4 +1,5 @@
 #include "gstring.h"
+#include "gutils.h"
 
 // private:
 
@@ -186,13 +187,9 @@ int gmstrcat(char **main, const char *sufix, ...){
 
 int gstrsort(char **array, int size){
     
-#ifdef DEBUG_DEEP
-    printf("[gstrsort: sorting array of size %d\n", size);
-#endif
+    debug(4, "sorting array of size %d\n", size);
     __gstrsort(array, 0, size - 1);
-#ifdef DEBUG_DEEP
-    printf("[gstrsort: done sorting");
-#endif    
+    debug(4, "done sorting");
     return 0;
     
 };

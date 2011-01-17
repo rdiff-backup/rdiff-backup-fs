@@ -198,10 +198,7 @@ int find_snapshot(revision_t *revisions, int count, int rev_index){
     int snapshot_index = rev_index;
     char *ext = NULL;
 
-#ifdef DEBUG
-    debug(2, "finding snapshot for index %d\n", rev_index);
-#endif            
-    
+    debug(2, "finding snapshot for index %d\n", rev_index);    
     while (snapshot_index < count) {
         if ((ext = gpthextptr(revisions[snapshot_index].file)) == NULL)
             return -1;
@@ -283,9 +280,7 @@ int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revis
         return value;                               \
     }
 
-#ifdef DEBUG
     debug(2, "reading %s\n", snapshot);
-#endif            
     FILE *file = NULL;
     stats_t stats;
     

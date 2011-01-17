@@ -48,7 +48,7 @@ int full_build_multi(struct file_system_info *fsinfo){
 
     int i = 0, j = 0;
 
-    //printf("[Function: init_multi] Received %d fsinfo->repos;\n", count);
+    debug(2, "Received %d repos;\n", fsinfo->repo_count);
 	gtreenew(&structure_tree);
     for (i = 0; i < fsinfo->repo_count; i++){
         if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], data_dir)) == -1)
@@ -151,9 +151,7 @@ int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file){
 		stats->size = DIR_SIZE;
     stats->internal = stats->path + strlen(prefix) + strlen("/");
     stats->rev = rev;
-#ifdef FULL_DEBUG
-	printf("[Function: read_stats_all] Read data of file %s\n", stats->path);
-#endif
+	debug(2, "Read data of file %s\n", stats->path);
     return 0;
    
 };

@@ -1,4 +1,5 @@
 #include "gpath.h"
+#include "gutils.h"
 	    
 // private:
 
@@ -7,10 +8,7 @@ int __gpthcld(char **dest, char *source){
     int source_length = strlen(source);
     int i = 0;
 
-#ifdef GPATH_DEBUG
-	printf("[Function: __gpthcld] Received path %s;\n", source);
-#endif
-
+	debug(4, "Received path %s;\n", source);
     if (source[source_length - 1] != '/')
 		for (i = source_length - 1; (i >= 0) && (source[i] != '/'); i--);
     else // source[source_length - 1] == '/'
@@ -23,7 +21,6 @@ int __gpthcld(char **dest, char *source){
 		strcpy((*dest), source + i + 1);
     else
 		strncpy((*dest), source + i + 1, source_length - i - 2);
-
     return 0;
     
 };
@@ -33,10 +30,7 @@ int __gpthcld_own(char **dest, char *source){
     int source_length = strlen(source);
     int i = 0;
 
-#ifdef GPATH_DEBUG
-	printf("[Function: __gpthcld_own] Received path %s;\n", source);
-#endif
-
+	debug(4, "Received path %s;\n", source);
     if (source[source_length - 1] != '/')
 		for (i = source_length - 1; (i >= 0) && (source[i] != '/'); i--);
     else // source[source_length - 1] == '/'

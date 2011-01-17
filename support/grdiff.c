@@ -64,18 +64,14 @@ int count_revs(char *path){
     int rev_count = 0;
     struct dirent *entry = NULL;
     
-#ifdef DEBUG_DEEP
-	printf("[Function: count_revs] Counting revisions in %s directory;\n", path);
-#endif
+	debug(2, "Counting revisions in %s directory;\n", path);
     if ((dir = opendir(path)) == NULL)
     	return -1;
     for (entry = readdir(dir); entry != NULL; entry = readdir(dir))
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0)
             rev_count++;
     closedir(dir);
-#ifdef DEBUG_DEEP
-	printf("[Function: count_revs] Found %d revisions;\n", rev_count);
-#endif    
+	debug(2, "Found %d revisions;\n", rev_count);
     return rev_count;
 };
 
@@ -224,11 +220,9 @@ int read_stats(stats_t *stats, FILE *file){
 			(name_set == 1) && (size_set == 1) && (type_set == 1) && (time_set == 1))
 			return 0;
 	};
-#ifdef DEBUG_DEEP
-	printf("[Function: read_stats] Finished reading file %s with name %s, type %s, size %s, time %s, link %s;\n",
-		   stats->internal, name_set == 1 ? "set" : "not set", type_set == 1 ? "set" : "not set",
-		   size_set == 1 ? "set" : "not set", time_set == 1 ? "set" : "not set", link_set == 1 ? "set" : "not set");
-#endif
+	debug(3, "Finished reading file %s with name %s, type %s, size %s, time %s, link %s;\n",
+          stats->internal, name_set == 1 ? "set" : "not set", type_set == 1 ? "set" : "not set",
+          size_set == 1 ? "set" : "not set", time_set == 1 ? "set" : "not set", link_set == 1 ? "set" : "not set");
 	return -1;
 
 };
@@ -239,7 +233,7 @@ int get_revisions(struct file_system_info *fsinfo, char *where, int count){
     struct dirent *entry;
     int i = 0;
 
-    // printf("[Function: get_revisions] Received place for %d revisions;\n", count);
+    debug(2, "Received place for %d revisions;\n", count);
     if ((dir = opendir(where)) == NULL)
         return -1;
     for (entry = readdir(dir); (i < count) && (entry != NULL); entry = readdir(dir))
@@ -250,7 +244,7 @@ int get_revisions(struct file_system_info *fsinfo, char *where, int count){
     closedir(dir);
     if (i != count)
         return -1;
-    // printf("[Function: get_revisions] Retrieved and sorted %d revisions;\n", count);
+    debug(2, "Retrieved and sorted %d revisions;\n", count);
     return 0;
     
 }
@@ -283,9 +277,7 @@ int snapshot_copy(char *revision, char *target, char *directory){
 
 	gmstrcpy(&path, directory, "/", revision, 0);
 	gmstrcpy(&snapshot, directory, "/", target, 0);
-#ifdef DEBUG_DEEP
-	printf("[Function: snapshot_copy] Copying from %s to %s\n", path, snapshot);
-#endif
+	debug(3, "Copying from %s to %s\n", path, snapshot);
 	unlink(snapshot);
 	if ((snapshot_desc = open(snapshot, O_WRONLY | O_CREAT, S_IRWXU)) == -1)
 		return -1;
@@ -312,9 +304,7 @@ int snapshot_append(char *revision, char *target, char *directory){
 
 	gmstrcpy(&path, directory, "/", revision, 0);
 	gmstrcpy(&snapshot, directory, "/", target, 0);
-#ifdef DEBUG_DEEP
-	printf("[Function: snapshot_append] Appending from %s to %s\n", path, snapshot);
-#endif
+	debug(3, "Appending from %s to %s\n", path, snapshot);
 	if ((snapshot_desc = open(snapshot, O_WRONLY | O_APPEND)) == -1)
 		return -1;
 	if ((revision_desc = open(path, O_RDONLY)) == -1){
@@ -336,7 +326,7 @@ int add_repo_dir(char *repository, tree_t tree){
 	struct stats stats;
 
     memset(&stats, 0, sizeof(stats));
-	// printf("[Function: add_repo_dir] Adding repository %s;\n", repository);
+	debug(2, "Adding repository %s;\n", repository);
 	if (gmstrcpy(&stats.path, "/", repository, NULL))
         return -1;
 	stats.name = stats.path + 1;
