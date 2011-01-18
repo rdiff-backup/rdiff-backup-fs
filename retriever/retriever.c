@@ -28,3 +28,10 @@ int retriever_init_limit(struct file_system_info *fsinfo){
 	return retriever_init_common(fsinfo);
 	
 };
+
+char * get_tmp_path(char *path) {
+    node_t *node = get_open_file(path);
+    if (!node || !node->tmp_path || !node->count)
+        return NULL;
+    return node->tmp_path;
+};

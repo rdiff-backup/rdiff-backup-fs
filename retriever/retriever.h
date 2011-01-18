@@ -19,5 +19,6 @@ int retriever_init_limit(struct file_system_info *);
 
 extern int (*retrieve)(struct file_system_info *, stats_t *);
 extern int (*release)(struct file_system_info *, stats_t *);
+char * get_tmp_path(char *path);
 
 #endif

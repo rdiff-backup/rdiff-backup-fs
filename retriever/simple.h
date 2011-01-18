@@ -7,9 +7,6 @@
 #include "../support/gstring.h"
 #include "../support/gpath.h"
 #include "../structure/core.h"
-#include "support.h"
-
-extern pthread_mutex_t **file_mutex;
 
 int retrieve_simple(struct file_system_info *fsinfo, struct stats *);
 

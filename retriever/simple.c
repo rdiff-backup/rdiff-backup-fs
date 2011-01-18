@@ -10,7 +10,7 @@ int retrieve_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
-	debug(3, "[Function: retrieve_simple] Retrieving file %s;\n", stats->path);
+	debug(3, "Retrieving file %s;\n", stats->path);
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
     return retrieve_common(fsinfo, stats, repo);
@@ -21,7 +21,7 @@ int release_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
-	debug(3, "[Function: release_simple] Retrieving file %s from revision %dB;\n", stats->path, stats->rev);
+	debug(3, "Retrieving file %s from revision %dB;\n", stats->path, stats->rev);
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_simple(stats, repo);
@@ -38,11 +38,14 @@ int __release_simple(struct stats *stats, int index){
 		}
 
 	lock(file_mutex[index][stats->rev]);
-	/* stats->shared--;
-	if (stats->shared == 0){
-		unlink(stats->tmp_path);
-		gstrdel(stats->tmp_path);
-	};*/
+    node_t *node = get_open_file(stats->path);
+    if (!node)
+        return -1;
+	node->count--;
+	if (node->count == 0){
+		unlink(node->tmp_path);
+        delete_open_file(node);
+	};
 	__release_simple_finish(0);
 
 };

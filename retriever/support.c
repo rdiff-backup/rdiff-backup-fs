@@ -1,31 +1,9 @@
 #include "support.h"
 #include "../support/gutils.h"
 
-struct node;
-
-typedef struct node node_t;
-
-struct node {
-    char *path;
-    char *tmp_path;
-    int count;
-    
-    node_t *next;
-    node_t *prev;
-};
-
-struct list {
-    node_t *head;
-    node_t *tail;
-};
-
-typedef struct list list_t;
-
 list_t *open_files;
 
 node_t * add_file(list_t *list, char *path);
-
-int create_tmp_file(struct stats *, node_t *node);
 
 int retriever_init_common(struct file_system_info *fsinfo){
 
@@ -143,5 +121,38 @@ int create_tmp_file(stats_t *stats, node_t *node){
 };
 
 node_t * add_file(list_t *list, char *path){
-    return NULL;
+    if (list->head == NULL){
+        list->head = list->tail = single(node_t);
+        gstrcpy(&list->head->path, path);
+        return list->head;
+    }
+    node_t *node = get_open_file(path);
+    if (node)
+        return node;
+    node = single(node_t);
+    list->tail->next = node;
+    node->prev = list->tail;
+    list->tail = node;
+    gstrcpy(&node->path, path);
+    return node;
+};
+
+node_t * get_open_file(char *path){
+    node_t *node = open_files->head;
+    for (; node && strcmp(node->path, path) != 0; node = node->next);
+    return node;
+};
+
+void delete_open_file(node_t *node){
+    if (node->next)
+        node->next->prev = node->prev;
+    else
+        open_files->tail = node->prev;
+    if (node->prev)
+        node->prev->next = node->next;
+    else
+        open_files->head = node->next;
+    free(node->path);
+    free(node->tmp_path);
+    free(node);
 };

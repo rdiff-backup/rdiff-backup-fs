@@ -1,5 +1,6 @@
 #include "limit.h"
 #include "support/gutils.h"
+#include "support.h"
 
 extern int cache_limit;
 // count of all opened files
@@ -67,8 +68,8 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 	};*/
 
 	// retrieving file
-	if (create_tmp_file(stats) == -1)
-		__retrieve_limit_finish(-1);
+	/*if (create_tmp_file(stats) == -1)
+		__retrieve_limit_finish(-1);*/
 	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		__retrieve_limit_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
