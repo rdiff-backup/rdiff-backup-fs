@@ -13,8 +13,4 @@ void copy_stats(stats_t *source, stats_t *dest){
         dest->link = 0;
         gstrcpy(&dest->link, source->link);
     }
-    if (source->tmp_path){
-        dest->tmp_path = 0;
-        gstrcpy(&dest->tmp_path, source->tmp_path);
-    }
 };

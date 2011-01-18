@@ -38,11 +38,11 @@ int __release_simple(struct stats *stats, int index){
 		}
 
 	lock(file_mutex[index][stats->rev]);
-	stats->shared--;
+	/* stats->shared--;
 	if (stats->shared == 0){
 		unlink(stats->tmp_path);
 		gstrdel(stats->tmp_path);
-	};
+	};*/
 	__release_simple_finish(0);
 
 };

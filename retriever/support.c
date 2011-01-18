@@ -1,6 +1,47 @@
 #include "support.h"
 #include "../support/gutils.h"
 
+struct node;
+
+typedef struct node node_t;
+
+struct node {
+    char *path;
+    char *tmp_path;
+    int count;
+    
+    node_t *next;
+    node_t *prev;
+};
+
+struct list {
+    node_t *head;
+    node_t *tail;
+};
+
+typedef struct list list_t;
+
+list_t *open_files;
+
+node_t * add_file(list_t *list, char *path);
+
+int create_tmp_file(struct stats *, node_t *node);
+
+int retriever_init_common(struct file_system_info *fsinfo){
+
+	int i = 0, j = 0;
+
+	debug(3, "Received %d repos;\n", fsinfo->repo_count);
+	file_mutex = calloc(fsinfo->repo_count, sizeof(pthread_mutex_t *));
+	for (i = 0; i < fsinfo->repo_count; i++){
+		file_mutex[i] = calloc(fsinfo->rev_count[i], sizeof(pthread_mutex_t));
+		for (j = 0; j < fsinfo->rev_count[i]; j++)
+			pthread_mutex_init(&file_mutex[i][j], 0);
+	};
+    return (open_files = single(list_t)) != NULL;
+
+};
+
 int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int repo){
 
 #define retrieve_common_finish(value){								\
@@ -15,22 +56,23 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 	char *revision = calloc(20, sizeof(char));
 	struct stat *temp = single(struct stat);
 
-	debug(3, "[Function: retrieve_common] Received file %s from repo %d;\n", stats->path, repo);
+	debug(3, "Received file %s from repo %d;\n", stats->path, repo);
 	lock(file_mutex[repo][stats->rev]);
-	if (stats->shared > 0){
-		stats->shared++;
+    node_t *node = add_file(open_files, stats->path);
+	if (node->count > 0){
+		node->count++;
 		retrieve_common_finish(0);
 	};
-	if (create_tmp_file(stats) == -1)
+	if (create_tmp_file(stats, node) == -1)
 		retrieve_common_finish(-1);
 	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		retrieve_common_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
-	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
+	if (retrieve_rdiff(revision, file, node->tmp_path) != 0)
 		retrieve_common_finish(-1);
-	if (stat(stats->tmp_path, temp) != 0)
+	if (stat(node->tmp_path, temp) != 0)
 		retrieve_common_finish(-1);
-	stats->shared = 1;
+	node->count = 1;
 	retrieve_common_finish(0);
 
 };
@@ -45,7 +87,7 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 	int i = 0;
 	char *repo = NULL;
 
-	debug(3, "[Function: repo_number] Received file %s;\n", stats->path);
+	debug(4, "Received file %s;\n", stats->path);
 	if (fsinfo->repo_count == 1)
 		repo_number_finish(0);
 	if ((repo = gpthprt(stats->path, 0)) == NULL)
@@ -74,7 +116,7 @@ int retrieve_rdiff(char *revision, char *file, char *tmp_path){
 	
 };
 
-int create_tmp_file(struct stats *stats){
+int create_tmp_file(stats_t *stats, node_t *node){
 
 #define create_tmp_file_error {				\
 	    gstrdel(tmp_template);				\
@@ -93,9 +135,13 @@ int create_tmp_file(struct stats *stats){
     if (desc == -1)
 		create_tmp_file_error;
     close(desc);
-    if (gstrcpy(&stats->tmp_path, tmp_template) != 0)
+    if (gstrcpy(&node->tmp_path, tmp_template) != 0)
 		create_tmp_file_error;
     gstrdel(tmp_template);
     return 0;
 
+};
+
+node_t * add_file(list_t *list, char *path){
+    return NULL;
 };

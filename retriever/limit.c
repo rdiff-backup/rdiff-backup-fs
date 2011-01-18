@@ -61,10 +61,10 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 
 	lock(file_mutex[repo][stats->rev]);
 	// checking, whether file was already retrieved
-	if (stats->shared > 0){
+	/*if (stats->shared > 0){
 		stats->shared++;
 		__retrieve_limit_finish(0);
-	};
+	};*/
 
 	// retrieving file
 	if (create_tmp_file(stats) == -1)
@@ -72,17 +72,17 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		__retrieve_limit_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
-	if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
+	/*if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
+		__retrieve_limit_finish(-1);*/
+	//debug(3, "[Fuse: __retrieve_limit] Retrieved to %s\n", stats->tmp_path);
+	/*if (stat(stats->tmp_path, temp) != 0)
 		__retrieve_limit_finish(-1);
-	debug(3, "[Fuse: __retrieve_limit] Retrieved to %s\n", stats->tmp_path);
-	if (stat(stats->tmp_path, temp) != 0)
-		__retrieve_limit_finish(-1);
-	stats->shared = 1;
+	stats->shared = 1;*/
 
 	// cache control
 	lock(cache_mutex);
-	if (stats->shared == 1)
-		open_count++;
+	/*if (stats->shared == 1)
+		open_count++;*/
 	unlock(file_mutex[repo][stats->rev]);
 	free(file);
 	free(revision);
@@ -102,18 +102,18 @@ int __release_limit(struct stats *stats, int repo){
 		}
 
 	lock(file_mutex[repo][stats->rev]);
-	if (stats->shared > 1){
+	/*if (stats->shared > 1){
 		stats->shared --;
 		__release_limit_finish(0);
-	}
+	}*/
 	lock(cache_mutex);
 	if (open_count > cache_limit){
 		// nothing is cached; if open_count > cache_limit, then cache_count = 0
 		open_count--;
 		unlock(cache_mutex);
-		stats->shared = 0;
+		/*stats->shared = 0;
 		unlink(stats->tmp_path);
-		gstrdel(stats->tmp_path);
+		gstrdel(stats->tmp_path);*/
 	}
 	else {
 		open_count--;
@@ -152,7 +152,7 @@ int cache_delete(struct file_system_info *fsinfo){
 		return -1;
 	debug(3, "[Function: cache_delete] Deleting from cache %s file with %d open and %d cached files;\n", cache->stats->path, open_count, cache_count);
 	lock(file_mutex[repo][cache->stats->rev]);
-	if (cache->stats->shared > 1){
+	/*if (cache->stats->shared > 1){
 		cache->stats->shared--;
 		open_count++;
 	}
@@ -160,7 +160,7 @@ int cache_delete(struct file_system_info *fsinfo){
 		cache->stats->shared = 0;
 		unlink(cache->stats->tmp_path);
 		gstrdel(cache->stats->tmp_path);
-	};
+	};*/
 	unlock(file_mutex[repo][cache->stats->rev]);
 	cache_count--;
 	temp = cache;

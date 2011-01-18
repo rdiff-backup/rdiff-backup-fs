@@ -3,7 +3,6 @@
 #include "necessary.h"
 #include "headers.h"
 #include "support/gutils.h"
-#include "support/glist.h"
 
 int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
@@ -23,7 +22,6 @@ typedef struct repository repository_t;
 
 repository_t *repositories = NULL;
 static struct stats root;
-list_t *open_files = NULL;
 
 /* private functions' prototypes */
 
@@ -56,16 +54,12 @@ static int repository_exists(struct file_system_info *, char *repo_name);
  */
 static int revision_exists(struct file_system_info *, char *repo_name, char *revision_name);
 
-static void find_open(node_t *, list_t *);
-
 /* public functions */
 
 int necessary_build(struct file_system_info *fsinfo){
 
     int i = 0;
     
-    if (list_new(&open_files))
-        return -1;
     if ((fsinfo->rev_count[0] = gather_revisions(fsinfo, fsinfo->repos[0], data_dir)) == -1)
         return -1;
     if ((repositories = single(repository_t)) == NULL)
@@ -83,8 +77,6 @@ int necessary_build_multi(struct file_system_info *fsinfo){
     
     int i = 0, j = 0;
     
-    if (list_new(&open_files))
-        return -1;
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
         return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
@@ -117,25 +109,11 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         }
     }
     else{
-        // trying to find stats in cache
-        char *full_path = NULL;
-        if (repo)
-            gmstrcpy(&full_path, repo, "/", revision, "/", internal, 0);
-        else
-            gmstrcpy(&full_path, revision, "/", internal, 0);
-        int result = list_find_by_path(open_files, full_path, stats);
-        free(full_path);
-        if (!result) {
-            debug(1, "found stats in on demand cache");
-            return 0;
-        }
-            
-        // haven't found stats in cache, trying in the whole tree
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree)
             return -1;
-        result = gtreeget(tree, internal, stats);
+        int result = gtreeget(tree, internal, stats);
         free_revision_tree(fsinfo, repo, revision);
         return result;
     }
@@ -262,28 +240,10 @@ void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *
     rev = &repositories[repo_index].revisions[rev_index];
 
     debug(2, "finding open files in the tree %d\n", (int) rev->tree);
-    find_open(rev->tree, open_files);
     gtreedel(rev->tree, "/");
     free(rev->tree);
     rev->tree = NULL;
     debug(2, "revision tree deleted\n");
-};
-
-void find_open(node_t *node, list_t *list){
-    int i = 0;
-    
-    pass(0);
-    if (node->stats->shared){
-        pass(1);
-        stats_t *new = single(stats_t);
-        pass(2);
-        copy_stats(node->stats, new);
-        pass(3);
-        list_add(list, new);
-        pass(4);
-    }
-    for (i = 0; i < node->size; i++)
-        find_open(node->children[i], list);
 };
 
 int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revision){

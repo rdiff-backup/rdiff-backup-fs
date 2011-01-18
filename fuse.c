@@ -104,10 +104,10 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 
     debug(1, "Reading file %s;\n", path);
     get_file(file_system_info, path, &stats);
-    if ((stats == NULL) || (stats->shared == 0))
-		return -1;
-    if ((descriptor = open(stats->tmp_path, O_RDONLY)) == -1)
-		return -1;
+    //if ((stats == NULL) || (stats->shared == 0))
+	//	return -1;
+    //if ((descriptor = open(stats->tmp_path, O_RDONLY)) == -1)
+	//	return -1;
 	if ((result = lseek(descriptor, offset, SEEK_SET)) != offset)
 		revs_read_finish(-1);
 	if ((result = read(descriptor, buf, size)) == -1)

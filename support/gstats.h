@@ -23,12 +23,9 @@ struct stats {
     char *internal; 
     char *name;
     char *link;
-
-    char *tmp_path; 
                   
     int type;
     int size;
-    int shared; 
     nlink_t nlink; 
     time_t ctime; 
     time_t atime; 

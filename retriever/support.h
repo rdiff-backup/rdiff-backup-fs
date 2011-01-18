@@ -14,12 +14,12 @@
 
 extern pthread_mutex_t **file_mutex;
 
+int retriever_init_common(struct file_system_info *);
+
 int retrieve_common(struct file_system_info *fsinfo, struct stats *, int);
 
 int repo_number(struct file_system_info *, struct stats *);
 
 int retrieve_rdiff(char *, char *, char *);
-
-int create_tmp_file(struct stats *);
 
 #endif
