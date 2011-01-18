@@ -34,7 +34,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     (void) fi;
 
     int i = 0;
-    struct stats *stats = 0;
+    struct stats *stats = NULL;
 
     debug(1, "Received path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0)
@@ -43,6 +43,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
     
+    debug(1, "Reading content of the eturned directory\n");
     char **content = get_children(file_system_info, path);
     if (content == NULL){
     	debug(1, "Error occured while looking for children;");
@@ -50,8 +51,8 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 	}
     for (i = 0; content[i] != 0; i++)
 		filler(buf, content[i], NULL, 0);
-    if (stats != 0)
-		stats->atime = time(0);
+    /*if (stats != 0)
+		stats->atime = time(0);*/
 	debug(1, "There were %d children in this directory;\n", i);
     for (i = 0; content[i] != 0; i++)
         free(content[i]);

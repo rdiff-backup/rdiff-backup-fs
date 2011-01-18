@@ -1,4 +1,5 @@
 #include "gtree.h"
+#include "gutils.h"
 
 // prototypes
 
@@ -49,7 +50,7 @@ int gtreeadd(struct node *tree, struct stats *stats, char *path){
     int count = gpthdiv(path, &parts);
     int i = 0, j = 0;
 
-	// ("[Function: tree_add_file] Received file on path %s;\n", path);
+	debug(3,"Received file on path %s;\n", path);
     if (count == 0)
 		return -1;
     for (i = 0; i < count; i++){
@@ -79,7 +80,7 @@ char** gtreecld(struct node *tree, const char *path){
 	int i = 0;
 	struct node *node = find_node(tree, path);
 
-	// printf("[Function: tree_get_children] Received path %s;\n", path);
+	debug(3, "Received path %s;\n", path);
 	if (node == NULL)
 		return NULL;
 	results = calloc(node->size + 1, sizeof(char *));
@@ -91,12 +92,12 @@ char** gtreecld(struct node *tree, const char *path){
 
 int gtreeget(struct node *tree, const char *path, struct stats **stats){
 
-
-    // printf("tree_get_file: Getting stats for %s;\n", path);    
+    debug(3, "Getting stats for %s;\n", path);    
 	struct node *node = find_node(tree, path);
 	if (node == NULL)
 		return -1;
-	*stats = node->stats;
+    debug(3, "found node; copying stats;\n");
+	copy_stats(node->stats, stats);
 	return 0;
 
 };

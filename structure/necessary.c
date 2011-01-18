@@ -97,14 +97,14 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
 
     debug(1, "checking file %s/%s/%s\n", repo, revision, internal);
     if (revision == NULL && (repo == NULL || repository_exists(fsinfo, repo))){
-        *stats = &root;
+        copy_stats(&root, stats);
         return 0;
     }
-    else if (revision != NULL && repo != NULL && internal == NULL){
+    else if (revision != NULL && repo == NULL && internal == NULL){
         if (!revision_exists(fsinfo, repo, revision))
             return -1;
         else {
-            *stats = &root;
+            copy_stats(&root, stats);
             return 0;
         }
     }
@@ -221,6 +221,7 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     }        
     if ((j = revision_index(fsinfo, repo, rev)) == -1)
         return NULL;
+    debug(3, "repo: %s = %d, revision: %s = %d\n", repo, i, rev, j);
     if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, i, j))
         return NULL;
     return revisions[j].tree;
@@ -254,7 +255,7 @@ int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revis
         return value;                               \
     }
 
-    debug(2, "reading %s\n", snapshot);
+    debug(2, "reading %s with revision %d\n", snapshot, revision);
     FILE *file = NULL;
     stats_t stats;
     
@@ -338,7 +339,7 @@ int revision_index(struct file_system_info *fsinfo, char *repo_name, char *revis
     count = fsinfo->rev_count[i];
     for (i = 0; i < count; i++)
         if (strcmp(revisions[i].name, revision_name) == 0)
-            return 1;
+            return i;
     return -1;
     
 };

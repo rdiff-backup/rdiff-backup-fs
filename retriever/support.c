@@ -9,7 +9,7 @@ int retriever_init_common(struct file_system_info *fsinfo){
 
 	int i = 0, j = 0;
 
-	debug(3, "Received %d repos;\n", fsinfo->repo_count);
+	debug(2, "Received %d repos;\n", fsinfo->repo_count);
 	file_mutex = calloc(fsinfo->repo_count, sizeof(pthread_mutex_t *));
 	for (i = 0; i < fsinfo->repo_count; i++){
 		file_mutex[i] = calloc(fsinfo->rev_count[i], sizeof(pthread_mutex_t));
@@ -34,7 +34,7 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 	char *revision = calloc(20, sizeof(char));
 	struct stat *temp = single(struct stat);
 
-	debug(3, "Received file %s from repo %d;\n", stats->path, repo);
+	debug(2, "Received file %s from repo %d;\n", stats->path, repo);
 	lock(file_mutex[repo][stats->rev]);
     node_t *node = add_file(open_files, stats->path);
 	if (node->count > 0){
@@ -65,7 +65,7 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 	int i = 0;
 	char *repo = NULL;
 
-	debug(4, "Received file %s;\n", stats->path);
+	debug(3, "Received file %s;\n", stats->path);
 	if (fsinfo->repo_count == 1)
 		repo_number_finish(0);
 	if ((repo = gpthprt(stats->path, 0)) == NULL)
@@ -81,11 +81,11 @@ int retrieve_rdiff(char *revision, char *file, char *tmp_path){
 
 	int pid = 0;
 
-	debug(3, "[Function: retrieve_rdiff] Received file %s from revision %s retrieved to path %s\n", file, revision, tmp_path);
+	debug(2, "Received file %s from revision %s retrieved to path %s\n", file, revision, tmp_path);
     if ((pid = fork()) == -1)
 		return -1;
     if (pid == 0){
-    	debug(3, "%s %s %s\n", revision, file, tmp_path);
+    	debug(2, "%s %s %s\n", revision, file, tmp_path);
 		if (execlp("rdiff-backup", "rdiff-backup", "--force", "-r", revision, file, tmp_path, NULL) == -1)
 		    fail(ERR_RDIFF);
 	};
@@ -106,7 +106,7 @@ int create_tmp_file(stats_t *stats, node_t *node){
     char *tmp_template = NULL;
     int desc = -1;
 
-	debug(3, "[Function: create_tmp_file] Received file %s;\n", stats->path);
+	debug(3, "Received file %s;\n", stats->path);
     if (gmstrcpy(&tmp_template, data_dir, "/", stats->name, "XXXXXX", 0) != 0)
 		create_tmp_file_error;
     desc = mkstemp(tmp_template);
