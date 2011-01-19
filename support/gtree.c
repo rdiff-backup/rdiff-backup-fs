@@ -64,6 +64,9 @@ int gtreeadd(struct node *tree, struct stats *stats, char *path){
 		};
 		node = next;
     };
+    for (i = 0; i < count; i++)
+        free(parts[i]);
+    free(parts);
     if (node->stats == NULL)
     	node->stats = single(struct stats);
     memcpy(node->stats, stats, sizeof(struct stats));
@@ -191,7 +194,7 @@ int tree_add_node(struct node *node, char *name){
     if (node->size == node->capacity)
 		tree_increase_capacity(node);
     node->children[node->size] = calloc(1, sizeof(struct node));
-    node->children[node->size]->name = name;
+    gstrcpy(&node->children[node->size]->name, name);
     node->size++;
     return 0;
     
@@ -227,6 +230,7 @@ int delete_node(struct node *node){
 
 	for (i = 0; i < node->size; i++)
 		delete_node(node->children[i]);
+    free(node->children);
     free(node->stats->path);
     free(node->stats);
 	free(node);

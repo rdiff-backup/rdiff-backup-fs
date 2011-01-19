@@ -283,7 +283,9 @@ int gpthpro(char **path){
 	}
 	else{ // path[0] != '/'
 #ifdef _GNU_SOURCE
-		gmstrcpy(&current, get_current_dir_name(), "/", *path, 0);
+        char *current_dir_name = get_current_dir_name();
+		gmstrcpy(&current, current_dir_name, "/", *path, 0);
+        free(current_dir_name);
 #else
 		int length = 20;
 		current = gstralloc(length);

@@ -315,6 +315,7 @@ char * build_snapshot(struct file_system_info *fsinfo, revision_t *revisions, in
         if (revision_desc > 0)              \
             close(snapshot_desc);           \
         unlink(temp_snapshot);              \
+        gstrdel(snapshot);                  \
         gstrdel(temp_snapshot);             \
         return NULL;                        \
     }
@@ -338,6 +339,8 @@ char * build_snapshot(struct file_system_info *fsinfo, revision_t *revisions, in
         build_snapshot_error;
     if (gdesccopy(revision_desc, snapshot_desc))
         build_snapshot_error;
+    gstrdel(snapshot);
+    close(revision_desc);
     for (i = snapshot_index - 1; i >= rev_index; i--){
         if (fsinfo->repo_count == 1)
             gmstrcpy(&snapshot, data_dir, "/", revisions[i].file, 0);
@@ -348,6 +351,7 @@ char * build_snapshot(struct file_system_info *fsinfo, revision_t *revisions, in
         write(snapshot_desc, "\n", 1);
         if (gdesccopy(revision_desc, snapshot_desc))
             build_snapshot_error;
+        gstrdel(snapshot);
         close(revision_desc);
     }
     close(snapshot_desc);
