@@ -69,6 +69,8 @@ int gtreeadd(struct node *tree, struct stats *stats, char *path){
     free(parts);
     if (node->stats == NULL)
     	node->stats = single(struct stats);
+    else // we will substitute old stats in this node, so we need free old path
+        gstrdel(node->stats->path);
     memcpy(node->stats, stats, sizeof(struct stats));
     stats->path = NULL;
     stats->name = NULL;
