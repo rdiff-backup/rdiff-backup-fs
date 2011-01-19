@@ -229,6 +229,7 @@ int read_stats(stats_t *stats, FILE *file){
 			(name_set == 1) && (size_set == 1) && (type_set == 1) && (time_set == 1))
 			return 0;
 	};
+    gstrdel(line);
 	debug(3, "Finished reading file %s with name %s, type %s, size %s, time %s, link %s;\n",
           stats->internal, name_set == 1 ? "set" : "not set", type_set == 1 ? "set" : "not set",
           size_set == 1 ? "set" : "not set", time_set == 1 ? "set" : "not set", link_set == 1 ? "set" : "not set");

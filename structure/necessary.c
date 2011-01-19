@@ -270,9 +270,7 @@ void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *
         return;
     rev = &repositories[repo_index].revisions[rev_index];
 
-    debug(2, "finding open files in the tree %d\n", (int) rev->tree);
     gtreedel(rev->tree, "/");
-    free(rev->tree);
     rev->tree = NULL;
     debug(2, "revision tree deleted\n");
 };

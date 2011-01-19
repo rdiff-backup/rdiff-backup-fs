@@ -23,7 +23,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
     
-    free(stats->path);
+    gstrdel(stats->path);
 	free(stats);
     debug(1, "Retrieved attributes\n");
     return 0;
@@ -41,7 +41,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     debug(1, "Received path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0)
 		return -ENOENT;
-    free(stats->path);
+    gstrdel(stats->path);
     free(stats);
 	
     filler(buf, ".", NULL, 0);

@@ -352,6 +352,9 @@ int gpthdpt(const char *path){
 			depth--;
 		else
 			depth++;
+    for (i = 0; i < count; i++)
+        free(parts[i]);
+    free(parts);
 	return depth;
 	
 };
