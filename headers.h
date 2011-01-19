@@ -48,6 +48,9 @@
 #define ARCHFS_DIR_FORMAT "%4d-%02d-%02dT%02d:%02d:%02d"
 #define ARCHFS_DIR_FORMAT_LENGTH "XXXX-XX-XXTXX:XX:XX"
 
+#define lock(mutex) pthread_mutex_lock(&mutex)
+#define unlock(mutex) pthread_mutex_unlock(&mutex)
+
 struct file_system_info {
 	int repo_count;
 	int *rev_count;

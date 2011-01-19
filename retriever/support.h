@@ -9,9 +9,6 @@
 #include "../support/gpath.h"
 #include "../structure/core.h"
 
-#define lock(mutex) pthread_mutex_lock(&mutex)
-#define unlock(mutex) pthread_mutex_unlock(&mutex)
-
 struct node;
 
 typedef struct node node_t;

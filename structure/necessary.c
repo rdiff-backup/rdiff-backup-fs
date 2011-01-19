@@ -1,3 +1,5 @@
+#include <pthread.h>
+
 #include "sglib.h"
 
 #include "necessary.h"
@@ -7,6 +9,7 @@
 int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
 struct revision {
+    pthread_mutex_t mutex;
 	char *name;
     char *file;
 	tree_t tree;
@@ -68,6 +71,7 @@ int necessary_build(struct file_system_info *fsinfo){
     for (i = 0; i < fsinfo->rev_count[0]; i++) {
         repositories[0].revisions[i].name = get_revs_dir(fsinfo->revs[i]);
         gstrcpy(&repositories[0].revisions[i].file, fsinfo->revs[i]);
+        pthread_mutex_init(&repositories[0].revisions[i].mutex, 0);
     }
     set_directory_stats(&root);
 	return 0;
@@ -116,12 +120,18 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         }
     }
     else{
+        int repo_index = repository_index(fsinfo, repo);
+        int rev_index = revision_index(fsinfo, repo, revision);
+        if (repo_index == -1 || rev_index == -1)
+            return -1;
+        lock(repositories[repo_index].revisions[rev_index].mutex);
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree)
             return -1;
         int result = gtreeget(tree, internal, stats);
         free_revision_tree(fsinfo, repo, revision);
+        unlock(repositories[repo_index].revisions[rev_index].mutex);        
         return result;
     }
 }
@@ -150,12 +160,18 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
         return result;
     }
     else { // revision != NULL
+        int repo_index = repository_index(fsinfo, repo);
+        int rev_index = revision_index(fsinfo, repo, revision);
+        if (repo_index == -1 || rev_index == -1)
+            return NULL;
+        lock(repositories[repo_index].revisions[rev_index].mutex);
         tree_t tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree)
             return NULL;
         result = gtreecld(tree, internal);
         free_revision_tree(fsinfo, repo, revision);
+        unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
     }
 }
@@ -224,11 +240,15 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
             return NULL;
         revisions = repositories[i].revisions;
         gmstrcpy(&prefix, "/", repo, "/", rev, 0);
-    }        
+    }
     if ((j = revision_index(fsinfo, repo, rev)) == -1)
         return NULL;
     debug(3, "repo: %s = %d, revision: %s = %d\n", repo, i, rev, j);
-    if (!revisions[j].tree && build_revision_tree(fsinfo, prefix, revisions, i, j))
+    int result = 0;
+    if (!revisions[j].tree)
+        result = build_revision_tree(fsinfo, prefix, revisions, i, j);
+    gstrdel(prefix);
+    if (result == -1)
         return NULL;
     return revisions[j].tree;
 }
