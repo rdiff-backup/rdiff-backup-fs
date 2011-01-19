@@ -35,11 +35,12 @@ int unzip_revs(char *path, char *dest){
     if ((dir = opendir(path)) == NULL)
     	return -1;
     for (entry = readdir(dir); entry != NULL; entry = readdir(dir)){
+        gstrdel(mirror);
         if (gstrsub(entry->d_name, "mirror_metadata.") == 0){
-            if (gmstrcpy(&mirror, path, "/", entry->d_name, 0) == -1)
-            	continue;
             extension = gpthextptr(entry->d_name);
             if (strcmp(extension, "gz") == 0){
+                if (gmstrcpy(&mirror, path, "/", entry->d_name, 0) == -1)
+                    continue;
             	if (unzip(mirror, dest) == -1)
             		continue;
             }
@@ -54,6 +55,7 @@ int unzip_revs(char *path, char *dest){
             rev_count++;
         };
     };
+    gstrdel(mirror);
     closedir(dir);
     return rev_count;
     
