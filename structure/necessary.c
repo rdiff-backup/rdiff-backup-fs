@@ -33,7 +33,7 @@ static void free_revision_tree(struct file_system_info *, char *repo, char *revi
 
 static int find_snapshot(revision_t *, int, int);
 
-static char * build_snapshot(revision_t *, int, int);
+static char * build_snapshot(struct file_system_info *, revision_t *, int, int, int);
 
 int read_revision_necessary(char *, char *, tree_t, int);
 
@@ -80,13 +80,18 @@ int necessary_build_multi(struct file_system_info *fsinfo){
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
         return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
-        if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], data_dir)) == -1)
+        char *target_dir = NULL;
+        gmstrcpy(&target_dir, data_dir, "/", fsinfo->repo_names[i], 0);
+        if (mkdir(target_dir, S_IRWXU))
+            return -1;
+        if ((fsinfo->rev_count[i] = gather_revisions(fsinfo, fsinfo->repos[i], target_dir)) == -1)
             return -1;
         repositories[i].revisions = calloc(fsinfo->rev_count[i], sizeof(revision_t));
         for (j = 0; j < fsinfo->rev_count[i]; j++){
             repositories[i].revisions[j].name = get_revs_dir(fsinfo->revs[j]);
             gstrcpy(&repositories[i].revisions[j].file, fsinfo->revs[j]);
         }
+        gstrdel(target_dir);
     }
     set_directory_stats(&root);
     return -1;
@@ -97,10 +102,12 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
 
     debug(1, "checking file %s/%s/%s\n", repo, revision, internal);
     if (revision == NULL && (repo == NULL || repository_exists(fsinfo, repo))){
+        debug(1, "checking repo entry\n");
         copy_stats(&root, stats);
         return 0;
     }
-    else if (revision != NULL && repo == NULL && internal == NULL){
+    else if (revision != NULL && internal == NULL){
+        debug(1, "checking revision entry\n");
         if (!revision_exists(fsinfo, repo, revision))
             return -1;
         else {
@@ -169,10 +176,9 @@ int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_
     char *current_snapshot = NULL;
 
     debug(2, "building revision tree for index %d\n", rev_index);
-    
     if ((snapshot_index = find_snapshot(revisions, fsinfo->rev_count[repository_index], rev_index)) == -1)
         build_revision_tree_finish(-1);
-    if ((current_snapshot = build_snapshot(revisions, rev_index, snapshot_index)) == NULL)
+    if ((current_snapshot = build_snapshot(fsinfo, revisions, repository_index, rev_index, snapshot_index)) == NULL)
         build_revision_tree_finish(-1);
     if (gtreenew(&(revisions[rev_index].tree)))
         build_revision_tree_finish(-1);
@@ -277,7 +283,7 @@ int read_revision_necessary(char *snapshot, char *prefix, tree_t tree, int revis
 	
 };
 
-char * build_snapshot(revision_t *revisions, int rev_index, int snapshot_index) {
+char * build_snapshot(struct file_system_info *fsinfo, revision_t *revisions, int repo_index, int rev_index, int snapshot_index) {
     
     #define build_snapshot_error {          \
         if (snapshot_desc > 0)              \
@@ -299,14 +305,20 @@ char * build_snapshot(revision_t *revisions, int rev_index, int snapshot_index) 
     gmstrcpy(&temp_snapshot, data_dir, "/temp-snapshot-XXXXXX", 0);
     if ((snapshot_desc = mkstemp(temp_snapshot)) == -1)
         build_snapshot_error;
-    gmstrcpy(&snapshot, data_dir, "/", revisions[snapshot_index].file, 0);
-    
+    if (fsinfo->repo_count == 1)
+        gmstrcpy(&snapshot, data_dir, "/", revisions[snapshot_index].file, 0);
+    else
+        gmstrcpy(&snapshot, data_dir, "/", fsinfo->repo_names[repo_index], "/", revisions[snapshot_index].file, 0);  
+    debug(2, "%s\n", snapshot);
     if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
         build_snapshot_error;
     if (gdesccopy(revision_desc, snapshot_desc))
         build_snapshot_error;
     for (i = snapshot_index - 1; i >= rev_index; i--){
-        gmstrcpy(&snapshot, data_dir, "/", revisions[i].file, 0);
+        if (fsinfo->repo_count == 1)
+            gmstrcpy(&snapshot, data_dir, "/", revisions[i].file, 0);
+        else
+            gmstrcpy(&snapshot, data_dir, "/", fsinfo->repo_names[repo_index], "/", revisions[i].file, 0);  
         if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
             build_snapshot_error;
         write(snapshot_desc, "\n", 1);
