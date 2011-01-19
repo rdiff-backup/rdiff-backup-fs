@@ -87,7 +87,8 @@ int revs_open(const char *path, struct fuse_file_info *fi){
 		return -1;
 	if (retrieve(file_system_info, stats) != 0)
 		return -1;	    
-    stats->atime = time(0);
+    gstrdel(stats->path);
+    free(stats);
     return 0;
 
 };
@@ -108,6 +109,8 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
     debug(1, "Reading file %s;\n", path);
     get_file(file_system_info, path, &stats);
     char *tmp_path = get_tmp_path(stats->path);
+    gstrdel(stats->path);
+    free(stats);
     if (!tmp_path)
 		return -1;
     if ((descriptor = open(tmp_path, O_RDONLY)) == -1)
@@ -128,8 +131,13 @@ int revs_release(const char *path, struct fuse_file_info *fi){
     struct stats *stats = NULL;
     
     get_file(file_system_info, path, &stats);
-    if (stats == NULL)
-		return -1;
+    if (stats == NULL){
+        gstrdel(stats->path);
+        free(stats);
+        return -1;
+    }
+    gstrdel(stats->path);
+    free(stats);    
     return release(file_system_info, stats);
 
 };
