@@ -114,13 +114,13 @@ int gtreedel(struct node *tree, const char *path){
 	// printf("[Function: tree_delete] Deleting path %s;\n", path);
 	if ((node = find_node(tree, path)) == NULL)
 		return -1;
-    // TODO: tu jest fuckup dla plikow w glownym katalogu; zwraca NULL
-	if ((parent = find_parent(tree, path)) == NULL)
-		return -1;
-	for (i = 0; (i < parent->size) && (parent->children[i] != node); i++);
-	for (;i < parent->size - 1; i++)
-		parent->children[i] = parent->children[i + 1];
-	parent->size--;
+    parent = find_parent(tree, path);
+	if (parent){
+        for (i = 0; (i < parent->size) && (parent->children[i] != node); i++);
+        for (;i < parent->size - 1; i++)
+            parent->children[i] = parent->children[i + 1];
+        parent->size--;
+    }
 	return delete_node(node);
 
 };
@@ -230,6 +230,7 @@ int delete_node(struct node *node){
 
 	for (i = 0; i < node->size; i++)
 		delete_node(node->children[i]);
+    free(node->name);
     free(node->children);
     free(node->stats->path);
     free(node->stats);
