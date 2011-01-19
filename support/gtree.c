@@ -227,6 +227,8 @@ int delete_node(struct node *node){
 
 	for (i = 0; i < node->size; i++)
 		delete_node(node->children[i]);
+    free(node->stats->path);
+    free(node->stats);
 	free(node);
 
 	return 0;

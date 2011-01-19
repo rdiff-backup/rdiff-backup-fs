@@ -166,8 +166,10 @@ int read_stats(stats_t *stats, FILE *file){
 		if (gstrsub(line, "File ") == 0){
 			memset(stats, 0, sizeof(struct stats));
 			line[result - 1] = 0;
-			if (strcmp(line, "File .") == 0)
+			if (strcmp(line, "File .") == 0){
+                gstrdel(line);
 				continue;
+            }
 			// gstrcpy(stats->internal, line + strlen("File "));
 			gstrcpy(&stats->internal, line + 5);
 			name_set = 1;
@@ -195,8 +197,10 @@ int read_stats(stats_t *stats, FILE *file){
 		};
 		if (strcmp(line, "  Type None\n") == 0){
 			stats->type = -1;
-			if (name_set == 1)
+			if (name_set == 1){
+                gstrdel(line);
 				return 0;
+            }
 		};
 		if (gstrsub(line, "  SymData ") == 0){
 			line[result - 1] = 0;
@@ -210,6 +214,7 @@ int read_stats(stats_t *stats, FILE *file){
 			stats->atime = stats->ctime;
 			time_set = 1;
 		}
+        gstrdel(line);
 		if ((stats->type == S_IFLNK) &&
 			(name_set == 1) && (link_set == 1) && (type_set == 1))
 			return 0;
