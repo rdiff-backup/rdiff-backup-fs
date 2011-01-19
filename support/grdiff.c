@@ -16,8 +16,10 @@ int unzip(char *, char *);
 // public:
 
 int update_tree(tree_t tree, stats_t *stats, char *path){
-    if (stats->type == -1)
+    if (stats->type == -1) {
+        gstrdel(stats->path);
         return gtreedel(tree, path);
+    }
     else
         return gtreeadd(tree, stats, path);
 }
