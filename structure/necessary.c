@@ -127,11 +127,13 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         lock(repositories[repo_index].revisions[rev_index].mutex);
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
-        if (!tree)
+        if (!tree) {
+            unlock(repositories[repo_index].revisions[rev_index].mutex);
             return -1;
+        }
         int result = gtreeget(tree, internal, stats);
         free_revision_tree(fsinfo, repo, revision);
-        unlock(repositories[repo_index].revisions[rev_index].mutex);        
+        unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
     }
 }
@@ -167,8 +169,10 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
         lock(repositories[repo_index].revisions[rev_index].mutex);
         tree_t tree = get_revision_tree(fsinfo, repo, revision);
         debug(1, "retrieved tree %d\n", (int) tree);
-        if (!tree)
+        if (!tree) {
+            unlock(repositories[repo_index].revisions[rev_index].mutex);
             return NULL;
+        }
         result = gtreecld(tree, internal);
         free_revision_tree(fsinfo, repo, revision);
         unlock(repositories[repo_index].revisions[rev_index].mutex);
