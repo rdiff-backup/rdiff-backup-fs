@@ -22,7 +22,8 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_mtime = stats->ctime;
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
-	
+    
+	free(stats);
     debug(1, "Retrieved attributes\n");
     return 0;
     
@@ -39,6 +40,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     debug(1, "Received path %s;\n", path);
     if (get_file(file_system_info, path, &stats) != 0)
 		return -ENOENT;
+    free(stats);
 	
     filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
@@ -51,8 +53,6 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 	}
     for (i = 0; content[i] != 0; i++)
 		filler(buf, content[i], NULL, 0);
-    /*if (stats != 0)
-		stats->atime = time(0);*/
 	debug(1, "There were %d children in this directory;\n", i);
     for (i = 0; content[i] != 0; i++)
         free(content[i]);

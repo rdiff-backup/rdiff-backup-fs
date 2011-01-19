@@ -350,7 +350,6 @@ int unzip(char *path, char *dest){
 #define unzip_error	{							\
     	    gstrdel(temp); 						\
     	    gstrdel(target); 					\
-    	    gstrdel(buffer);					\
     	    if (file != NULL)					\
     			fclose(file);					\
     	    if (archive != NULL)				\
@@ -360,8 +359,8 @@ int unzip(char *path, char *dest){
     
     char *temp = NULL;    
     char *target = NULL;
-    char *buffer = NULL;
-    int buffer_length = 1000;
+    int buffer_length = 1024;
+    char buffer[1024];
 
     FILE *file = NULL;
     gzFile archive = NULL;
@@ -377,8 +376,6 @@ int unzip(char *path, char *dest){
 		unzip_error;
     if ((archive = gzopen(path, "rb")) == NULL)
 		unzip_error;
-    if ((buffer = gstralloc(buffer_length)) == NULL)
-		unzip_error;	
     while (gzgets(archive, buffer, buffer_length) != Z_NULL)
 		fprintf(file, "%s", buffer);
         
