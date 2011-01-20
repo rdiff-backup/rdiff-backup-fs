@@ -13,9 +13,9 @@ from rdiff_backup.Main import Main
 
 class RdiffBackupTestMeta(type):
     
-    TEST_DATA_DIRECTORY = 'tests'
-    TEST_RDIFF_DIRECTORY = 'tests_backup'
-    TEST_MOUNT_DIRECTORY = 'tests_mount'
+    TEST_DATA_DIRECTORY = '.tests'
+    TEST_RDIFF_DIRECTORY = '.tests_backup'
+    TEST_MOUNT_DIRECTORY = '.tests_mount'
     EXECUTABLE = './rdiff-backup-fs'
     UNMOUNT_EXECUTABLE = 'fusermount'
     
