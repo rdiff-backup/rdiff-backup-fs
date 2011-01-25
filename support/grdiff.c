@@ -17,8 +17,11 @@ int unzip(char *, char *);
 
 int update_tree(tree_t tree, stats_t *stats, char *path){
     if (stats->type == -1) {
+        int result = gtreedel(tree, path);
+        // because path points to stats->path, we must delete after we use path
+        // TODO: this should be cleared up
         gstrdel(stats->path);
-        return gtreedel(tree, path);
+        return result;
     }
     else
         return gtreeadd(tree, stats, path);
