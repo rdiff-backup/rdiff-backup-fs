@@ -1,7 +1,7 @@
 #ifndef _HEADERS_H_
 #define _HEADERS_H_
 
-#define VERSION "1.0.0a"
+#define VERSION "1.0.0a2"
 
 #include <stdio.h>
 #include <stdlib.h>
