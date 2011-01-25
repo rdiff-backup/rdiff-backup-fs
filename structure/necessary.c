@@ -26,6 +26,24 @@ typedef struct repository repository_t;
 repository_t *repositories = NULL;
 static struct stats root;
 
+struct cache_node;
+
+typedef struct cache_node cache_node_t;
+
+struct cache_node {
+    int repo;
+    int rev;
+    node_t *next;
+    node_t *prev;
+};
+
+struct cache_list {
+    node_t *head;
+    node_t *tail;
+};
+
+typedef struct cache_list cache_list_t;
+
 /* private functions' prototypes */
 
 static struct node * get_revision_tree(struct file_system_info *, char *, char *);
