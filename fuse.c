@@ -85,11 +85,10 @@ int revs_open(const char *path, struct fuse_file_info *fi){
     get_file(file_system_info, path, &stats);
     if (stats->type & S_IFDIR)
 		return -1;
-	if (retrieve(file_system_info, stats) != 0)
-		return -1;	    
+	int result = retrieve(file_system_info, stats);
     gstrdel(stats->path);
     free(stats);
-    return 0;
+    return result;
 
 };
 
@@ -136,9 +135,10 @@ int revs_release(const char *path, struct fuse_file_info *fi){
         free(stats);
         return -1;
     }
+    int result = release(file_system_info, stats);
     gstrdel(stats->path);
     free(stats);    
-    return release(file_system_info, stats);
+    return result;
 
 };
 

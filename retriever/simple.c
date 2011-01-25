@@ -21,7 +21,7 @@ int release_simple(struct file_system_info *fsinfo, struct stats *stats){
 
 	int repo = 0;
 	
-	debug(2, "Retrieving file %s from revision %dB;\n", stats->path, stats->rev);
+	debug(2, "Releasing file %s from revision %dB;\n", stats->path, stats->rev);
 	if ((repo = repo_number(fsinfo, stats)) == -1)
 		return -1;
 	return __release_simple(stats, repo);
