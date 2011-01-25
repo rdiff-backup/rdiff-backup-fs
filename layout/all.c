@@ -20,14 +20,12 @@ int all_get_file(struct file_system_info *fsinfo, const char *path, struct stats
 	char *repo = NULL;
 	char *internal = NULL;
 
-    // printf("[all_get_file] getting file stats for %s\n", path);
 	if (get_internals(fsinfo, path, &repo, &revision, &internal) != 0)
 		return -1;
 	int result = struct_get_file(fsinfo, repo, revision, internal, stats);
     free(revision);
     free(repo);
     free(internal);
-    // printf("[all_get_file] stats retrieved\n");
     return result;
 	
 };
@@ -74,6 +72,7 @@ int get_internals(struct file_system_info *fsinfo, const char *path, char **repo
 					return -1;
 				};
 				(*internal) = gpthcut(temp);
+                free(temp);
 			};
 		};
 	};
