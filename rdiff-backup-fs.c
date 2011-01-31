@@ -7,7 +7,7 @@ char *mount = NULL;
 char *tmp_dir = NULL;
 char *data_dir = NULL;
 
-int structure = STRUCTURE_FULL;
+int structure = STRUCTURE_NECESSARY;
 int layout = LAYOUT_ALL;
 int debug = 0;
 
