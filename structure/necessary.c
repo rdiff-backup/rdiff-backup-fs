@@ -1,12 +1,11 @@
 #include <pthread.h>
+#include <assert.h>
 
 #include "sglib.h"
 
 #include "necessary.h"
 #include "headers.h"
 #include "support/gutils.h"
-
-int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
 struct revision {
     pthread_mutex_t mutex;
@@ -33,16 +32,22 @@ typedef struct cache_node cache_node_t;
 struct cache_node {
     int repo;
     int rev;
-    node_t *next;
-    node_t *prev;
+    cache_node_t *next;
+    cache_node_t *prev;
 };
 
 struct cache_list {
-    node_t *head;
-    node_t *tail;
+    cache_node_t *head;
+    cache_node_t *tail;
+    int size;
+    pthread_mutex_t mutex;
 };
 
 typedef struct cache_list cache_list_t;
+
+static cache_list_t cache_list;
+
+int necessary_limit = DEFAULT_NECESSARY_LIMIT;
 
 /* private functions' prototypes */
 
@@ -50,7 +55,7 @@ static struct node * get_revision_tree(struct file_system_info *, char *, char *
 
 static int build_revision_tree(struct file_system_info *fsinfo, char *, revision_t *, int, int);
 
-static void free_revision_tree(struct file_system_info *, char *repo, char *revision);
+static void free_revision_tree(int repo, int rev);
 
 static int find_snapshot(revision_t *, int, int);
 
@@ -75,6 +80,10 @@ static int repository_exists(struct file_system_info *, char *repo_name);
  */
 static int revision_exists(struct file_system_info *, char *repo_name, char *revision_name);
 
+static int add_cached_tree(cache_list_t *list, int repo, int rev);
+
+static void free_cached_tree(cache_list_t *list);
+
 /* public functions */
 
 int necessary_build(struct file_system_info *fsinfo){
@@ -85,6 +94,9 @@ int necessary_build(struct file_system_info *fsinfo){
         return -1;
     if ((repositories = single(repository_t)) == NULL)
         return -1;
+    cache_list.head = cache_list.tail = NULL;
+    cache_list.size = 0;
+    pthread_mutex_init(&cache_list.mutex, 0);
     repositories[0].revisions = calloc(fsinfo->rev_count[0], sizeof(revision_t));
     for (i = 0; i < fsinfo->rev_count[0]; i++) {
         repositories[0].revisions[i].name = get_revs_dir(fsinfo->revs[i]);
@@ -98,7 +110,10 @@ int necessary_build(struct file_system_info *fsinfo){
 int necessary_build_multi(struct file_system_info *fsinfo){
     
     int i = 0, j = 0;
-    
+
+    cache_list.head = cache_list.tail = NULL;
+    cache_list.size = 0;
+    pthread_mutex_init(&cache_list.mutex, 0);    
     if ((repositories = calloc(fsinfo->repo_count, sizeof(revision_t))) == NULL)
         return -1;
     for (i = 0; i < fsinfo->repo_count; i++){
@@ -150,7 +165,6 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
             return -1;
         }
         int result = gtreeget(tree, internal, stats);
-        free_revision_tree(fsinfo, repo, revision);
         unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
     }
@@ -192,7 +206,6 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
             return NULL;
         }
         result = gtreecld(tree, internal);
-        free_revision_tree(fsinfo, repo, revision);
         unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
     }
@@ -222,7 +235,8 @@ int build_revision_tree(struct file_system_info *fsinfo, char *prefix, revision_
         build_revision_tree_finish(-1);
     if (read_revision_necessary(current_snapshot, prefix, revisions[rev_index].tree, fsinfo->rev_count[repository_index] - rev_index - 1))
         build_revision_tree_finish(-1);
-    debug(1, "done building\n");
+    add_cached_tree(&cache_list, repository_index, rev_index);
+    debug(2, "done building\n");
     build_revision_tree_finish(0);
 }
 
@@ -275,19 +289,12 @@ tree_t get_revision_tree(struct file_system_info *fsinfo, char *repo, char *rev)
     return revisions[j].tree;
 }
 
-void free_revision_tree(struct file_system_info *fsinfo, char *repo_name, char *rev_name){
+void free_revision_tree(int repo_index, int rev_index){
     
-    int rev_index = 0, repo_index = 0;
     revision_t *rev = NULL;
     
-    debug(2, "freeing revision tree for %s/%s\n", repo_name, rev_name);
-    
-    if ((repo_index = repository_index(fsinfo, repo_name)) == -1)
-        return;
-    if ((rev_index = revision_index(fsinfo, repo_name, rev_name)) == -1)
-        return;
+    debug(2, "freeing revision tree for %d/%d\n", repo_index, rev_index);
     rev = &repositories[repo_index].revisions[rev_index];
-
     gtreedel(rev->tree, "/");
     rev->tree = NULL;
     debug(2, "revision tree deleted\n");
@@ -408,4 +415,37 @@ int repository_index(struct file_system_info *fsinfo, char *repo){
     if (i == fsinfo->repo_count) // failed to find repo
         return -1;
     return i;
+};
+
+int add_cached_tree(cache_list_t *list, int repo, int rev){
+    
+    assert(necessary_limit > 0);
+    
+    lock(list->mutex);
+    cache_node_t *node = single(cache_node_t);
+    node->repo = repo;
+    node->rev = rev;
+    node->next = list->head;
+    if (list->head)
+        list->head->prev = node;
+    if (!list->tail)
+        list->tail = node;
+    list->head = node;
+    list->size++;
+    if (list->size > necessary_limit)
+        free_cached_tree(list);
+    unlock(list->mutex);
+    return 0;
+};
+
+void free_cached_tree(cache_list_t *list){
+    
+    assert(list->size > necessary_limit && necessary_limit > 0);
+    
+    list->tail->prev->next = NULL;
+    lock(repositories[list->tail->repo].revisions[list->tail->rev].mutex);
+    free_revision_tree(list->tail->repo, list->tail->rev);
+    unlock(repositories[list->tail->repo].revisions[list->tail->rev].mutex);
+    list->tail = list->tail->prev;
+    list->size--;
 };

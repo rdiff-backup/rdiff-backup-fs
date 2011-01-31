@@ -1,7 +1,7 @@
 CC = gcc -c
 LD = gcc
 LDFLAGS = -lz
-OBJS = archfs.o \
+OBJS = rdiff-backup-fs.o \
        errors.o \
        parse.o \
        initialize.o \
@@ -32,8 +32,8 @@ ALWAYS_REQUIRED = headers.h externs.h
 all: ${OBJS} ${ALWAYS_REQUIRED}
 	${LD} ${MAIN_FLAGS} ${OBJS} ${LDFLAGS} -o ${EXECUTABLE}
 
-archfs.o: archfs.c ${ALWAYS_REQUIRED}
-	${CC} ${FLAGS} archfs.c
+rdiff-backup-fs.o: rdiff-backup-fs.c ${ALWAYS_REQUIRED}
+	${CC} ${FLAGS} rdiff-backup-fs.c
 
 errors.o: errors.c errors.h ${ALWAYS_REQUIRED}
 	${CC} ${FLAGS} errors.c 

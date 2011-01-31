@@ -4,6 +4,10 @@ rm --force config.h
 echo "/* System dependent options; */" >> config.h
 echo "" >> config.h
 
+AC_ARG_ENABLE(assert, "enable assertion",
+  [ AC_DEFINE(ASSERT_ON) ]
+)
+
 AC_PROG_CC
 
 dnl checks for programs
