@@ -82,7 +82,8 @@ int revs_open(const char *path, struct fuse_file_info *fi){
 
     struct stats *stats;
     
-    get_file(file_system_info, path, &stats);
+    if (get_file(file_system_info, path, &stats) == -1)
+        return -1;
     if (stats->type & S_IFDIR)
 		return -1;
 	int result = retrieve(file_system_info, stats);
@@ -106,8 +107,12 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
     int result = 0;
 
     debug(1, "Reading file %s;\n", path);
-    get_file(file_system_info, path, &stats);
+    if (get_file(file_system_info, path, &stats) == -1)
+        return -1;
+    if (stats->type & S_IFDIR)
+		return -1;
     char *tmp_path = get_tmp_path(stats->path);
+    debug(1, "Retrieved stats for path %s with tmp path %s\n", stats->path, tmp_path);
     gstrdel(stats->path);
     free(stats);
     if (!tmp_path)
