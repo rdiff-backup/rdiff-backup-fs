@@ -4,7 +4,7 @@
 
 int policy = POLICY_SIMPLE;
 pthread_mutex_t **file_mutex = NULL;
-int cache_limit = 0;
+int cache_limit = DEFAULT_FILE_CACHE_LIMIT;
 
 int (*retrieve)(struct file_system_info *fsinfo, stats_t *stats);
 int (*release)(struct file_system_info *fsinfo, stats_t *stats);

@@ -12,6 +12,8 @@
 #include "simple.h"
 #include "limit.h"
 
+#define DEFAULT_FILE_CACHE_LIMIT 10
+
 extern int cache_limit;
 
 int retriever_init_simple(struct file_system_info *);

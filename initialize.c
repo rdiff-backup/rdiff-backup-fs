@@ -137,7 +137,7 @@ void initialize(struct file_system_info *fsinfo){
 
     if (cache_limit == 0)
    		retriever_init_simple(fsinfo);
-   	else
+   	else 
    		retriever_init_limit(fsinfo);
    	
 };
