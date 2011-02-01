@@ -25,12 +25,12 @@ struct stats {
     char *link;
                   
     int type;
-    int size;
+    unsigned long long size;
     nlink_t nlink; 
     time_t ctime; 
     time_t atime; 
 
-    int rev;
+    unsigned int rev;
 
 };
 

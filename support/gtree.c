@@ -285,7 +285,7 @@ int tree_save_node(struct node *node, int desc){
 	
 	// setting file size
 	if (node->stats->type == S_IFREG){
-		asprintf(&temp, "Size %d\n", node->stats->size);
+		asprintf(&temp, "Size %lld\n", node->stats->size);
 		gstrcat(&result, temp);
 		gstrdel(temp);
 	}
