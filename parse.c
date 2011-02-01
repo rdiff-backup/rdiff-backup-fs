@@ -131,8 +131,10 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
     	structure = STRUCTURE_FULL;
     else if ((strcmp(argv[*index], OPT_NECESSARY) == 0) || (strcmp(argv[*index], OPT_NECESSARY_FULL) == 0))
     	structure = STRUCTURE_NECESSARY;
-    else if ((strcmp(argv[*index], OPT_LAST) == 0) || (strcmp(argv[*index], OPT_LAST_FULL) == 0))
+    else if ((strcmp(argv[*index], OPT_LAST) == 0) || (strcmp(argv[*index], OPT_LAST_FULL) == 0)) {
     	layout = LAYOUT_LAST;
+        structure = STRUCTURE_FULL;
+    }
     else if ((strcmp(argv[*index], OPT_CACHING) == 0) || (strcmp(argv[*index], OPT_CACHING_FULL) == 0)){
     	if (set_caching(argc, argv, index) != 0)
     		fail(ERR_PARAMETRES);
@@ -175,7 +177,6 @@ void parse_mount(char *arg){
 		fail(ERR_PARAMETRES);
     if (gstrcpy(&mount, arg) != 0)
     	fail(-1);
-	//printf("[Function: parse_mount] Mount point set to %s;\n", mount);
 
 };
 
