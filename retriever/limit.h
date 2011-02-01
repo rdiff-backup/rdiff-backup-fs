@@ -8,11 +8,6 @@
 #include "../support/gpath.h"
 #include "../structure/core.h"
 
-struct cache {
-	struct stats *stats;
-	struct cache *next;
-};
-
 int retrieve_limit(struct file_system_info *fsinfo, struct stats *);
 int release_limit(struct file_system_info *fsinfo, struct stats *);
 

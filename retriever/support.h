@@ -17,6 +17,7 @@ struct node {
     char *path;
     char *tmp_path;
     int count;
+    int rev;
     
     node_t *next;
     node_t *prev;
@@ -41,7 +42,7 @@ int retriever_init_common(struct file_system_info *);
 
 int retrieve_common(struct file_system_info *fsinfo, struct stats *, int);
 
-int repo_number(struct file_system_info *, struct stats *);
+int repo_number(struct file_system_info *, char *);
 
 int retrieve_rdiff(char *, char *, char *);
 

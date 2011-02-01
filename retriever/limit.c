@@ -16,7 +16,12 @@ struct cache *last = NULL;
 int __retrieve_limit(struct file_system_info *fsinfo, struct stats *, int);
 int __release_limit(struct stats *, int);
 
-int cache_add(struct stats *);
+struct cache {
+	node_t *node;
+	struct cache *next;
+};
+
+int cache_add(node_t *);
 int cache_delete();
 
 // public:
@@ -27,7 +32,7 @@ int retrieve_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	debug(3, "Retrieving file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
-	if ((repo = repo_number(fsinfo, stats)) == -1)
+	if ((repo = repo_number(fsinfo, stats->path)) == -1)
 		return -1;
 	return __retrieve_limit(fsinfo, stats, repo);
 
@@ -39,7 +44,7 @@ int release_limit(struct file_system_info *fsinfo, struct stats *stats){
 
 	debug(3, "Releasing file; currently %d open and %d cached files;\n", 
 		   open_count, cache_count);
-	if ((repo == repo_number(fsinfo, stats)) == -1)
+	if ((repo == repo_number(fsinfo, stats->path)) == -1)
 		return -1;
 	return __release_limit(stats, repo);
 		
@@ -58,37 +63,37 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 
 	char *file = NULL;
 	char *revision = calloc(20, sizeof(char));
-	struct stat *temp = single(struct stat);
+	struct stat temp;
 
 	lock(file_mutex[repo][stats->rev]);
-	// checking, whether file was already retrieved
-	/*if (stats->shared > 0){
-		stats->shared++;
+    node_t *node = get_open_file(stats->path);
+	if (node->count > 0){
+		node->count++;
 		__retrieve_limit_finish(0);
-	};*/
+	};
 
 	// retrieving file
-	/*if (create_tmp_file(stats) == -1)
-		__retrieve_limit_finish(-1);*/
+	if (create_tmp_file(stats, node) == -1)
+		__retrieve_limit_finish(-1);
 	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		__retrieve_limit_finish(-1);
 	sprintf(revision, "%dB", stats->rev);
-	/*if (retrieve_rdiff(revision, file, stats->tmp_path) != 0)
-		__retrieve_limit_finish(-1);*/
-	//debug(3, "[Fuse: __retrieve_limit] Retrieved to %s\n", stats->tmp_path);
-	/*if (stat(stats->tmp_path, temp) != 0)
+	if (retrieve_rdiff(revision, file, node->tmp_path) != 0)
 		__retrieve_limit_finish(-1);
-	stats->shared = 1;*/
+	debug(3, "Retrieved to %s\n", node->tmp_path);
+	if (stat(node->tmp_path, &temp) != 0)
+		__retrieve_limit_finish(-1);
+	node->count = 1;
 
 	// cache control
 	lock(cache_mutex);
-	/*if (stats->shared == 1)
-		open_count++;*/
+	if (node->count == 1)
+		open_count++;
 	unlock(file_mutex[repo][stats->rev]);
 	free(file);
 	free(revision);
 	while ((open_count + cache_count > cache_limit) && (open_count < cache_limit))
-		cache_delete();
+		cache_delete(fsinfo);
 	unlock(cache_mutex);
 
 	return 0;
@@ -102,36 +107,37 @@ int __release_limit(struct stats *stats, int repo){
 			return value;								\
 		}
 
+    node_t *node = get_open_file(stats->path);
 	lock(file_mutex[repo][stats->rev]);
-	/*if (stats->shared > 1){
-		stats->shared --;
+	if (node->count > 1){
+		node->count--;
 		__release_limit_finish(0);
-	}*/
+	}
 	lock(cache_mutex);
 	if (open_count > cache_limit){
 		// nothing is cached; if open_count > cache_limit, then cache_count = 0
 		open_count--;
 		unlock(cache_mutex);
-		/*stats->shared = 0;
-		unlink(stats->tmp_path);
-		gstrdel(stats->tmp_path);*/
+		node->count = 0;
+		unlink(node->tmp_path);
+        delete_open_file(node);
 	}
 	else {
 		open_count--;
-		cache_add(stats);
+		cache_add(node);
 		unlock(cache_mutex);
 	};
 	__release_limit_finish(0);
 
 };
 
-int cache_add(struct stats *stats){
+int cache_add(node_t *node){
 
 	struct cache *temp = single(struct cache);
 
-	debug(3, "[Function: cache add] Expanding cache with %s file with %d open and %d cached files;\n", stats->path, open_count, cache_count);
+	debug(3, "Expanding cache with %s file with %d open and %d cached files;\n", node->path, open_count, cache_count);
 	cache_count++;
-	temp->stats = stats;
+	temp->node = node;
 	if (cache == NULL){
 		cache = temp;
 		last = temp;
@@ -147,22 +153,23 @@ int cache_add(struct stats *stats){
 int cache_delete(struct file_system_info *fsinfo){
 
 	struct cache *temp = NULL;
-	int repo = repo_number(fsinfo, cache->stats);
-	
+	int repo = 0;
 	if (cache == NULL)
 		return -1;
-	debug(3, "[Function: cache_delete] Deleting from cache %s file with %d open and %d cached files;\n", cache->stats->path, open_count, cache_count);
-	lock(file_mutex[repo][cache->stats->rev]);
-	/*if (cache->stats->shared > 1){
-		cache->stats->shared--;
+     if ((repo = repo_number(fsinfo, cache->node->path)) == -1)
+        return -1;
+	debug(3, "Deleting from cache %s file with %d open and %d cached files;\n", cache->node->path, open_count, cache_count);
+	lock(file_mutex[repo][cache->node->rev]);
+	if (cache->node->count > 1){
+		cache->node->count--;
 		open_count++;
 	}
 	else{
-		cache->stats->shared = 0;
-		unlink(cache->stats->tmp_path);
-		gstrdel(cache->stats->tmp_path);
-	};*/
-	unlock(file_mutex[repo][cache->stats->rev]);
+		cache->node->count = 0;
+		unlink(cache->node->tmp_path);
+		gstrdel(cache->node->tmp_path);
+	};
+	unlock(file_mutex[repo][cache->node->rev]);
 	cache_count--;
 	temp = cache;
 	cache = cache->next;

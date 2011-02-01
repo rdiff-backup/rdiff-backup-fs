@@ -55,7 +55,7 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 
 };
 
-int repo_number(struct file_system_info *fsinfo, struct stats *stats){
+int repo_number(struct file_system_info *fsinfo, char *path){
 
 #define repo_number_finish(value) {				\
 			gstrdel(repo);						\
@@ -65,10 +65,10 @@ int repo_number(struct file_system_info *fsinfo, struct stats *stats){
 	int i = 0;
 	char *repo = NULL;
 
-	debug(3, "Received file %s;\n", stats->path);
+	debug(3, "Received file %s;\n", path);
 	if (fsinfo->repo_count == 1)
 		repo_number_finish(0);
-	if ((repo = gpthprt(stats->path, 0)) == NULL)
+	if ((repo = gpthprt(path, 0)) == NULL)
 		repo_number_finish(-1);
 	for (i = 0; (i < fsinfo->repo_count) && (strcmp(repo, fsinfo->repo_names[i]) != 0); i++);
 	if (i == fsinfo->repo_count)
