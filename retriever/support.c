@@ -89,7 +89,7 @@ int retrieve_rdiff(char *revision, char *file, char *tmp_path){
 		if (execlp("rdiff-backup", "rdiff-backup", "--force", "-r", revision, file, tmp_path, NULL) == -1)
 		    fail(ERR_RDIFF);
 	};
-    wait(0);
+    waitpid(pid, 0, 0);
     return 0;
 	
 };
