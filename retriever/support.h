@@ -48,4 +48,6 @@ int retrieve_rdiff(char *, char *, char *);
 
 int create_tmp_file(struct stats *, node_t *node);
 
+node_t * add_file(list_t *list, char *path, int rev);
+
 #endif

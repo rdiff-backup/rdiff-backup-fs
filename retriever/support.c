@@ -3,8 +3,6 @@
 
 list_t *open_files;
 
-node_t * add_file(list_t *list, char *path);
-
 int retriever_init_common(struct file_system_info *fsinfo){
 
 	int i = 0, j = 0;
@@ -36,7 +34,7 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 
 	debug(2, "Received file %s from repo %d;\n", stats->path, repo);
 	lock(file_mutex[repo][stats->rev]);
-    node_t *node = add_file(open_files, stats->path);
+    node_t *node = add_file(open_files, stats->path, stats->rev);
 	if (node->count > 0){
 		node->count++;
 		retrieve_common_finish(0);
@@ -120,7 +118,7 @@ int create_tmp_file(stats_t *stats, node_t *node){
 
 };
 
-node_t * add_file(list_t *list, char *path){
+node_t * add_file(list_t *list, char *path, int rev){
     if (list->head == NULL){
         list->head = list->tail = single(node_t);
         gstrcpy(&list->head->path, path);
@@ -134,6 +132,7 @@ node_t * add_file(list_t *list, char *path){
     node->prev = list->tail;
     list->tail = node;
     gstrcpy(&node->path, path);
+    node->rev = rev;
     return node;
 };
 

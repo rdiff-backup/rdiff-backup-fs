@@ -64,19 +64,25 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 	char *file = NULL;
 	char *revision = calloc(20, sizeof(char));
 	struct stat temp;
+    node_t *node;
 
+    pass(1);
 	lock(file_mutex[repo][stats->rev]);
-    node_t *node = get_open_file(stats->path);
+    if ((node = add_file(open_files, stats->path, stats->rev)) == NULL)
+        __retrieve_limit_finish(-1);
+    pass(2);
 	if (node->count > 0){
 		node->count++;
 		__retrieve_limit_finish(0);
 	};
 
+    pass(3);
 	// retrieving file
 	if (create_tmp_file(stats, node) == -1)
 		__retrieve_limit_finish(-1);
 	if (gmstrcpy(&file, fsinfo->repos[repo], "/", stats->internal, 0) == -1)
 		__retrieve_limit_finish(-1);
+    pass(4);
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, node->tmp_path) != 0)
 		__retrieve_limit_finish(-1);
