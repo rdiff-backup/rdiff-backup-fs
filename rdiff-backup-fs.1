@@ -25,6 +25,13 @@ Run rdiff-backup-fs in foreground with given verbosity of debug messages.
 Store information about all revisions in memory. CAUTION: this may take a lot
 of memory if your archive contains many revisions.
 
+.TP
+.BI "\-l, \--last"
+Displays files from the most recent increment as directories, each holding 
+every version of the file. CAUTION: this stores information about all
+revisions in memory and therefore may take a lot of memory if archive contains
+many revisions.
+
 .SH SEE ALSO
 .B rdiff-backup(1)
 
