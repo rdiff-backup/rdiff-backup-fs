@@ -1,0 +1,48 @@
+.TH RDIFF-BACKUP-FS 1
+
+.SH NAME 
+rdiff-backup-fs \- Filesystem for accessing rdiff-backup archives.
+
+.SH SYNOPSIS 
+
+.B rdiff-backup-fs <mount_point> <repository> [repositories ...] [\-option ...]
+
+.SH DESCRIPTION 
+
+.PP 
+.B rdiff-backup-fs
+is a filesystem in userspace that
+reads rdiff-backup archives and provides convenient access.
+
+.SH OPTIONS 
+
+.TP 
+.BI "\--debug <0-4>"
+Run rdiff-backup-fs in foreground with given verbosity of debug messages.
+
+.TP
+.BI "\-f, \--full"
+Store information about all revisions in memory. CAUTION: this may take a lot
+of memory if your archive contains many revisions.
+
+.SH SEE ALSO
+.B rdiff-backup(1)
+
+.SH COPYRIGHT 
+rdiff-backup-fs is Copyright (c) 2007-2011 Filip Gruszczyński.
+
+rdiff-backup-fs is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+.SH AUTHORS 
+Filip Gruszczyński <gruszczy@gmail.com>
