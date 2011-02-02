@@ -139,5 +139,6 @@ void initialize(struct file_system_info *fsinfo){
    		retriever_init_simple(fsinfo);
    	else 
    		retriever_init_limit(fsinfo);
+    printf("using nece: %d\n", necessary_limit);
    	
 };

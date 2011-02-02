@@ -2,6 +2,7 @@
 #include "externs.h"
 #include "retriever/retriever.h"
 #include "support/gutils.h"
+#include "structure/necessary.h"
 
 // definitions
 
@@ -16,6 +17,9 @@
 
 #define OPT_NECESSARY "-n"
 #define OPT_NECESSARY_FULL "--necessary"
+
+#define OPT_INCREMENTS "-i"
+#define OPT_INCREMENTS_FULL "--increments"
 
 #define OPT_CACHING "-c"
 #define OPT_CACHING_FULL "--caching"
@@ -88,6 +92,19 @@ int set_caching(int argc, char **argv, int *index){
 
 };
 
+int set_increments(int argc, char **argv, int *index){
+    
+	if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
+		return -1;
+	necessary_limit = atoi(argv[*index + 1]);
+	if (cache_limit < 0)
+		return -1;
+	*index += 1;
+
+	return 0;
+        
+};
+
 int set_debug_level(int argc, char **argv, int *index){
     if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
         return -1;
@@ -129,6 +146,10 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
 		if (set_repos(fsinfo, argc, argv, index) != 0)
 			fail(ERR_PARAMETRES);
     }
+    else if ((strcmp(argv[*index], OPT_INCREMENTS) == 0) || (strcmp(argv[*index], OPT_INCREMENTS_FULL) == 0)){
+		if (set_increments(argc, argv, index) != 0)
+			fail(ERR_PARAMETRES);
+    }    
     else if ((strcmp(argv[*index], OPT_FULL) == 0) || (strcmp(argv[*index], OPT_FULL_FULL) == 0))
     	structure = STRUCTURE_FULL;
     else if ((strcmp(argv[*index], OPT_NECESSARY) == 0) || (strcmp(argv[*index], OPT_NECESSARY_FULL) == 0))
