@@ -441,6 +441,7 @@ int add_cached_tree(cache_list_t *list, int repo, int rev){
 void free_cached_tree(cache_list_t *list){
     
     assert(list->size > necessary_limit && necessary_limit > 0);
+    debug(3s, "freeing cache for repo: %d and rev: %d\n", list->tail->repo, list->tail->rev);
     
     cache_node_t *node;
     
