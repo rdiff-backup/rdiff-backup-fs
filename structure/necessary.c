@@ -442,10 +442,14 @@ void free_cached_tree(cache_list_t *list){
     
     assert(list->size > necessary_limit && necessary_limit > 0);
     
+    cache_node_t *node;
+    
     list->tail->prev->next = NULL;
     lock(repositories[list->tail->repo].revisions[list->tail->rev].mutex);
     free_revision_tree(list->tail->repo, list->tail->rev);
     unlock(repositories[list->tail->repo].revisions[list->tail->rev].mutex);
+    node = list->tail;
     list->tail = list->tail->prev;
     list->size--;
+    free(node);
 };
