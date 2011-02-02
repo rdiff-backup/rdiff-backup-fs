@@ -238,6 +238,18 @@ class FutureFilesRegressionTestCase(RdiffBackupTestCase):
             {'file': '1', 'dir/file': '1'}
         ]
     }
+    
+
+class LargeTestCase(RdiffBackupTestCase):
+    
+    fixture_single = {
+        'first': [{'file': str(val)} for val in range(20)]
+    }
+    
+    fixture_multi = {
+        'first': [{'first': str(val)} for val in range(20)],
+        'second': [{'second': str(val)} for val in range(20)]
+    }
 
 
 def remove_directory(path, only_content=True):
