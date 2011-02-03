@@ -24,6 +24,8 @@ AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([mkdir])
 AC_CHECK_FUNCS([rmdir])
 AC_CHECK_FUNCS([strtol])
+AC_CHECK_FUNCS([get_current_dir_name])
+AC_CHECK_FUNCS([getline])
 
 AC_FUNC_FORK
 AC_FUNC_MKTIME
@@ -31,13 +33,6 @@ AC_PREREQ
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 
-AC_CHECK_FUNCS(get_current_dir_name getline)
-
-if test "$ac_cv_func_get_current_dir_name" == yes -a "$ac_cv_func_getline" == yes
-then
-	echo "#define _GNU_SOURCE" >> config.h
-	echo "" >> config.h
-fi
 
 if test -z $TMP_DIR
 then
