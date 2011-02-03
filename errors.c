@@ -7,7 +7,7 @@ void fail(int error){
     printf("Error: ");
     switch (error){
 		case (ERR_PARAMETRES):
-	    	printf("Wrong parametres; try " PROGRAM_NAME " <mount point path> <repository path> or see man archfs;\n");
+	    	printf("Wrong parametres; try " PROGRAM_NAME " <mount point path> <repository path> or see man " PROGRAM_NAME ";\n");
 	    	break;
 		case (ERR_NO_MOUNT_OPT):
 		    printf("Mount point was not declared;\n");
