@@ -1,12 +1,41 @@
-rdiff-backup-fs is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Anyone who at least once lost his project knows – I personally do - how
+important it is to create backups. Rdiff-backup 
+(http://www.nongnu.org/rdiff-backup/) allows user to incrementally
+backup one directory into another. Increments make disk usage relatively
+low, as only differences between two consecutive backups are stored. 
+This has its drawbacks, however. Although user can access files from
+most recent backup easily, simply by entering the backup directory,
+it is much harder to access and browse through older versions.
+Rdiff-backup allows to access them only by set of instructions,
+that require precise knowledge of file names and backup times. To
+investigate creation process of certain project one has to invest a lot
+of time and energy. This reduces rdiff-backup directory to simple copy 
+of a project rather than repository of all its versions.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Possible solution is to create userspace filesystem based on
+rdiff-backup repository data. As these information are well and
+explicitly stored, they can be easily accessed by the filesystem
+and presented to user in clear and friendly manner. Instead of
+doing a lot typing and bookkeeping, user will be able to freely browse
+through any revision of the backed up directory.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+The easiest – in my opinion – way to create one, is to use FUSE
+(Filesystem in userspace - http://fuse.sourceforge.net/) library that
+allows the developer to focus on high level aspects of the filesystem
+(e.g. Accessing rdiff-back information and files), while it does all
+the necessary low level work itself. Since using FUSE does not require
+root privileges it can be used by any user to create personal
+filesystem on demand.
+
+As soon as filesystem is correctly mounted, it will provide access to
+snapshot of the repository for every increment that had been done.
+Directory structure will be the same as the backed up directory at the
+time of the increment. Any file added to the repository at the will be
+accessible, yet only the accessed files will be replicated, so disk
+space usage stays low.
+
+Idea for this filesystem was first presented by Lukasz Sznuk from
+University of Warsaw as one of the projects for course in Operating
+Systems.
+
+For usage information check man rdiff-backup-fs.
