@@ -1,8 +1,6 @@
 #ifndef _HEADERS_H_
 #define _HEADERS_H_
 
-#define VERSION "1.0.0b1"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

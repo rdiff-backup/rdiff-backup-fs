@@ -1,15 +1,8 @@
-AC_INIT(rdiff-backup-fs)
+AC_INIT(rdiff-backup-fs, 1.0.0b3)
 
-rm --force config.h
-echo "/* System dependent options; */" >> config.h
-echo "" >> config.h
-
-AC_ARG_ENABLE(assert, "enable assertion",
-  [ AC_DEFINE(ASSERT_ON) ]
-)
+AC_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
-
 dnl checks for programs
 
 dnl checks for libraries
@@ -25,6 +18,18 @@ AC_CHECK_HEADER(stdarg.h)
 AC_CHECK_HEADER(dirent.h)
 AC_CHECK_HEADER(sys/wait.h)
 AC_CHECK_HEADER(pthread.h)
+
+AC_CHECK_FUNCS([getcwd])
+AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([mkdir])
+AC_CHECK_FUNCS([rmdir])
+AC_CHECK_FUNCS([strtol])
+
+AC_FUNC_FORK
+AC_FUNC_MKTIME
+AC_PREREQ
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
 
 AC_CHECK_FUNCS(get_current_dir_name getline)
 

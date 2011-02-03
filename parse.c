@@ -3,6 +3,7 @@
 #include "retriever/retriever.h"
 #include "support/gutils.h"
 #include "structure/necessary.h"
+#include "config.h"
 
 // definitions
 
@@ -169,7 +170,7 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
     else if ((strcmp(argv[*index], OPT_NO_CACHING_FULL) == 0))
         cache_limit = 0;
     else if ((strcmp(argv[*index], OPT_VERSION) == 0) || (strcmp(argv[*index], OPT_VERSION_FULL) == 0)) {
-		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
+		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", PACKAGE_VERSION);
         exit(0);
     }
     else if (strcmp(argv[*index], OPT_DEBUG_FULL) == 0) {
@@ -212,7 +213,7 @@ int parse(struct file_system_info *fsinfo, int argc, char **argv){
     int i = 0;
         
     if ((argc == 2) && ((strcmp(argv[1], OPT_VERSION) == 0) || (strcmp(argv[1], OPT_VERSION_FULL) == 0))){
-		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", VERSION);
+		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", PACKAGE_VERSION);
 		exit(0);	
     };	
     if (argc < 3)
