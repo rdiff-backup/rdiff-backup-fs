@@ -1,8 +1,6 @@
 #include <pthread.h>
 #include <assert.h>
 
-#include "sglib.h"
-
 #include "necessary.h"
 #include "headers.h"
 #include "support/gutils.h"
