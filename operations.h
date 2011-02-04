@@ -1,5 +1,5 @@
-#ifndef _FUSE_H_
-#define _FUSE_H_
+#ifndef _OPERATIONS_H_
+#define _OPERATIONS_H_
 
 #define FUSE_USE_VERSION 26
 

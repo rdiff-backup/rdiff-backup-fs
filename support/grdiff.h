@@ -6,7 +6,7 @@
 #include "gstring.h"
 #include "gpath.h"
 #include "gtree.h"
-#include "../headers.h"
+#include "headers.h"
 
 /*
  * unzips all rdiff-backup mirror_metadata files in a given directory

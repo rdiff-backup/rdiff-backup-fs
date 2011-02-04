@@ -1,3 +1,5 @@
+#include <fcntl.h>
+
 #include "gtree.h"
 #include "gutils.h"
 

@@ -6,7 +6,7 @@
 #include "externs.h"
 #include "support/gstring.h"
 #include "support/gpath.h"
-#include "fuse.h"
+#include "operations.h"
 
 #include "structure/core.h"
 #include "structure/full.h"

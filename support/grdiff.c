@@ -1,3 +1,6 @@
+#include <fcntl.h>
+#include <time.h>
+
 #include "grdiff.h"
 #include "../constants.h"
 
@@ -52,7 +55,7 @@ int unzip_revs(char *path, char *dest){
             else{
             	if (gmstrcpy(&mirror, dest, "/", entry->d_name, 0) == -1)
             		continue;
-            	if ((descriptor = open(mirror, O_WRONLY | O_CREAT)) == -1)
+            	if ((descriptor = open(mirror, O_WRONLY | O_CREAT, S_IRWXU)) == -1)
             		continue;
             	if (close(descriptor) == -1)
             		continue;
