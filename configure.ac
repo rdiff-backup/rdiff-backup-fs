@@ -1,7 +1,12 @@
+AC_PREREQ(2.61)
 AC_INIT(rdiff-backup-fs, 1.0.0b3)
-AM_INIT_AUTOMAKE
+
+AC_CANONICAL_HOST
+AC_PROG_RANLIB
+
+AM_INIT_AUTOMAKE(rdiff-backup-fs, 1.0.0b3)
 AC_CONFIG_HEADER(config.h)
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile layout/Makefile structure/Makefile retriever/Makefile support/Makefile])
 
 dnl checks for programs
 
@@ -9,6 +14,7 @@ AC_PROG_CC
 
 dnl checks for libraries
 
+AC_CHECK_LIB([z], [gzgets],,[AC_MSG_ERROR(No zlib library!)])
 AC_CHECK_LIB(fuse, fuse_main, FUSE_LIBS="-lfuse", AC_MSG_ERROR(No fuse library!))
 
 dnl checks for header files
@@ -36,6 +42,18 @@ AC_FUNC_MKTIME
 AC_PREREQ
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
+
+dnl checking type of system to provide proper compile and linking flags
+
+case ${host} in
+    *-*-linux-*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
+    *-*-bsd-*)		AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
+    *-*-darwin*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
+    *)			AC_MSG_WARN(No automatic flags for this host system; set compile/linking flags manually);;
+esac
 
 if test -z $TMP_DIR
 then
