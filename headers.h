@@ -25,7 +25,6 @@
 
 #define PROGRAM_NAME "rdiff-backup-fs"
 #define TMP_DIR_NAME PROGRAM_NAME "-XXXXXX"
-#define DEFAULT_TMP_DIR "/tmp"
 
 #define MIRROR_PREFIX "mirror_metadata."
 // strlen("mirror_metadata.XXXX-XX-XXTXX:XX:XX");

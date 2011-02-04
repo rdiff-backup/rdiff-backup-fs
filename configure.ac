@@ -33,13 +33,13 @@ AC_PREREQ
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 
-
 if test -z $TMP_DIR
 then
-	echo '#define DEFAULT_TMP_DIR "/tmp"' >> config.h
+	AC_DEFINE([DEFAULT_TMP_DIR], ["/tmp"], 
+              [Define default temporary directory])
 else
-	echo "#define DEFAULT_TMP_DIR ${TMP_DIR}" >> config.h
+    AC_DEFINE_UNQUOTED([DEFAULT_TMP_DIR], [${TMP_DIR}], 
+                       [Define temporary directory from evnironment variable])
 fi
-echo "" >> config.h
 
 AC_OUTPUT
