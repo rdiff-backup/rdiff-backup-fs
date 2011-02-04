@@ -1,9 +1,11 @@
 AC_INIT(rdiff-backup-fs, 1.0.0b3)
-
+AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER(config.h)
+AC_CONFIG_FILES([Makefile])
+
+dnl checks for programs
 
 AC_PROG_CC
-dnl checks for programs
 
 dnl checks for libraries
 
@@ -18,6 +20,8 @@ AC_CHECK_HEADER(stdarg.h)
 AC_CHECK_HEADER(dirent.h)
 AC_CHECK_HEADER(sys/wait.h)
 AC_CHECK_HEADER(pthread.h)
+
+dnl check for functions
 
 AC_CHECK_FUNCS([getcwd])
 AC_CHECK_FUNCS([memset])

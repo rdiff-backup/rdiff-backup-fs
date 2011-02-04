@@ -1,13 +1,9 @@
-#include "headers.h"
+#ifndef _FUSE_H_
+#define _FUSE_H_
+
+#define FUSE_USE_VERSION 26
 
 #include <fuse.h>
-
-#include "support/gstring.h"
-#include "support/gstats.h"
-#include "externs.h"
-#include "errors.h"
-#include "retriever/retriever.h"
-#include "layout/core.h"
 
 int revs_getattr(const char *path, struct stat *stbuf);
 
@@ -22,3 +18,5 @@ int revs_read(const char *path, char *buf, size_t size, off_t offset, struct fus
 int revs_release(const char *path, struct fuse_file_info *fi);
 
 void revs_destroy(void *);
+
+#endif

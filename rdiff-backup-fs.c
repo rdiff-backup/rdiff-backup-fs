@@ -3,6 +3,10 @@
 #include "parse.h"
 #include "initialize.h"
 
+#define FUSE_USE_VERSION 26
+
+#include <fuse.h>
+
 char *mount = NULL;
 char *tmp_dir = NULL;
 char *data_dir = NULL;

@@ -1,3 +1,8 @@
+#ifndef _EXTERNS_H_
+#define _EXTERNS_H_
+
+#define FUSE_USE_VERSION 26
+
 #include <fuse.h>
 
 extern char *mount;
@@ -14,3 +19,5 @@ extern int layout;
 extern int debug;
 
 extern int policy;
+
+#endif

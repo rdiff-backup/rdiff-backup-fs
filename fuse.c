@@ -1,5 +1,12 @@
 #include "fuse.h"
+#include "headers.h"
 #include "support/gutils.h"
+#include "support/gstring.h"
+#include "support/gstats.h"
+#include "externs.h"
+#include "errors.h"
+#include "retriever/retriever.h"
+#include "layout/core.h"
 
 // public:
 

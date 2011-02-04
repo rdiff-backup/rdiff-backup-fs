@@ -14,10 +14,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
-#define FUSE_USE_VERSION 26
-
-#include <fuse.h>
-
 #define pass(val) printf("Passed point %d\n", val);
 #define single(type) calloc(1, sizeof(type))
 

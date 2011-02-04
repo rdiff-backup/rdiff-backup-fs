@@ -1,6 +1,5 @@
 #include "headers.h"
 #include "errors.h"
-#include "externs.h"
 
 void fail(int error){
 
