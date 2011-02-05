@@ -6,3 +6,4 @@ rdiff_backup_fs_SOURCES=rdiff-backup-fs.c errors.c parse.c initialize.c operatio
 
 SUBDIRS = layout structure retriever support
 
+man1_MANS = rdiff-backup-fs.man
