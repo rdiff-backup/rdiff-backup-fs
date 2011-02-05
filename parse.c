@@ -25,8 +25,6 @@
 #define OPT_CACHING "-c"
 #define OPT_CACHING_FULL "--caching"
 
-#define OPT_NO_CACHING_FULL "--no-caching"
-
 #define OPT_DIR "-d"
 #define OPT_DIR_FULL "--directory"
 
@@ -167,8 +165,6 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
     	if (set_directory(argc, argv, index) != 0)
     		fail(ERR_PARAMETRES);
     }
-    else if ((strcmp(argv[*index], OPT_NO_CACHING_FULL) == 0))
-        cache_limit = 0;
     else if ((strcmp(argv[*index], OPT_VERSION) == 0) || (strcmp(argv[*index], OPT_VERSION_FULL) == 0)) {
 		printf(PROGRAM_NAME " - filesystem in userspace for rdiff-backup repositories; version %s\n", PACKAGE_VERSION);
         exit(0);
