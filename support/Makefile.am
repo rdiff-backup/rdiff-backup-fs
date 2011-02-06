@@ -1,3 +1,4 @@
 noinst_LIBRARIES=libsupport.a
-libsupport_a_SOURCES=gstring.c gpath.c grdiff.c gstats.c gtree.c gutils.c
-##libsupport_a_HEADERS=gstirng.h gpath.h grdiff.h gstat.h gtree.h gutils.h
+libsupport_a_SOURCES=gstring.c gstring.h gpath.c gpath.h grdiff.c grdiff.h \
+					 gstats.c gstats.h gtree.c gtree.h gutils.c gutils.h
+
