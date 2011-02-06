@@ -1,2 +1,1 @@
-1.0.0
-* Support for on demand building of revision snapshot.
+For a complete change log clone mercurial repository and run hg log.
