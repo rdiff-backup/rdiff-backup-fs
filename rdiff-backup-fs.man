@@ -33,15 +33,25 @@ revisions in memory and therefore may take a lot of memory if archive contains
 many revisions.
 
 .TP
-.BI "\-c, \--caching <n>"
+.BI "\-c <n>, \--caching <n>"
 How many files retrieved from the rdiff-backup archive may be cached by 
 filesystem. By default rdiff-backup-fs will cache up to 10 files. If this switch
 is set to 0, no caching will be done.
 
 .TP
+.BI "\-r <n>, \--revisions <n>"
+How many revisions should be stored in memory for on demand revision
+retrieval. By default rdiff-backup-fs will store up to 10 revisions
+in memory.
+
+.TP
 .BI "\-d, \--directory <path>"
 Set directory for directory with temporary files. By default rdiff-backup-fs
 uses /tmp.
+
+.TP
+.BI "\-v, \--version"
+Print version of rdiff-backup-fs and exit.
 
 .SH SEE ALSO
 .B rdiff-backup(1)

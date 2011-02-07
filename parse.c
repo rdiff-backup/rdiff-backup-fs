@@ -7,20 +7,11 @@
 
 // definitions
 
-#define OPT_MOUNT "-m"
-#define OPT_MOUNT_FULL "--mount"
-
-#define OPT_REPOS "-r"
-#define OPT_REPOS_FULL "--repositories"
-
 #define OPT_FULL "-f"
 #define OPT_FULL_FULL "--full"
 
-#define OPT_NECESSARY "-n"
-#define OPT_NECESSARY_FULL "--necessary"
-
-#define OPT_INCREMENTS "-i"
-#define OPT_INCREMENTS_FULL "--increments"
+#define OPT_INCREMENTS "-r"
+#define OPT_INCREMENTS_FULL "--revisions"
 
 #define OPT_CACHING "-c"
 #define OPT_CACHING_FULL "--caching"
@@ -39,44 +30,6 @@
 #define isOption(string) ((string[0] == '-') ? 1 : 0)
 
 // private functions
-
-int set_mount(int argc, char **argv, int *index){
-    
-    if (((*index) + 1 >= argc) || (isOption(argv[(*index) + 1]) == 1))
-		return -1;
-    if (mount != NULL)
-		return -1;
-    if (gstrcpy(&mount, argv[(*index) + 1]) != 0)
-    	return -1;
-    (*index) += 1;
-	// printf("[Function: set_mount] Mount point set to %s;\n", mount);
-    return 0;
-    
-};
-
-int set_repos(struct file_system_info *fsinfo, int argc, char **argv, int *index){
-
-    int i = 0;
-
-    if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
-		return -1;
-    if (fsinfo->repo_count != 0)
-		return -1;
-	
-    for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++)
-		fsinfo->repo_count++;
-    fsinfo->repos = calloc(fsinfo->repo_count, sizeof(char *));
-    fsinfo->rev_count = calloc(fsinfo->repo_count, sizeof(int));
-    fsinfo->repo_count = 0;
-    for (i = *index + 1; (i < argc) && (isOption(argv[i]) != 1); i++){
-		gstrcpy(&fsinfo->repos[fsinfo->repo_count], argv[i]);
-		fsinfo->repo_count++;
-    };
-    *index += fsinfo->repo_count;
-
-    return 0;
-    
-};
 
 int set_caching(int argc, char **argv, int *index){
 
@@ -137,22 +90,12 @@ int set_directory(int argc, char **argv, int *index){
 
 void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *index){
 
-    if ((strcmp(argv[(*index)], OPT_MOUNT) == 0) || (strcmp(argv[(*index)], OPT_MOUNT_FULL) == 0)){
-		if (set_mount(argc, argv, index) != 0)
-			fail(ERR_PARAMETRES);
-	}
-    else if ((strcmp(argv[*index], OPT_REPOS) == 0) || (strcmp(argv[*index], OPT_REPOS_FULL) == 0)){
-		if (set_repos(fsinfo, argc, argv, index) != 0)
-			fail(ERR_PARAMETRES);
-    }
-    else if ((strcmp(argv[*index], OPT_INCREMENTS) == 0) || (strcmp(argv[*index], OPT_INCREMENTS_FULL) == 0)){
+    if ((strcmp(argv[*index], OPT_INCREMENTS) == 0) || (strcmp(argv[*index], OPT_INCREMENTS_FULL) == 0)){
 		if (set_increments(argc, argv, index) != 0)
 			fail(ERR_PARAMETRES);
     }    
     else if ((strcmp(argv[*index], OPT_FULL) == 0) || (strcmp(argv[*index], OPT_FULL_FULL) == 0))
     	structure = STRUCTURE_FULL;
-    else if ((strcmp(argv[*index], OPT_NECESSARY) == 0) || (strcmp(argv[*index], OPT_NECESSARY_FULL) == 0))
-    	structure = STRUCTURE_NECESSARY;
     else if ((strcmp(argv[*index], OPT_LAST) == 0) || (strcmp(argv[*index], OPT_LAST_FULL) == 0)) {
     	layout = LAYOUT_LAST;
         structure = STRUCTURE_FULL;
