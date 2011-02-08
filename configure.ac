@@ -4,7 +4,7 @@ AC_INIT(rdiff-backup-fs, 1.0.0b3)
 AC_CANONICAL_HOST
 AC_PROG_RANLIB
 
-AM_INIT_AUTOMAKE(rdiff-backup-fs, 1.0.0b3)
+AM_INIT_AUTOMAKE(rdiff-backup-fs, 1.0.0)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_FILES([Makefile layout/Makefile structure/Makefile retriever/Makefile support/Makefile])
 
