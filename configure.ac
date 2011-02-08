@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT(rdiff-backup-fs, 1.0.0b3)
+AC_INIT(rdiff-backup-fs, 1.0.0)
 
 AC_CANONICAL_HOST
 AC_PROG_RANLIB
