@@ -23,7 +23,7 @@ class RdiffBackupTestMeta(type):
         fixtures = [(name, attr) for name, attr in classdict.items() 
                                  if name.startswith('fixture')]
         for name, attr in fixtures:
-            for option, sufix in (('-f', 'full'), ('-n', 'necessary')):
+            for option, sufix in (('-f', 'full'), (None, 'necessary')):
                 test = Meta.build_test(attr, option, Meta.verify_revisions)
                 classdict['test' + name[len('fixture'):] + '_' + sufix] = test
             test = Meta.build_test(attr, '-l', Meta.verify_last)
@@ -126,9 +126,11 @@ class RdiffBackupTestMeta(type):
 
     @classmethod
     def run_fs(Meta, repos, option):
-        repo_paths = [join(Meta.TEST_RDIFF_DIRECTORY, repo) for repo in repos]
-        Popen([Meta.EXECUTABLE, Meta.TEST_MOUNT_DIRECTORY] + 
-               repo_paths + [option]).wait()
+        paths = [join(Meta.TEST_RDIFF_DIRECTORY, repo) for repo in repos]
+        args = [Meta.EXECUTABLE, Meta.TEST_MOUNT_DIRECTORY] + paths 
+        if option is not None:
+			args += [option]
+        Popen(args).wait()
         
     def unmount_fs(Meta):
         Popen([Meta.UNMOUNT_EXECUTABLE, '-u', 

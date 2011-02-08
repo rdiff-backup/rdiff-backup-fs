@@ -282,7 +282,7 @@ int gpthpro(char **path){
 			return -1;
 	}
 	else{ // path[0] != '/'
-#ifdef _GNU_SOURCE
+#ifdef HAVE_GET_CURRENT_DIR_NAME
         char *current_dir_name = get_current_dir_name();
 		gmstrcpy(&current, current_dir_name, "/", *path, 0);
         free(current_dir_name);
@@ -295,7 +295,6 @@ int gpthpro(char **path){
 			current = gstralloc(length);
 		};
 		gmstrcat(&current, "/", *path, 0);
-		printf("%s\n", current);
 #endif
 		if (stat(current, &temp) == 0){
 			gstrcpy(path, current);
