@@ -41,6 +41,8 @@
 #define ARCHFS_DIR_FORMAT "%4d-%02d-%02dT%02d:%02d:%02d"
 #define ARCHFS_DIR_FORMAT_LENGTH "XXXX-XX-XXTXX:XX:XX"
 
+#define MAX_FUSE_OPTIONS 1024
+
 #define lock(mutex) pthread_mutex_lock(&mutex)
 #define unlock(mutex) pthread_mutex_unlock(&mutex)
 

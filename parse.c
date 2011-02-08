@@ -36,6 +36,8 @@
 #define OPT_VERSION "-v"
 #define OPT_VERSION_FULL "--version"
 
+#define OPT_FUSE "-o"
+
 #define isOption(string) ((string[0] == '-') ? 1 : 0)
 
 // private functions
@@ -135,6 +137,21 @@ int set_directory(int argc, char **argv, int *index){
 	
 };
 
+int add_fuse_option(int argc, char **argv, int *index){
+	
+    if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
+		return -1;
+    if (fuse_options_size == MAX_FUSE_OPTIONS)
+        return -1;
+    if ((fuse_options[fuse_options_size] = strdup(argv[*index + 1])) == NULL)
+        return -1;
+    fuse_options_size++;
+	*index += 1;
+
+	return 0;
+    
+};
+
 void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *index){
 
     if ((strcmp(argv[(*index)], OPT_MOUNT) == 0) || (strcmp(argv[(*index)], OPT_MOUNT_FULL) == 0)){
@@ -171,6 +188,10 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
     }
     else if (strcmp(argv[*index], OPT_DEBUG_FULL) == 0) {
         if (set_debug_level(argc, argv, index) != 0)
+            fail(ERR_PARAMETRES);
+    }
+    else if (strcmp(argv[*index], OPT_FUSE) == 0) {
+        if (add_fuse_option(argc, argv, index) != 0)
             fail(ERR_PARAMETRES);
     }
     else 
