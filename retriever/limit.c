@@ -83,7 +83,7 @@ int __retrieve_limit(struct file_system_info *fsinfo, struct stats *stats, int r
 	if (retrieve_rdiff(revision, file, node->tmp_path) != 0)
 		__retrieve_limit_finish(-1);
 	debug(3, "Retrieved to %s\n", node->tmp_path);
-	if (stat(node->tmp_path, &temp) != 0)
+	if (stat(node->tmp_path, &temp) != 0 || temp.st_size != stats->size)
 		__retrieve_limit_finish(-1);
 	node->count = 1;
 

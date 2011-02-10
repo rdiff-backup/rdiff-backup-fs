@@ -46,7 +46,7 @@ int retrieve_common(struct file_system_info *fsinfo, struct stats *stats, int re
 	sprintf(revision, "%dB", stats->rev);
 	if (retrieve_rdiff(revision, file, node->tmp_path) != 0)
 		retrieve_common_finish(-1);
-	if (stat(node->tmp_path, temp) != 0)
+	if (stat(node->tmp_path, temp) != 0 || temp->st_size != stats->size)
 		retrieve_common_finish(-1);
 	node->count = 1;
 	retrieve_common_finish(0);
