@@ -1,0 +1,14 @@
+syntax: glob
+
+*.o
+*.a
+*.in
+*log
+Makefile
+config.*
+
+.deps
+autom4te.cache
+
+rdiff-backup-fs
+configure

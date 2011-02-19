@@ -141,6 +141,10 @@ int gtreesave(struct node *tree, char *path){
 	
 };
 
+void gtreenlinks(tree_t tree){
+    
+};
+
 // private:
 
 struct node * find_node(struct node *root, const char *path){
