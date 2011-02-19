@@ -27,6 +27,7 @@ int full_build(struct file_system_info *fsinfo){
         add_snapshot(fsinfo->revs[i], CURRENT_SNAPSHOT, data_dir);
 		read_revision_all(NULL, fsinfo->revs[i], fsinfo->rev_count[0] - i - 1);
 	};
+    gtreenlinks(structure_tree);
 	return 0;
 
 };
@@ -63,6 +64,7 @@ int full_build_multi(struct file_system_info *fsinfo){
 		};
 		full_build_multi_free_revs;
     };
+    gtreenlinks(structure_tree);
     return 0;
 };
 
