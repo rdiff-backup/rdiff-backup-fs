@@ -1,6 +1,8 @@
 #ifndef _SUPPORT_GSTATS_H_
 #define _SUPPORT_GSTATS_H_
 
+#include <time.h>
+
 #include "../headers.h"
 
 /*
