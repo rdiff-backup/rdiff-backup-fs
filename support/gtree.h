@@ -57,8 +57,6 @@ int gtreeget(struct node *, const char *, struct stats **);
 
 int gtreedel(struct node *, const char *);
 
-int gtreesave(struct node *, char *);
-
 /*
  * sets hard link counters in the given tree
  */
