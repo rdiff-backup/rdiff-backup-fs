@@ -57,6 +57,4 @@ int gtreeget(struct node *, const char *, struct stats **);
 
 int gtreedel(struct node *, const char *);
 
-int gtreesave(struct node *, char *);
-
 #endif

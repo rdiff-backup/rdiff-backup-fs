@@ -21,8 +21,6 @@ int delete_node(struct node *);
  */
 int tree_increase_capacity(struct node *);
 
-int tree_save_node(struct node *, int);
-
 // public
 
 int gtreenew(tree_t *tree){
@@ -129,18 +127,6 @@ int gtreedel(struct node *tree, const char *path){
 
 };
 
-int gtreesave(struct node *tree, char *path){
-	
-	int file =  0;
-	
-	if ((file = open(path, O_WRONLY | O_CREAT, S_IRWXU)) == -1)
-		return -1;
-	tree_save_node(tree, file);
-	close(file);
-	return 0;
-	
-};
-
 // private:
 
 struct node * find_node(struct node *root, const char *path){
@@ -242,59 +228,4 @@ int delete_node(struct node *node){
 
 	return 0;
 
-};
-
-/*
- * saves node information to an open file in fashion similar to 
- * rdiff-backup mirror_metadata files; afterwards saves all its children
- * 
- * @1: node to be saved
- * @2: descriptor of an open file
- * 
- * returns: 0 on a success, -1 otherwise
- */
-int tree_save_node(struct node *node, int desc){
-	
-	#define tree_save_node_finish(value) {			\
-		gstrdel(temp);								\
-		gstrdel(result);							\
-		return value;								\
-	}
-	
-	char *temp = NULL;
-	char *result = NULL;
-	int i = 0;
-	
-	// setting file path
-	asprintf(&temp, "File %s\n", node->stats->internal);
-	gstrcat(&result, temp);
-	gstrdel(temp);
-	
-	// setting file type
-	if (node->stats->type == S_IFDIR)
-		gstrcat(&result, "  Type dir\n");
-	else if (node->stats->type == S_IFREG)
-		gstrcat(&result, "  Type reg\n");
-	else if (node->stats->type == S_IFLNK)
-		gstrcat(&result, "  Type lnk\n");
-	else
-		tree_save_node_finish(-1);
-	
-	// setting modification time
-	asprintf(&temp, "  ModTime %u\n", (unsigned) node->stats->ctime);
-	gstrcat(&result, temp);
-	gstrdel(temp);
-	
-	// setting file size
-	if (node->stats->type == S_IFREG){
-		asprintf(&temp, "Size %lld\n", node->stats->size);
-		gstrcat(&result, temp);
-		gstrdel(temp);
-	}
-	
-	write(desc, result, strlen(result));
-	for (i = 0; i < node->size; i++)
-		tree_save_node(node->children[i], desc);
-	tree_save_node_finish(0);
-		
 };
