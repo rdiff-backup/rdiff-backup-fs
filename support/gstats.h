@@ -1,6 +1,8 @@
 #ifndef _SUPPORT_GSTATS_H_
 #define _SUPPORT_GSTATS_H_
 
+#include <time.h>
+
 #include "../headers.h"
 
 /*
@@ -37,7 +39,7 @@ struct stats {
 typedef struct stats stats_t;
 
 #define set_directory_stats(stats){            	    \
-            (stats)->nlink = 1;                   	\
+            (stats)->nlink = 2;                   	\
             (stats)->type = S_IFDIR;              	\
             (stats)->rev = -1;                    	\
             (stats)->internal = NULL;             	\

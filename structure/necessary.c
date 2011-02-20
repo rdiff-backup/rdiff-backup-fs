@@ -7,6 +7,7 @@
 
 struct revision {
     pthread_mutex_t mutex;
+    struct stats stats;
 	char *name;
     char *file;
 	tree_t tree;
@@ -16,6 +17,7 @@ typedef struct revision revision_t;
 
 struct repository {
     struct revision *revisions;
+    struct stats stats;
 };
 
 typedef struct repository repository_t;
@@ -157,6 +159,7 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
             return -1;
         lock(repositories[repo_index].revisions[rev_index].mutex);
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
+        gtreenlinks(tree);
         debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree) {
             unlock(repositories[repo_index].revisions[rev_index].mutex);
