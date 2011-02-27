@@ -128,8 +128,6 @@ int gtreedel(struct node *tree, const char *path){
 
 };
 
-};
-
 void gtreenlinks(tree_t tree){
     
     assert(tree->stats->type == S_IFDIR);
@@ -143,6 +141,9 @@ void gtreenlinks(tree_t tree){
             nlink++;
         }
     tree->stats->nlink = nlink;
+
+};
+
 // private:
 
 struct node * find_node(struct node *root, const char *path){

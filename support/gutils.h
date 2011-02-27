@@ -15,3 +15,5 @@ extern int debug_level;
     if (level <= debug_level)                           \
         printf("[%s, %d, %s] " format, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);                  \
 }
+
+#define hardlinkcount(subdirs) (2 + subdirs)

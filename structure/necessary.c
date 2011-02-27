@@ -102,8 +102,10 @@ int necessary_build(struct file_system_info *fsinfo){
         repositories[0].revisions[i].name = get_revs_dir(fsinfo->revs[i]);
         gstrcpy(&repositories[0].revisions[i].file, fsinfo->revs[i]);
         pthread_mutex_init(&repositories[0].revisions[i].mutex, 0);
+        set_directory_stats(&repositories[0].revisions[i].stats);
     }
     set_directory_stats(&root);
+    root.nlink = hardlinkcount(fsinfo->rev_count[0]);
 	return 0;
 }
 
@@ -126,11 +128,16 @@ int necessary_build_multi(struct file_system_info *fsinfo){
         repositories[i].revisions = calloc(fsinfo->rev_count[i], sizeof(revision_t));
         for (j = 0; j < fsinfo->rev_count[i]; j++){
             repositories[i].revisions[j].name = get_revs_dir(fsinfo->revs[j]);
+            set_directory_stats(&repositories[i].revisions[j].stats);
             gstrcpy(&repositories[i].revisions[j].file, fsinfo->revs[j]);
         }
         gstrdel(target_dir);
+        set_directory_stats(&repositories[i].stats);
+        repositories[i].stats.nlink = hardlinkcount(fsinfo->rev_count[i]);
     }
     set_directory_stats(&root);
+    root.nlink = hardlinkcount(fsinfo->repo_count);
+    // TODO: check why this is -1 and why it is not considered a failure
     return -1;
 }
 
