@@ -166,12 +166,13 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
             return -1;
         lock(repositories[repo_index].revisions[rev_index].mutex);
         struct node *tree = get_revision_tree(fsinfo, repo, revision);
-        gtreenlinks(tree);
-        debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree) {
             unlock(repositories[repo_index].revisions[rev_index].mutex);
             return -1;
         }
+        gtreenlinks(tree);
+        // only after tree is retrieved for the first time, we can update nlink count
+        repositories[repo_index].revisions[rev_index].stats.nlink = tree->stats->nlink;
         int result = gtreeget(tree, internal, stats);
         unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
@@ -184,7 +185,6 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
     int i = 0, index = 0;
     char **result = 0;
 
-    debug(1, "getting children of %s/%s/%s\n", repo, revision, internal);
     if (revision != NULL && repo == NULL && fsinfo->repo_count > 1)
         return NULL; // should not happen
     if (revision == NULL && repo == NULL && fsinfo->repo_count > 1){
@@ -209,7 +209,6 @@ char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char 
             return NULL;
         lock(repositories[repo_index].revisions[rev_index].mutex);
         tree_t tree = get_revision_tree(fsinfo, repo, revision);
-        debug(1, "retrieved tree %d\n", (int) tree);
         if (!tree) {
             unlock(repositories[repo_index].revisions[rev_index].mutex);
             return NULL;
