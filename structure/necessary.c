@@ -144,19 +144,19 @@ int necessary_build_multi(struct file_system_info *fsinfo){
 int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revision, char *internal, 
 					   stats_t **stats){
 
-    debug(1, "checking file %s/%s/%s\n", repo, revision, internal);
-    if (revision == NULL && (repo == NULL || repository_exists(fsinfo, repo))){
-        debug(1, "checking repo entry\n");
+    if (revision == NULL && repo == NULL)
         copy_stats(&root, stats);
-        return 0;
+    else if (revision == NULL && repo != NULL && repository_exists(fsinfo, repo)){
+        int index = repository_index(fsinfo, repo);
+        copy_stats(&repositories[index].stats, stats);
     }
     else if (revision != NULL && internal == NULL){
-        debug(1, "checking revision entry\n");
+        int repo_index = repository_index(fsinfo, repo);
         if (!revision_exists(fsinfo, repo, revision))
             return -1;
         else {
-            copy_stats(&root, stats);
-            return 0;
+            int rev_index = revision_index(fsinfo, repo, revision);
+            copy_stats(&repositories[repo_index].revisions[rev_index].stats, stats);
         }
     }
     else{
@@ -176,6 +176,7 @@ int necessary_get_file(struct file_system_info *fsinfo, char *repo, char *revisi
         unlock(repositories[repo_index].revisions[rev_index].mutex);
         return result;
     }
+    return 0;
 }
 
 char** necessary_get_children(struct file_system_info *fsinfo, char *repo, char *revision, char *internal){
