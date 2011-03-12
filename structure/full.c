@@ -2,9 +2,9 @@
 
 // prototypes:
 
-int add_revs_dir(char *, char *);
+int add_revs_dir(struct file_system_info *, char *, char *);
 
-void read_revision_all(char *, char *, int);
+void read_revision_all(struct file_system_info *, char *, char *, int);
 
 int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file);
 
@@ -25,7 +25,7 @@ int full_build(struct file_system_info *fsinfo){
         return -1;
     for (i = fsinfo->rev_count[0] - 1; i >= 0; i--){
         add_snapshot(fsinfo->revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_all(NULL, fsinfo->revs[i], fsinfo->rev_count[0] - i - 1);
+		read_revision_all(fsinfo, NULL, fsinfo->revs[i], fsinfo->rev_count[0] - i - 1);
 	};
     gtreenlinks(structure_tree);
 	return 0;
@@ -60,7 +60,7 @@ int full_build_multi(struct file_system_info *fsinfo){
 		};
 		for (j = fsinfo->rev_count[i] - 1; j >= 0; j--){
             add_snapshot(fsinfo->revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_all(fsinfo->repo_names[i], fsinfo->revs[j], fsinfo->rev_count[i] - j - 1);
+		    read_revision_all(fsinfo, fsinfo->repo_names[i], fsinfo->revs[j], fsinfo->rev_count[i] - j - 1);
 		};
 		full_build_multi_free_revs;
     };
@@ -98,7 +98,8 @@ char** full_get_children(struct file_system_info *fsinfo, char *repo, char *revi
 
 // private:
 
-void read_revision_all(char *repo, char *rev, int rev_index){
+void read_revision_all(struct file_system_info *fsinfo, char *repo, char *rev, 
+                       int rev_index){
 
 #define read_revision_error {						\
 	    gstrdel(file);									\
@@ -115,18 +116,18 @@ void read_revision_all(char *repo, char *rev, int rev_index){
     struct stats *stats = calloc(1, sizeof(struct stats));
 
 	if (repo == NULL){
-		if (gmstrcpy(&rev_dir, "/", get_revs_dir(rev), 0) != 0)
+		if (gmstrcpy(&rev_dir, "/", get_revs_dir(fsinfo, rev), 0) != 0)
 			read_revision_error;
 	}
 	else{ // repo != NULL
-    	if (gmstrcpy(&rev_dir, "/", repo, "/", get_revs_dir(rev), 0) != 0)
+    	if (gmstrcpy(&rev_dir, "/", repo, "/", get_revs_dir(fsinfo, rev), 0) != 0)
 			read_revision_error;
 	};
     if (gmstrcpy(&file_path, data_dir, "/", CURRENT_SNAPSHOT, 0) != 0)
 		read_revision_error;
     if ((file = fopen(file_path, "r")) == NULL)
 		read_revision_error;
-    add_revs_dir(rev, repo);
+    add_revs_dir(fsinfo, rev, repo);
 
     while (read_stats_all(stats, rev_dir, rev_index, file) == 0)
         update_tree(structure_tree, stats, stats->path);
@@ -158,7 +159,7 @@ int read_stats_all(struct stats *stats, char *prefix, int rev, FILE *file){
    
 };
 
-int add_revs_dir(char *revision, char *repository){
+int add_revs_dir(struct file_system_info *fsinfo, char *revision, char *repository){
     
     struct stats stats;
     
@@ -166,13 +167,13 @@ int add_revs_dir(char *revision, char *repository){
     if (revision == NULL)
 		return -1;
     if (repository == NULL){
-		gmstrcpy(&stats.path, "/", get_revs_dir(revision), NULL);
+		gmstrcpy(&stats.path, "/", get_revs_dir(fsinfo, revision), NULL);
 		// printf("[Function: add_revs_dir] Adding revision %s to the data structure;\n", stats->path);
 		// stats->name = stats->path + strlen("/")'
 		stats.name = stats.path + 1;
     }
     else{
-		gmstrcpy(&stats.path, "/", repository, "/", get_revs_dir(revision), NULL);
+		gmstrcpy(&stats.path, "/", repository, "/", get_revs_dir(fsinfo, revision), NULL);
 		// stats->name = stats->path + strlen("/") + strlen(repository) + strlen("/");
 		stats.name = stats.path + 1 + strlen(repository) + 1;
     };

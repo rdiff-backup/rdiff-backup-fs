@@ -46,6 +46,9 @@
 #define lock(mutex) pthread_mutex_lock(&mutex)
 #define unlock(mutex) pthread_mutex_unlock(&mutex)
 
+#define REV_LOCAL_TIME 1
+#define REV_GMT_TIME 2
+
 struct file_system_info {
 	int repo_count;
 	int *rev_count;
@@ -56,6 +59,8 @@ struct file_system_info {
     // TODO: this must be fixed; it doesn't hold actual information about revs,
     // but only the most recent revs for multiple repos
     char **revs;
+    
+    int rev_dir_time;
 };
 
 #endif

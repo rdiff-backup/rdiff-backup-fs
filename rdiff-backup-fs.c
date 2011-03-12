@@ -27,6 +27,7 @@ int run(int argc, char **argv){
     int i = 0, options_count = 0;
     
     file_system_info = single(struct file_system_info);
+    file_system_info->rev_dir_time = REV_GMT_TIME;
 
     parse(file_system_info, argc, argv);
     initialize(file_system_info);

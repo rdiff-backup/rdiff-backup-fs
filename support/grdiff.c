@@ -16,6 +16,15 @@
  */
 int unzip(char *, char *);
 
+/*
+ * returns gmt time of revision creation
+ * 
+ * @1: filename of revision's mirror_metadata file
+ * 
+ * returns: gmt time on success, -1 otherwise
+ */
+static time_t get_revs_date(char *);
+
 // public:
 
 int update_tree(tree_t tree, stats_t *stats, char *path){
@@ -109,7 +118,7 @@ int gather_revisions(struct file_system_info *fsinfo, char *repo_path, char *des
 };
 
 // FIXME: what about seasonal time?
-time_t get_revs_date(char *mirror){
+static time_t get_revs_date(char *mirror){
 
     #define FACTORS_COUNT 8
     #define FACTORS_SHORT_COUNT 6
@@ -146,10 +155,16 @@ time_t get_revs_date(char *mirror){
 
 };
 
-char* get_revs_dir(char *mirror){
+char* get_revs_dir(struct file_system_info *fsinfo, char *mirror){
 
     time_t rev_date = get_revs_date(mirror);
-    struct tm *rev_tm = gmtime(&rev_date);
+    struct tm *rev_tm = 0;
+    if (fsinfo->rev_dir_time == REV_LOCAL_TIME)
+        rev_tm = localtime(&rev_date);
+    else if (fsinfo->rev_dir_time == REV_GMT_TIME)
+        rev_tm = gmtime(&rev_date);
+    else
+        return NULL;
     char *result = gstralloc(strlen(ARCHFS_DIR_FORMAT_LENGTH));
     
     sprintf(result, ARCHFS_DIR_FORMAT, rev_tm->tm_year + 1900, 

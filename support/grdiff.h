@@ -28,23 +28,13 @@ int unzip_revs(char *, char *);
 int count_revs(char *);
 
 /*
- * returns gmt time of revision creation
- * 
- * @1: filename of revision's mirror_metadata file
- * 
- * returns: gmt time on success, -1 otherwise
- */
-
-time_t get_revs_date(char *);
-
-/*
  * returns name of directory for a revision
  * 
  * @1: filename of revision's mirror_metadata file
  * 
  * returns: name of directory on success, NULL otherwise
  */
-char* get_revs_dir(char *);
+char* get_revs_dir(struct file_system_info *, char *);
 
 /*
  * read single portion of file stats from a stream

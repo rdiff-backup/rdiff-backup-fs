@@ -29,6 +29,8 @@
 
 #define OPT_FUSE "-o"
 
+#define OPT_DIR_LOCAL_TIME_FULL "--local-time"
+
 #define isOption(string) ((string[0] == '-') ? 1 : 0)
 
 // private functions
@@ -137,6 +139,8 @@ void parse_option(struct file_system_info *fsinfo, int argc, char **argv, int *i
         if (add_fuse_option(argc, argv, index) != 0)
             fail(ERR_PARAMETRES);
     }
+    else if (strcmp(argv[*index], OPT_DIR_LOCAL_TIME_FULL) == 0) 
+        fsinfo->rev_dir_time = REV_LOCAL_TIME;
     else 
 		fail(ERR_UNKNOWN_OPTION);
 

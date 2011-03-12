@@ -8,7 +8,8 @@ struct node *version_tree = NULL;
 
 int read_layout_versions(char *, char *);
 
-void read_revision_versions(char *rev, int rev_index, char *);
+void read_revision_versions(struct file_system_info *, char *rev, 
+                            int rev_index, char *);
 
 #define CURRENT_SNAPSHOT "mirror_metadata.current.snapshot"
 
@@ -26,7 +27,7 @@ int versions_init(struct file_system_info *fsinfo){
     read_layout_versions(fsinfo->revs[fsinfo->rev_count[0] - 1], NULL);
     for (i = fsinfo->rev_count[0] - 1; i >= 0; i--){
         add_snapshot(fsinfo->revs[i], CURRENT_SNAPSHOT, data_dir);
-		read_revision_versions(fsinfo->revs[i], fsinfo->rev_count[0] - i - 1, NULL);
+		read_revision_versions(fsinfo, fsinfo->revs[i], fsinfo->rev_count[0] - i - 1, NULL);
 	};
     return 0;
 
@@ -64,7 +65,7 @@ int versions_init_multi(struct file_system_info *fsinfo){
 		};
 		for (j = fsinfo->rev_count[i] - 1; j >= 0; j--){
             add_snapshot(fsinfo->revs[j], CURRENT_SNAPSHOT, data_dir);
-		    read_revision_versions(fsinfo->revs[j], fsinfo->rev_count[i] - j - 1, fsinfo->repo_names[i]);
+		    read_revision_versions(fsinfo, fsinfo->revs[j], fsinfo->rev_count[i] - j - 1, fsinfo->repo_names[i]);
 		};
 		versions_init_multi_free_revs;
 	};
@@ -122,7 +123,8 @@ int read_layout_versions(char *revision, char *prefix){
 
 };
 
-void read_revision_versions(char *revision, int rev_index, char *prefix){
+void read_revision_versions(struct file_system_info *fsinfo, char *revision, 
+                            int rev_index, char *prefix){
 
 #define read_revision_versions_finish {						\
 			gmstrcpy(&path, data_dir, "/", revision, 0);	\
@@ -136,7 +138,7 @@ void read_revision_versions(char *revision, int rev_index, char *prefix){
 		}
 
 	char *path = NULL;
-	char *sufix = get_revs_dir(revision);
+	char *sufix = get_revs_dir(fsinfo, revision);
 	char *file_path = NULL;
 	struct stats stats, *temp;
 	FILE *file = NULL;

@@ -99,7 +99,7 @@ int necessary_build(struct file_system_info *fsinfo){
     pthread_mutex_init(&cache_list.mutex, 0);
     repositories[0].revisions = calloc(fsinfo->rev_count[0], sizeof(revision_t));
     for (i = 0; i < fsinfo->rev_count[0]; i++) {
-        repositories[0].revisions[i].name = get_revs_dir(fsinfo->revs[i]);
+        repositories[0].revisions[i].name = get_revs_dir(fsinfo, fsinfo->revs[i]);
         gstrcpy(&repositories[0].revisions[i].file, fsinfo->revs[i]);
         pthread_mutex_init(&repositories[0].revisions[i].mutex, 0);
         set_directory_stats(&repositories[0].revisions[i].stats);
@@ -127,7 +127,7 @@ int necessary_build_multi(struct file_system_info *fsinfo){
             return -1;
         repositories[i].revisions = calloc(fsinfo->rev_count[i], sizeof(revision_t));
         for (j = 0; j < fsinfo->rev_count[i]; j++){
-            repositories[i].revisions[j].name = get_revs_dir(fsinfo->revs[j]);
+            repositories[i].revisions[j].name = get_revs_dir(fsinfo, fsinfo->revs[j]);
             set_directory_stats(&repositories[i].revisions[j].stats);
             gstrcpy(&repositories[i].revisions[j].file, fsinfo->revs[j]);
         }
