@@ -29,6 +29,8 @@ int revs_getattr(const char *path, struct stat *stbuf){
     stbuf->st_mtime = stats->ctime;
     stbuf->st_ctime = stats->ctime;
     stbuf->st_atime = stats->atime;
+    stbuf->st_uid = stats->uid;
+    stbuf->st_gid = stats->gid;
     
     gstrdel(stats->path);
 	free(stats);

@@ -185,6 +185,8 @@ int read_stats(stats_t *stats, FILE *file){
 	int type_set = 0;
 	int size_set = 0;
 	int time_set = 0;
+    int uid_set = 0;
+    int gid_set = 0;
 	
 	memset(stats, 0, sizeof(stats_t));
 	while ((result = gstrline(&line, &length, file)) != -1){
@@ -202,6 +204,8 @@ int read_stats(stats_t *stats, FILE *file){
 			type_set = 0;
 			size_set = 0;
 			time_set = 0;
+            uid_set = 0;
+            gid_set = 0;
 		}
 		if (gstrsub(line, "  Size") == 0){
 			// stats->size = atoi(line + strlen("  Size ");
@@ -239,15 +243,23 @@ int read_stats(stats_t *stats, FILE *file){
 			stats->atime = stats->ctime;
 			time_set = 1;
 		}
+        if (gstrsub(line, "  Uid ") == 0) {
+            stats->uid = atoi(line + strlen("  Uid "));
+            uid_set = 1;
+        }
+        if (gstrsub(line, "  Gid ") == 0) {
+            stats->gid = atoi(line + strlen("  Gid "));
+            gid_set = 1;
+        }
         gstrdel(line);
 		if ((stats->type == S_IFLNK) &&
-			(name_set == 1) && (link_set == 1) && (type_set == 1))
+			(name_set && link_set && type_set && uid_set && gid_set))
 			return 0;
 		if ((stats->type == S_IFDIR) &&
-			(name_set == 1) && (type_set == 1) && (time_set == 1))
+			(name_set && type_set && time_set && uid_set && gid_set))
 			return 0;
 		if ((stats->type != S_IFLNK) &&
-			(name_set == 1) && (size_set == 1) && (type_set == 1) && (time_set == 1))
+			(name_set && size_set && type_set && time_set && uid_set && gid_set))
 			return 0;
 	};
     gstrdel(line);

@@ -25,6 +25,9 @@ struct stats {
     char *internal; 
     char *name;
     char *link;
+    
+    unsigned int uid;
+    unsigned int gid;
                   
     int type;
     unsigned long long size;
