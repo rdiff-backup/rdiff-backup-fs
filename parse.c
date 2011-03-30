@@ -96,11 +96,8 @@ int add_fuse_option(int argc, char **argv, int *index){
 	
     if ((*index + 1 >= argc) || (isOption(argv[*index + 1]) == 1))
 		return -1;
-    if (fuse_options_size == MAX_FUSE_OPTIONS)
+    if (gmstrcpy(&fuse_options, "-o", argv[*index + 1], NULL))
         return -1;
-    if ((fuse_options[fuse_options_size] = strdup(argv[*index + 1])) == NULL)
-        return -1;
-    fuse_options_size++;
 	*index += 1;
 
 	return 0;

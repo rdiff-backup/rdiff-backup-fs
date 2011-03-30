@@ -21,6 +21,11 @@ reads rdiff-backup archives and provides convenient access.
 Run rdiff-backup-fs in foreground with given verbosity of debug messages.
 
 .TP
+.BI "\-o opt[,opt..]"
+Pass mount options including allow_other for allowing other users to access
+the file system.
+
+.TP
 .BI "\-f, \--full"
 Store information about all revisions in memory. CAUTION: this may take a lot
 of memory if your archive contains many revisions.

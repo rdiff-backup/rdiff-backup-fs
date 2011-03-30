@@ -18,7 +18,7 @@ extern int structure;
 extern int layout;
 extern int debug;
 
-extern char *fuse_options[];
+extern char *fuse_options;
 extern int fuse_options_size;
 
 extern int policy;
