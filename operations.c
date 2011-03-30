@@ -1,4 +1,4 @@
-#include "fuse.h"
+#include "operations.h"
 #include "headers.h"
 #include "support/gutils.h"
 #include "support/gstring.h"
