@@ -379,7 +379,8 @@ char * build_snapshot(struct file_system_info *fsinfo, revision_t *revisions, in
             gmstrcpy(&snapshot, data_dir, "/", fsinfo->repo_names[repo_index], "/", revisions[i].file, 0);  
         if ((revision_desc = open(snapshot, O_RDONLY)) == -1)
             build_snapshot_error;
-        write(snapshot_desc, "\n", 1);
+        if (write(snapshot_desc, "\n", 1) == -1)
+            build_snapshot_error;
         if (gdesccopy(revision_desc, snapshot_desc))
             build_snapshot_error;
         gstrdel(snapshot);

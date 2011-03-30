@@ -329,10 +329,14 @@ int snapshot_copy(char *revision, char *target, char *directory){
 		return -1;
 	};
 	while ((result = read(revision_desc, buffer, 1024)) != 0)
-		write(snapshot_desc, buffer, result);
+		if (write(snapshot_desc, buffer, result) == -1){
+            close(snapshot_desc);
+            close(revision_desc);
+            return -1;
+        }
 	close(snapshot_desc);
 	close(revision_desc);
-	return 0;
+	return result;
 	
 };
 
@@ -355,12 +359,20 @@ int snapshot_append(char *revision, char *target, char *directory){
 		return -1;
 	};
 	buffer[0] = '\n';
-	write(snapshot_desc, buffer, 1);
+	if (write(snapshot_desc, buffer, 1) == -1){
+        close(snapshot_desc);
+        return -1;
+    }
+        
 	while ((result = read(revision_desc, buffer, 1024)) != 0)
-		write(snapshot_desc, buffer, result);
+		if (write(snapshot_desc, buffer, result) == -1){
+            close(snapshot_desc);
+            close(revision_desc);
+            return -1;
+        }
 	close(snapshot_desc);
 	close(revision_desc);
-	return 0;
+	return result;
 	
 };
 
