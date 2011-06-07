@@ -14,15 +14,17 @@ void check_repo(struct file_system_info *fsinfo, int index){
 
     char *rdiff_backup_dir = NULL;
 
-	// printf("[Function: check_repo] Checking repo %s;\n", fsinfo->repos[index]);
 	if (gmstrcpy(&rdiff_backup_dir, fsinfo->repos[index], "/rdiff-backup-data", 0) == -1)
 		fail(-1);
+	DIR *temp_dir = opendir(rdiff_backup_dir);
+	if (temp_dir == NULL)
+		fail(errno);
+	closedir(temp_dir);		
 	if (gpthpro(&rdiff_backup_dir) != 0)
 		fail(ERR_NO_REPO);
 	gstrdel(rdiff_backup_dir);
 	if (gpthpro(&fsinfo->repos[index]) != 0)
 		fail(ERR_NO_REPO);
-	//printf("[Function: check_repo] Setting repo to %s;\n", fsinfo->repos[index]);
 	
 };
 

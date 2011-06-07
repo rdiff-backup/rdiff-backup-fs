@@ -48,7 +48,7 @@ int unzip_revs(char *path, char *dest){
     char *extension = NULL;
     int descriptor = 0;
 
-	// printf("[Function: unzip_revs] Unzipping revisions in %s directory;\n", path);
+	debug(2, "Unzipping revisions in %s directory;\n", path);
     if ((dir = opendir(path)) == NULL)
     	return -1;
     for (entry = readdir(dir); entry != NULL; entry = readdir(dir)){
