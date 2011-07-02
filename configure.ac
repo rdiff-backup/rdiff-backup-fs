@@ -47,11 +47,11 @@ dnl checking type of system to provide proper compile and linking flags
 
 case ${host} in
     *-*-linux-*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
+			AC_SUBST(LIBS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
     *-*-bsd-*)		AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
+			AC_SUBST(LIBS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
     *-*-darwin*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
+			AC_SUBST(LIBS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
     *)			AC_MSG_WARN(No automatic flags for this host system; set compile/linking flags manually);;
 esac
 
