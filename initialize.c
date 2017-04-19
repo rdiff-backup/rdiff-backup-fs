@@ -5,7 +5,7 @@
 
 void check_mount(){
     
-    if (gpthpro(&mount) != 0)
+    if (gpthpro(&mount_dir) != 0)
     	fail(ERR_NO_MOUNT);
             
 };

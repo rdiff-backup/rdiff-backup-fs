@@ -160,9 +160,9 @@ void parse_repo(struct file_system_info *fsinfo, int argc, char** argv, int *ind
 
 void parse_mount(char *arg){
 
-    if (mount != NULL)
+    if (mount_dir != NULL)
 		fail(ERR_PARAMETRES);
-    if (gstrcpy(&mount, arg) != 0)
+    if (gstrcpy(&mount_dir, arg) != 0)
     	fail(-1);
 
 };
@@ -182,12 +182,12 @@ int parse(struct file_system_info *fsinfo, int argc, char **argv){
     for (i = 1; i < argc; i++){
 		if (isOption(argv[i]) == 1)
 	    	parse_option(fsinfo, argc, argv, &i);
-		else if (mount == NULL)
+		else if (mount_dir == NULL)
 	    	parse_mount(argv[i]);
 		else
 	    	parse_repo(fsinfo, argc, argv, &i);
 	};
-    if (mount == NULL)
+    if (mount_dir == NULL)
 		fail(ERR_NO_MOUNT);
     if (fsinfo->repo_count == 0)
 		fail(ERR_NO_REPO);

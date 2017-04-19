@@ -3,7 +3,7 @@
 #include "parse.h"
 #include "initialize.h"
 
-char *mount = NULL;
+char *mount_dir = NULL;
 char *tmp_dir = NULL;
 char *data_dir = NULL;
 
@@ -30,7 +30,7 @@ int run(int argc, char **argv){
     
     args = calloc(3 + 2, sizeof(char *));
     args[0] = argv[0];
-    args[1] = mount;
+    args[1] = mount_dir;
     options_count = 2;
     if (debug){
         args[options_count] = "-d";

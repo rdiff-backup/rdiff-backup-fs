@@ -5,7 +5,7 @@
 
 #include <fuse.h>
 
-extern char *mount;
+extern char *mount_dir;
 // directory where data directory should be created
 extern char *tmp_dir;
 // directory where file system's data will be kept
