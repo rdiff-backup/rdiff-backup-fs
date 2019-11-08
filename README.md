@@ -1,6 +1,20 @@
+# rdiff-backup-fs
+
+> **CAUTION:** the code in this repository has been imported 1-to-1 from
+the archive at https://code.google.com/archive/p/rdiff-backup-fs and is
+not guaranteed to work in any way or form, and can be dangerous to use.
+
+## WE'RE LOOKING FOR A CO-MAINTAINER!
+
+Check the rdiff-backup-users mailing list
+mailto:rdiff-backup-users@nongnu.org, join at
+https://lists.nongnu.org/mailman/listinfo/rdiff-backup-users
+
+## Description
+
 Anyone who at least once lost his project knows – I personally do - how
 important it is to create backups. Rdiff-backup 
-(http://www.nongnu.org/rdiff-backup/) allows user to incrementally
+(https://rdiff-backup.net/) allows user to incrementally
 backup one directory into another. Increments make disk usage relatively
 low, as only differences between two consecutive backups are stored. 
 This has its drawbacks, however. Although user can access files from
