@@ -30,7 +30,7 @@ struct stats {
     unsigned int gid;
                   
     int type;
-    unsigned long long size;
+    long long size;
     nlink_t nlink; 
     time_t ctime; 
     time_t atime; 
