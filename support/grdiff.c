@@ -209,7 +209,7 @@ int read_stats(stats_t *stats, FILE *file){
 		}
 		if (gstrsub(line, "  Size") == 0){
 			// stats->size = atoi(line + strlen("  Size ");
-			stats->size = atoi(line + 7);
+			stats->size = atoll(line + 7);
 			size_set = 1;
 		};
 		if (strcmp(line, "  Type reg\n") == 0){
