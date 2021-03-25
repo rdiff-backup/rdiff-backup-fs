@@ -1,10 +1,10 @@
 AC_PREREQ(2.61)
-AC_INIT(rdiff-backup-fs, 1.0.0)
+AC_INIT(rdiff-backup-fs, 1.0.1)
 
 AC_CANONICAL_HOST
 AC_PROG_RANLIB
 
-AM_INIT_AUTOMAKE(rdiff-backup-fs, 1.0.0)
+AM_INIT_AUTOMAKE(rdiff-backup-fs, 1.0.1)
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_FILES([Makefile layout/Makefile structure/Makefile retriever/Makefile support/Makefile])
 
@@ -15,7 +15,7 @@ AC_PROG_CC
 dnl checks for libraries
 
 AC_CHECK_LIB([z], [gzgets],,[AC_MSG_ERROR(No zlib library!)])
-AC_CHECK_LIB(fuse, fuse_main, FUSE_LIBS="-lfuse", AC_MSG_ERROR(No fuse library!))
+PKG_CHECK_MODULES([FUSE], [fuse], [], [AC_MSG_ERROR(No fuse library!)])
 
 dnl checks for header files
 
