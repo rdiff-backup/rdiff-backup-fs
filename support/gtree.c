@@ -1,5 +1,7 @@
 #include <fcntl.h>
 #include <assert.h>
+#include <stdio.h>
+#include <time.h>
 
 #include "gtree.h"
 #include "gutils.h"
