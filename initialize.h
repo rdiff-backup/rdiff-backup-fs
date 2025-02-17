@@ -18,6 +18,6 @@
 
 #include "retriever/retriever.h"
 
-void initialize();
+void initialize(struct file_system_info *fsinfo);
 
 #endif

@@ -22,7 +22,7 @@ struct cache {
 };
 
 int cache_add(node_t *);
-int cache_delete();
+int cache_delete(struct file_system_info *fsinfo);
 
 // public:
 
