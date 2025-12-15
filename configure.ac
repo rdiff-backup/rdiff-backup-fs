@@ -15,7 +15,7 @@ AC_PROG_CC
 dnl checks for libraries
 
 AC_CHECK_LIB([z], [gzgets],,[AC_MSG_ERROR(No zlib library!)])
-PKG_CHECK_MODULES([FUSE], [fuse], [], [AC_MSG_ERROR(No fuse library!)])
+PKG_CHECK_MODULES([FUSE3], [fuse3], [], [AC_MSG_ERROR(No fuse3 library!)])
 
 dnl checks for header files
 
@@ -46,12 +46,12 @@ AC_TYPE_SIZE_T
 dnl checking type of system to provide proper compile and linking flags
 
 case ${host} in
-    *-*-linux-*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
-    *-*-bsd-*)		AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
-    *-*-darwin*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse`"])
-			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse` -lz"]);;
+    *-*-linux-*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
+    *-*-bsd-*)		AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
+    *-*-darwin*)	AC_SUBST(CFLAGS, ["-Wall -O3 `pkg-config --cflags fuse3`"])
+			AC_SUBST(LDFLAGS, ["`pkg-config --cflags --libs fuse3` -lz"]);;
     *)			AC_MSG_WARN(No automatic flags for this host system; set compile/linking flags manually);;
 esac
 

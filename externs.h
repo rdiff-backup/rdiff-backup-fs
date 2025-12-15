@@ -1,9 +1,9 @@
 #ifndef _EXTERNS_H_
 #define _EXTERNS_H_
 
-#define FUSE_USE_VERSION 26
+#define FUSE_USE_VERSION 31
 
-#include <fuse.h>
+#include <fuse3/fuse.h>
 
 extern char *mount_dir;
 // directory where data directory should be created

@@ -10,7 +10,7 @@
 
 // public:
 
-int revs_getattr(const char *path, struct stat *stbuf){
+int revs_getattr(const char *path, struct stat *stbuf, struct fuse_file_info *fileinfo){
 
     struct stats *stats;
     memset(stbuf, 0, sizeof(struct stat));
@@ -39,7 +39,7 @@ int revs_getattr(const char *path, struct stat *stbuf){
     
 };
 
-int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){
+int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi, enum fuse_readdir_flags flags){
 
     (void) offset;
     (void) fi;
@@ -53,8 +53,8 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
     gstrdel(stats->path);
     free(stats);
 	
-    filler(buf, ".", NULL, 0);
-    filler(buf, "..", NULL, 0);
+    filler(buf, ".", NULL, 0, flags);
+    filler(buf, "..", NULL, 0, flags);
     
     debug(1, "Reading content of the eturned directory\n");
     char **content = get_children(file_system_info, path);
@@ -63,7 +63,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 		return 0;
 	}
     for (i = 0; content[i] != 0; i++)
-		filler(buf, content[i], NULL, 0);
+		filler(buf, content[i], NULL, 0, flags);
 	debug(1, "There were %d children in this directory;\n", i);
     for (i = 0; content[i] != 0; i++)
         free(content[i]);
