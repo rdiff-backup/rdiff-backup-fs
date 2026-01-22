@@ -52,9 +52,14 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 		return -ENOENT;
     gstrdel(stats->path);
     free(stats);
+
+    enum fuse_fill_dir_flags fill_flags = 0;
+    if (flags & FUSE_READDIR_PLUS) {
+        fill_flags |= FUSE_FILL_DIR_PLUS;
+    }
 	
-    filler(buf, ".", NULL, 0, flags);
-    filler(buf, "..", NULL, 0, flags);
+    filler(buf, ".", NULL, 0, fill_flags);
+    filler(buf, "..", NULL, 0, fill_flags);
     
     debug(1, "Reading content of the eturned directory\n");
     char **content = get_children(file_system_info, path);
@@ -63,7 +68,7 @@ int revs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offs
 		return 0;
 	}
     for (i = 0; content[i] != 0; i++)
-		filler(buf, content[i], NULL, 0, flags);
+		filler(buf, content[i], NULL, 0, fill_flags);
 	debug(1, "There were %d children in this directory;\n", i);
     for (i = 0; content[i] != 0; i++)
         free(content[i]);
