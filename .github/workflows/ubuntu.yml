@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
-      run: sudo apt install -y build-essential autoconf automake libtool pkg-config libfuse3-dev libssl-dev libz-dev
+      run: sudo apt install -y build-essential autoconf automake libtool pkg-config libfuse3-dev libssl-dev libz-dev python3 fuse3 rdiff-backup
     - name: prepare build system
       run: autoreconf -fiv
     - name: configure
