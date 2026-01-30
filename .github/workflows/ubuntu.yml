@@ -1,0 +1,23 @@
+name: ubuntu
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: sudo apt install -y build-essential autoconf automake libtool pkg-config libfuse3-dev libssl-dev libz-dev
+    - name: prepare build system
+      run: autoreconf -fiv
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make -j$(nproc)
+    - name: test
+      run: make check
