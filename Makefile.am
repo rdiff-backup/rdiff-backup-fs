@@ -10,4 +10,8 @@ SUBDIRS = layout structure retriever support
 
 man1_MANS = rdiff-backup-fs.man
 
+TESTS = tests.py
+
+check_SCRIPTS = tests.py
+
 EXTRA_DIST = rdiff-backup-fs.man

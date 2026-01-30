@@ -14,6 +14,8 @@ AC_PROG_CC
 
 dnl checks for libraries
 
+AM_PATH_PYTHON(,, [:])
+
 AC_CHECK_LIB([z], [gzgets],,[AC_MSG_ERROR(No zlib library!)])
 PKG_CHECK_MODULES([FUSE3], [fuse3], [], [AC_MSG_ERROR(No fuse3 library!)])
 
